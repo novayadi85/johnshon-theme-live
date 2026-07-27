@@ -1,0 +1,15 @@
+{%- comment -%}
+  Renders the single price variant (no offer, no member).
+  Required: single_price, currency
+  Optional: scope (class prefix, default 'pdp')
+{%- endcomment -%}
+{%- assign scope = scope | default: 'pdp' -%}
+<div class="{{ scope }}-pricing {{ scope }}-pricing--single-no-offer">
+  <div class="{{ scope }}-price-section">
+    <div class="{{ scope }}-price-row">
+      <span class="{{ scope }}-price">{% render 'format-amount', amount: single_price %}</span>
+      <span class="{{ scope }}-currency">{{ currency | downcase }}</span>
+    </div>
+    <span class="{{ scope }}-club-note">{{ 'jkl.price_per_bottle' | t }}</span>
+  </div>
+</div>

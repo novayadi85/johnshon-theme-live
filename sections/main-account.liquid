@@ -1,0 +1,477 @@
+{% liquid
+  assign orders_count = customer.orders_count | default: 0
+  assign default_address = customer.default_address
+  assign contact_page = pages['contact']
+%}
+
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<section class="account-page color-{{ section.settings.color_scheme }}">
+  <div class="account-page__shell page-width-content">
+    <div class="account-page__hero">
+      <div class="account-page__eyebrow">Customer account</div>
+      <div class="account-page__hero-row">
+        <div>
+          <h1 class="account-page__title">
+            {% if customer.first_name != blank %}
+              Welcome back, {{ customer.first_name }}
+            {% else %}
+              Your account
+            {% endif %}
+          </h1>
+          <p class="account-page__intro">
+            Review your recent orders, keep your details close at hand, and jump back into the cellar anytime.
+          </p>
+        </div>
+        <div class="account-page__hero-actions">
+          <a class="account-page__link account-page__link--primary" href="{{ routes.all_products_collection_url }}">
+            Continue shopping
+          </a>
+          <a class="account-page__link" href="{{ routes.account_logout_url }}">
+            Log out
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="account-page__grid">
+      <div class="account-page__main">
+        <article class="account-card account-card--orders">
+          <div class="account-card__header">
+            <div>
+              <p class="account-card__kicker">Order history</p>
+              <h2 class="account-card__title">Your orders</h2>
+            </div>
+            <div class="account-card__meta">
+              {{ orders_count }}
+              {% if orders_count == 1 %}
+                order
+              {% else %}
+                orders
+              {% endif %}
+            </div>
+          </div>
+
+          {% if customer.orders.size > 0 %}
+            <div class="account-orders-table">
+              <table role="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Order</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Payment</th>
+                    <th scope="col">Fulfillment</th>
+                    <th scope="col">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for order in customer.orders %}
+                    <tr>
+                      <td data-label="Order">
+                        <a href="{{ order.customer_url }}" class="account-page__inline-link">
+                          {{ order.name }}
+                        </a>
+                      </td>
+                      <td data-label="Date">{{ order.created_at | date: '%b %d, %Y' }}</td>
+                      <td data-label="Payment">{{ order.financial_status_label }}</td>
+                      <td data-label="Fulfillment">{{ order.fulfillment_status_label }}</td>
+                      <td data-label="Total">{{ order.total_price | money }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="account-empty-state">
+              <h3>No orders yet</h3>
+              <p>Your order history will show up here after your first purchase.</p>
+              <a class="account-page__link account-page__link--primary" href="{{ routes.all_products_collection_url }}">
+                Explore wines
+              </a>
+            </div>
+          {% endif %}
+        </article>
+      </div>
+
+      <aside class="account-page__sidebar">
+        <article class="account-card">
+          <p class="account-card__kicker">Profile</p>
+          <h2 class="account-card__title">Account details</h2>
+          <div class="account-details">
+            <div class="account-details__row">
+              <span>Name</span>
+              <strong>{{ customer.name | default: customer.email }}</strong>
+            </div>
+            <div class="account-details__row">
+              <span>Email</span>
+              <strong>{{ customer.email }}</strong>
+            </div>
+            {% if customer.phone != blank %}
+              <div class="account-details__row">
+                <span>Phone</span>
+                <strong>{{ customer.phone }}</strong>
+              </div>
+            {% endif %}
+            {% if default_address %}
+              <div class="account-details__address">
+                <span>Default address</span>
+                <div>{{ default_address | format_address }}</div>
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="account-card__actions">
+            <a class="account-page__link" href="{{ routes.account_addresses_url }}">
+              Manage addresses
+            </a>
+          </div>
+        </article>
+
+        <article class="account-card account-card--highlight">
+          <p class="account-card__kicker">Need something special?</p>
+          <h2 class="account-card__title">Talk to the team</h2>
+          <p class="account-card__copy">
+            Looking for a recommendation, a case for dinner, or something worth cellaring? We’re here to help.
+          </p>
+          <div class="account-card__actions">
+            <a
+              class="account-page__link account-page__link--primary"
+              href="{% if contact_page != blank %}{{ contact_page.url }}{% else %}{{ routes.root_url }}{% endif %}"
+            >
+              Contact us
+            </a>
+          </div>
+        </article>
+      </aside>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .account-page {
+    background:
+      radial-gradient(circle at top right, rgba(198, 176, 102, 0.14), transparent 28%),
+      linear-gradient(180deg, rgba(254, 243, 221, 0.6) 0%, rgba(255, 252, 246, 1) 24%, rgba(255, 252, 246, 1) 100%);
+    color: var(--color-green-coal);
+    padding: 40px 20px 88px;
+  }
+
+  .account-page__shell {
+    max-width: 1240px;
+    margin: 0 auto;
+  }
+
+  .account-page__hero {
+    border: 1px solid var(--color-stroke-dark-15);
+    background: linear-gradient(135deg, rgba(254, 243, 221, 0.95), rgba(255, 252, 246, 0.98));
+    padding: 32px;
+    margin-bottom: 28px;
+  }
+
+  .account-page__eyebrow,
+  .account-card__kicker {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.65;
+  }
+
+  .account-page__hero-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    align-items: end;
+  }
+
+  .account-page__title,
+  .account-card__title {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    line-height: 0.95;
+    margin: 10px 0 0;
+  }
+
+  .account-page__title {
+    font-size: clamp(40px, 6vw, 72px);
+    max-width: 10ch;
+  }
+
+  .account-page__intro,
+  .account-card__copy {
+    max-width: 56ch;
+    margin-top: 14px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: rgba(var(--color-green-coal-rgb), 0.78);
+  }
+
+  .account-page__hero-actions,
+  .account-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .account-page__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(300px, 0.9fr);
+    gap: 28px;
+    align-items: start;
+  }
+
+  .account-page__main,
+  .account-page__sidebar {
+    display: grid;
+    gap: 24px;
+  }
+
+  .account-card {
+    border: 1px solid var(--color-stroke-dark-15);
+    background: rgba(255, 252, 246, 0.96);
+    padding: 28px;
+  }
+
+  .account-card--highlight {
+    background: linear-gradient(180deg, rgba(49, 9, 18, 0.95), rgba(83, 69, 36, 0.98));
+    color: var(--color-cream);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .account-card--highlight::after {
+    content: '';
+    position: absolute;
+    inset: auto -40px -70px auto;
+    width: 180px;
+    height: 180px;
+    border-radius: 999px;
+    background: rgba(198, 176, 102, 0.18);
+    filter: blur(3px);
+  }
+
+  .account-card--highlight .account-card__copy,
+  .account-card--highlight .account-card__kicker {
+    color: rgba(254, 243, 221, 0.8);
+  }
+
+  .account-card--highlight .account-page__link {
+    border-color: rgba(254, 243, 221, 0.34);
+  }
+
+  .account-card--highlight .account-page__link--primary {
+    background: var(--color-cream);
+    border-color: var(--color-cream);
+    color: var(--color-burgundy);
+  }
+
+  .account-card--highlight .account-page__link--primary:hover {
+    background: var(--color-green-gold);
+    border-color: var(--color-green-gold);
+    color: var(--color-burgundy);
+  }
+
+  .account-card__header {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: start;
+    margin-bottom: 20px;
+  }
+
+  .account-card__meta {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    opacity: 0.7;
+    padding-top: 6px;
+  }
+
+  .account-card__title {
+    font-size: 34px;
+  }
+
+  .account-page__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 12px 18px;
+    border: 1px solid var(--color-stroke-dark-40);
+    color: currentColor;
+    transition: background-color var(--transition), color var(--transition), border-color var(--transition);
+  }
+
+  .account-page__link:hover {
+    background: rgba(49, 9, 18, 0.05);
+  }
+
+  .account-page__link--primary {
+    background: var(--color-burgundy);
+    border-color: var(--color-burgundy);
+    color: var(--color-cream);
+  }
+
+  .account-page__link--primary:hover {
+    background: var(--color-teracotta);
+    border-color: var(--color-teracotta);
+    color: var(--color-cream);
+  }
+
+  .account-page__inline-link {
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+  }
+
+  .account-orders-table {
+    overflow-x: auto;
+  }
+
+  .account-orders-table table {
+    margin-bottom: 0;
+    background: transparent;
+  }
+
+  .account-empty-state {
+    padding: 18px 0 4px;
+  }
+
+  .account-empty-state h3 {
+    margin-bottom: 10px;
+  }
+
+  .account-empty-state p {
+    max-width: 44ch;
+    color: rgba(var(--color-green-coal-rgb), 0.72);
+    margin-bottom: 20px;
+  }
+
+  .account-details {
+    display: grid;
+    gap: 16px;
+    margin-top: 22px;
+  }
+
+  .account-details__row,
+  .account-details__address {
+    padding-top: 14px;
+    border-top: 1px solid var(--color-stroke-dark-15);
+  }
+
+  .account-details__row span,
+  .account-details__address span {
+    display: block;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.62;
+    margin-bottom: 8px;
+  }
+
+  .account-details__row strong {
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .account-details__address > div {
+    color: rgba(var(--color-green-coal-rgb), 0.84);
+    line-height: 1.7;
+  }
+
+  .account-details__address > div p {
+    margin-bottom: 0;
+  }
+
+  @media screen and (max-width: 989px) {
+    .account-page {
+      padding-inline: 16px;
+      padding-bottom: 64px;
+    }
+
+    .account-page__hero,
+    .account-card {
+      padding: 24px;
+    }
+
+    .account-page__hero-row,
+    .account-card__header {
+      align-items: start;
+      flex-direction: column;
+    }
+
+    .account-page__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .account-page__title {
+      font-size: 38px;
+    }
+
+    .account-card__title {
+      font-size: 28px;
+    }
+
+    .account-orders-table table,
+    .account-orders-table thead,
+    .account-orders-table tbody,
+    .account-orders-table th,
+    .account-orders-table td,
+    .account-orders-table tr {
+      display: block;
+    }
+
+    .account-orders-table thead {
+      display: none;
+    }
+
+    .account-orders-table tbody tr {
+      padding: 18px 0;
+      border-bottom: 1px solid var(--color-stroke-dark-15);
+    }
+
+    .account-orders-table tbody tr:first-child {
+      padding-top: 0;
+    }
+
+    .account-orders-table tbody tr:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .account-orders-table tbody td {
+      border-bottom: none;
+      padding: 0 0 10px;
+      text-align: left;
+    }
+
+    .account-orders-table tbody td:last-child {
+      text-align: left;
+      padding-bottom: 0;
+    }
+
+    .account-orders-table tbody td::before {
+      content: attr(data-label);
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      opacity: 0.58;
+      margin-bottom: 4px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Main account",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ]
+}
+{% endschema %}

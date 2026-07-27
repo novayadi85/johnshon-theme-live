@@ -1,0 +1,64 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "hero_jkl": {
+      "type": "jkl-hero",
+      "disabled": true,
+      "settings": {}
+    },
+    "product_carousel_jkl": {
+      "type": "jkl-product-carousel",
+      "disabled": true,
+      "settings": {}
+    },
+    "club_banner_jkl": {
+      "type": "jkl-club-banner",
+      "settings": {}
+    },
+    "tasting_boxes_jkl": {
+      "type": "jkl-tasting-boxes",
+      "disabled": true,
+      "settings": {}
+    },
+    "story_carousel_jkl": {
+      "type": "jkl-story-carousel",
+      "disabled": true,
+      "settings": {}
+    },
+    "image_banner_jkl": {
+      "type": "jkl-image-banner",
+      "settings": {}
+    },
+    "inspiration_story_jkl": {
+      "type": "jkl-inspiration-story",
+      "settings": {}
+    },
+    "faq_jkl": {
+      "type": "jkl-faq",
+      "settings": {}
+    },
+    "signup_jkl": {
+      "type": "jkl-signup-with-text",
+      "settings": {}
+    }
+  },
+  "order": [
+    "hero_jkl",
+    "product_carousel_jkl",
+    "club_banner_jkl",
+    "tasting_boxes_jkl",
+    "story_carousel_jkl",
+    "image_banner_jkl",
+    "inspiration_story_jkl",
+    "faq_jkl",
+    "signup_jkl"
+  ]
+}

@@ -1,0 +1,32 @@
+{%- comment -%}
+  Renders the bundle member price variant.
+  Required: single_price, bundle_price, member_price, member_price_save_amount,
+            member_price_save_percent, member_point, qty_bulk_size, currency
+  Optional: scope (class prefix, default 'pdp')
+{%- endcomment -%}
+{%- assign scope = scope | default: 'pdp' -%}
+<div class="{{ scope }}-pricing {{ scope }}-pricing--bundle-memberprice">
+  <span class="{{ scope }}-save-badge">{{ 'jkl.save_percent' | t: percent: member_price_save_percent }}</span>
+
+  <div class="{{ scope }}-price-section">
+    <span class="{{ scope }}-price-label">{{ 'jkl.members_offer' | t }}</span>
+    <div class="{{ scope }}-price-row">
+      <span class="{{ scope }}-price">{% render 'format-amount', amount: member_price %}</span>
+      <span class="{{ scope }}-currency">{{ currency | downcase }}</span>
+      <span class="save-badge">{{ 'jkl.save' | t }} {% render 'format-amount', amount: member_price_save_amount %}</span>
+    </div>
+    <span class="{{ scope }}-club-note">{{ 'jkl.earn' | t }} <span class="{{ scope }}-points-value">{% render 'format-amount', amount: member_point %}</span> {{ 'jkl.club_points' | t }}</span>
+  </div>
+
+  <div class="{{ scope }}-member-prices">
+    <span class="{{ scope }}-price-label">{{ 'jkl.standard_prices' | t }}</span>
+    <div class="{{ scope }}-member-price-row">
+      <span class="{{ scope }}-member-value">{% render 'format-amount', amount: single_price %} {{ currency | downcase }}</span>
+      <span class="{{ scope }}-member-label">{{ 'jkl.per_bottle' | t }}</span>
+    </div>
+    <div class="{{ scope }}-member-price-row">
+      <span class="{{ scope }}-member-value">{% render 'format-amount', amount: bundle_price %} {{ currency | downcase }}</span>
+      <span class="{{ scope }}-member-label">{{ 'jkl.at_bulk' | t: count: qty_bulk_size }}</span>
+    </div>
+  </div>
+</div>

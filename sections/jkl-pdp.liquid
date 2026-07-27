@@ -1,0 +1,505 @@
+{%- assign variant = product.selected_or_first_available_variant -%}
+
+{%- assign vendor = product.metafields.custom.vendor.value.name -%}
+{%- assign vendor_link = product.metafields.custom.vendor.value.vendor_collection.value.url -%}
+
+{%- assign country = product.metafields.custom.country.value.name -%}
+{%- assign country_link = product.metafields.custom.country.value.collection.value.url -%}
+
+{%- assign region = product.metafields.custom.region.value.name -%}
+{%- assign region_link = product.metafields.custom.region.value.collection.value.url -%}
+
+{%- assign subregion = product.metafields.custom.sub_region.value.name -%}
+{%- assign subregion_link = product.metafields.custom.sub_region.value.collection.value.url -%}
+
+{%- assign district = product.metafields.custom.district.value.name -%}
+{%- assign district_link = product.metafields.custom.district.value.collection.value.url -%}
+
+{%- assign wine_type = product.metafields.custom.type.value.type -%}
+{%- assign wine_type_link = product.metafields.custom.type.value.collection.value.url -%}
+{%- assign size = product.metafields.custom.volume -%}
+
+{%- assign vintage = variant.metafields.custom.vintage -%}
+{%- assign alcohol_percentage = variant.metafields.custom.alcohol_percentage -%}
+{%- assign serving_temperature = variant.metafields.custom.serving_temperature -%}
+
+{%- assign dry_sweet_number = variant.metafields.custom.taste_profile_dry_sweet -%}
+
+{%- assign short_description = variant.metafields.custom.short_description -%}
+{%- assign description_headline = variant.metafields.custom.description_headline -%}
+{%- assign description = variant.metafields.custom.description -%}
+
+{%- if dry_sweet_number == 1 -%}
+  {%- assign dry_sweet_number = 10 -%}
+{%- elsif dry_sweet_number == 2 -%}
+  {%- assign dry_sweet_number = 35 -%}
+{%- elsif dry_sweet_number == 3 -%}
+  {%- assign dry_sweet_number = 50 -%}
+{%- elsif dry_sweet_number == 4 -%}
+  {%- assign dry_sweet_number = 75 -%}
+{%- elsif dry_sweet_number == 5 -%}
+  {%- assign dry_sweet_number = 90 -%}
+{%- endif -%}
+
+{%- assign soft_tannin_number = variant.metafields.custom.taste_profile_soft_tannin -%}
+
+{%- if soft_tannin_number == 1 -%}
+  {%- assign soft_tannin_number = 10 -%}
+{%- elsif soft_tannin_number == 2 -%}
+  {%- assign soft_tannin_number = 35 -%}
+{%- elsif soft_tannin_number == 3 -%}
+  {%- assign soft_tannin_number = 50 -%}
+{%- elsif soft_tannin_number == 4 -%}
+  {%- assign soft_tannin_number = 75 -%}
+{%- elsif soft_tannin_number == 5 -%}
+  {%- assign soft_tannin_number = 90 -%}
+{%- endif -%}
+
+{%- assign light_strong_number = variant.metafields.custom.taste_profile_light_strong -%}
+
+{%- if light_strong_number == 1 -%}
+  {%- assign light_strong_number = 10 -%}
+{%- elsif light_strong_number == 2 -%}
+  {%- assign light_strong_number = 35 -%}
+{%- elsif light_strong_number == 3 -%}
+  {%- assign light_strong_number = 50 -%}
+{%- elsif light_strong_number == 4 -%}
+  {%- assign light_strong_number = 75 -%}
+{%- elsif light_strong_number == 5 -%}
+  {%- assign light_strong_number = 90 -%}
+{%- endif -%}
+
+{%- assign acid_number = variant.metafields.custom.taste_profile_low_acid_high_acid -%}
+
+{%- if acid_number == 1 -%}
+  {%- assign acid_number = 10 -%}
+{%- elsif acid_number == 2 -%}
+  {%- assign acid_number = 35 -%}
+{%- elsif acid_number == 3 -%}
+  {%- assign acid_number = 50 -%}
+{%- elsif acid_number == 4 -%}
+  {%- assign acid_number = 75 -%}
+{%- elsif acid_number == 5 -%}
+  {%- assign acid_number = 90 -%}
+{%- endif -%}
+
+{%- assign fruit_number = variant.metafields.custom.taste_profile_light_fruit_much_fruit -%}
+
+{%- if fruit_number == 1 -%}
+  {%- assign fruit_number = 10 -%}
+{%- elsif fruit_number == 2 -%}
+  {%- assign fruit_number = 35 -%}
+{%- elsif fruit_number == 3 -%}
+  {%- assign fruit_number = 50 -%}
+{%- elsif fruit_number == 4 -%}
+  {%- assign fruit_number = 75 -%}
+{%- elsif fruit_number == 5 -%}
+  {%- assign fruit_number = 90 -%}
+{%- endif -%}
+
+{% render 'jkl-pdp-schema', product: product %}
+
+{%- assign product_wsi = product.metafields.custom.wsi -%}
+{%- assign matching_reviews = shop.metaobjects.reviews.values | where: 'wsi_object', product_wsi | sort: 'reviewscore' | reverse -%}
+
+<!-- === PDP Top === -->
+<section class="pdp-top">
+  <div class="breadcrumbs">
+    <a href="/collections/all">{{ 'jkl.all_wines' | t }}</a> / 
+    <a href="{{ country_link }}">{{ country }}</a> / 
+    {% if region %}
+      <a href="{{ region_link }}">{{ region }}</a> / 
+    {% endif %}
+    {% if subregion %}
+      <a href="{{ subregion_link }}">{{ subregion }}</a> /
+    {% endif %}  
+    {% if district %}
+      <a href="{{ district_link }}">{{ district }}</a> / 
+    {% endif %}  
+    {{ variant.option1 }} {{ product.title }}
+  </div>
+  <div class="pdp-top-left">
+    <div class="pdp-meta">
+      <div class="pdp-badges">
+        <span class="badge">Trusted winery</span>
+        <span class="badge">Critics pick</span>
+      </div>
+      <div class="pdp-ratings">
+        {%- for review in matching_reviews limit: 3 -%}
+          <div class="pdp-rating">
+            <span class="pdp-rating-score">{{ review.reviewscore }} Points</span>
+            <span class="pdp-rating-source">{{ review.reviewer.value.showing_name }}</span>
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+    {%- if variant.metafields.custom.show_member_price.value -%}
+      <div class="member-banner">Member price — Member price — Member price — Member price — Member price — Member price — Member price — Member price</div>
+    {%- endif -%}
+    <div class="pdp-bottle-shadow"></div>
+    {%- if product.featured_image -%}
+      <img class="pdp-product-image" src="{{ product.featured_image | image_url: width: 600 }}" alt="{{ product.title }}">
+    {%- else -%}
+      <img class="pdp-product-image" src="https://cdn.shopify.com/s/files/1/0945/9030/4603/files/Bourgogne_Blanc_Chateau_Fuisse.webp?v=1761735898" alt="Wine bottle">
+    {%- endif -%}
+    <a href="#" class="pdp-wishlist" aria-label="Wishlist">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 21s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 11c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+      </svg>
+    </a>
+  </div>
+  <div class="pdp-top-right">
+    <div class="pdp-right-content">
+      <p class="pdp-winery">
+        {%- if vendor_link != blank -%}
+          <a href="{{ vendor_link }}">{{ vendor }}</a>
+        {%- else -%}
+          {{ vendor }}
+        {%- endif -%}
+      </p>
+      <h1 class="pdp-product-name">
+        {{ variant.option1 }} {{ product.title }}
+      </h1>
+      <div class="pdp-vintage-selector" data-section-id="{{ section.id }}">
+        {%- for product_variant in product.variants -%}
+          {%- liquid
+            assign variant_label = product_variant.title | replace: ' / ', ' &middot; '
+            if product_variant.title == 'Default Title'
+              assign variant_label = product_variant.metafields.custom.vintage.value | default: product_variant.metafields.custom.vintage | default: product_variant.option1
+            endif
+          -%}
+          <button
+            type="button"
+            class="pdp-vintage-btn{% if product_variant.id == variant.id %} active{% endif %}"
+            data-variant-id="{{ product_variant.id }}"
+            data-variant-url="{{ product_variant.url }}"
+            data-variant-available="{{ product_variant.available }}"
+            aria-pressed="{% if product_variant.id == variant.id %}true{% else %}false{% endif %}"
+          >
+            {{ variant_label }}
+          </button>
+        {%- endfor -%}
+      </div>
+      
+      {%- if short_description != blank -%}
+        <div class="pdp-description">
+          {{ short_description }}
+        </div>
+        <a href="#" class="pdp-read-more">Read more</a>
+      {%- endif -%}
+      
+      {% render 'pdp-price', variant: variant %}
+
+      {%- form 'product', product, id: 'jkl-product-form' -%}
+        <input type="hidden" name="id" value="{{ variant.id }}">
+        <div class="pdp-actions">
+          <div class="pdp-quantity-selector">
+            <button type="button" class="pdp-qty-btn" onclick="var v=this.nextElementSibling;v.value=Math.max(1,parseInt(v.value)-1)">-</button>
+            <input type="number" name="quantity" value="{% render 'qty-bulk-size', variant: variant %}" min="1" class="pdp-qty-value">
+            <button type="button" class="pdp-qty-btn" onclick="var v=this.previousElementSibling;v.value=parseInt(v.value)+1">+</button>
+          </div>
+          <button type="submit" class="pdp-add-to-basket"
+            data-logged-in="{% if customer %}true{% else %}false{% endif %}"
+            {% unless variant.available %}disabled{% endunless %}>
+            {%- if variant.available -%}{{ 'actions.add_to_cart' | t }} {%- else -%}{{ 'content.product_badge_sale' | t }}{%- endif -%}
+          </button>
+        </div>
+      {%- endform -%}
+
+      {%- comment -%}
+        Add-to-cart is handled globally by snippets/jkl-cart-drawer.liquid:
+        it intercepts the /cart/add submit, adds via AJAX, re-renders the drawer and opens it.
+      {%- endcomment -%}
+      {%- capture fs_threshold -%}{% render 'jkl-shipping-threshold' %}{%- endcapture -%}
+      {%- assign fs_threshold = fs_threshold | strip -%}
+      <div class="pdp-delivery-info">
+        <div class="pdp-delivery-item">
+          <span class="pdp-delivery-title">{{ 'jkl.free_delivery' | t }}</span>
+          <span class="pdp-delivery-desc">{{ 'jkl.free_delivery_desc' | t: amount: fs_threshold }}</span>
+        </div>
+        <div class="pdp-delivery-item">
+          <span class="pdp-delivery-title">{{ 'jkl.fast_delivery' | t }}</span>
+          <span class="pdp-delivery-desc">{{ 'jkl.fast_delivery_desc' | t }}</span>
+        </div>
+        <div class="pdp-delivery-item">
+          <span class="pdp-delivery-title">{{ 'jkl.free_returns' | t }}</span>
+          <span class="pdp-delivery-desc">{{ 'jkl.free_returns_desc' | t }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- === Notes Section === -->
+<section class="pdp-notes bg-cream-color color-green-coal">
+  <div class="pdp-notes-left">
+    {%- assign aromas = variant.metafields.custom.aromas.value -%}
+    {%- if aromas != blank -%}
+      <h2 class="pdp-notes-title">{{ 'jkl.scent_notes' | t }}</h2>
+      <div class="pdp-scent-tags">
+        {%- for aroma in aromas -%}
+          <span class="pdp-scent-tag">{{ aroma.type | strip_newlines | strip }}</span>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+    <h2 class="pdp-notes-title">{{ 'jkl.reviews' | t }}</h2>
+    <div class="pdp-reviews-tags">
+      {%- for review in matching_reviews -%}
+        <span class="pdp-scent-tag"><span class="pdp-rating-score">{{ review.reviewscore }} points</span><br><span class="pdp-rating-source">{{ review.reviewer.value.showing_name }}</span></span>
+      {%- endfor -%}
+    </div>
+  </div>
+  <div class="pdp-notes-right">
+    <h2 class="pdp-notes-title">{{ 'jkl.tasting_notes' | t }}</h2>
+    <div class="pdp-tasting-sliders">
+      {%- if dry_sweet_number != blank and dry_sweet_number != 0 -%}
+        <div class="pdp-slider">
+          <div class="pdp-slider-labels"><span>{{ 'jkl.tasting_notes_dry' | t }}</span><span>{{ 'jkl.tasting_notes_sweet' | t }}</span></div>
+          <div class="pdp-slider-track"><div class="pdp-slider-marker" style="left: {{dry_sweet_number}}%"></div></div>
+        </div>
+      {%- endif -%}
+      {%- if light_strong_number != blank and light_strong_number != 0 -%}
+        <div class="pdp-slider">
+          <div class="pdp-slider-labels"><span>{{ 'jkl.tasting_notes_light_bodied' | t }}</span><span>{{ 'jkl.tasting_notes_full_bodied' | t }}</span></div>
+          <div class="pdp-slider-track"><div class="pdp-slider-marker" style="left: {{ light_strong_number }}%"></div></div>
+        </div>
+      {%- endif -%}
+      {%- if soft_tannin_number != blank and soft_tannin_number != 0 -%}
+        <div class="pdp-slider">
+          <div class="pdp-slider-labels"><span>{{ 'jkl.tasting_notes_smooth' | t }}</span><span>{{ 'jkl.tasting_notes_tannic' | t}}</span></div>
+          <div class="pdp-slider-track"><div class="pdp-slider-marker" style="left: {{ soft_tannin_number }}%"></div></div>
+        </div>
+      {%- endif -%}
+      {%- if acid_number != blank and acid_number != 0 -%}
+        <div class="pdp-slider">
+          <div class="pdp-slider-labels"><span>{{ 'jkl.tasting_notes_acidic_low' | t }}</span><span>{{ 'jkl.tasting_notes_acidic_heigh' | t }}</span></div>
+          <div class="pdp-slider-track"><div class="pdp-slider-marker" style="left: {{ acid_number }}%"></div></div>
+        </div>
+      {%- endif -%}
+      {%- if fruit_number != blank and fruit_number != 0 -%}
+        <div class="pdp-slider">
+          <div class="pdp-slider-labels"><span>{{ 'jkl.tasting_notes_friut_low' | t }}</span><span>{{ 'jkl.tasting_notes_friut_heigh' | t }}</span></div>
+          <div class="pdp-slider-track"><div class="pdp-slider-marker" style="left: {{ fruit_number }}%"></div></div>
+        </div>
+      {%- endif -%}
+    </div>
+    {% comment %}
+    <div class="pdp-profile-match">
+      <div class="pdp-profile-icon" style="background:var(--color-green-coal);"></div>
+      <p>There's a <strong>88% match</strong> with <span class="pdp-profile-link">your tasting profile</span></p>
+    </div>
+    {% endcomment %}
+  </div>
+</section>
+
+<!-- === PDP Facts === -->
+<section class="pdp-facts bg-burgundy color-cream">
+  <div class="pdp-facts-grid">
+    {%- if wine_type != blank -%}
+      <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.type' | t }}</span><span class="pdp-fact-value">{%- if wine_type_link != blank -%}<a href="{{ wine_type_link }}">{{ wine_type }}</a>{%- else -%}{{ wine_type }}{%- endif -%}</span></div>
+    {%- endif -%}
+    {%- if vintage != blank -%}
+      <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.vintage' | t }}</span><span class="pdp-fact-value">{{ vintage }}</span></div>
+    {%- endif -%}
+    {%- if size != blank -%}
+      <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.size' | t }}</span><span class="pdp-fact-value">{{ size }} CL</span></div>
+    {%- endif -%}
+    {%- if alcohol_percentage != blank -%}
+      <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.alcohol' | t }}</span><span class="pdp-fact-value">{{ alcohol_percentage }}</span></div>
+    {%- endif -%}
+    {%- if country != blank -%}
+      <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.country' | t }}</span><span class="pdp-fact-value">{%- if country_link != blank -%}<a href="{{ country_link }}">{{ country }}</a>{%- else -%}{{ country }}{%- endif -%}</span></div>
+    {%- endif -%}
+    {%- if region != blank -%}
+      <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.region' | t }}</span><span class="pdp-fact-value">{%- if region_link != blank -%}<a href="{{ region_link }}">{{ region }}</a>{%- else -%}{{ region }}{%- endif -%}</span></div>
+    {%- endif -%}
+    {%- if subregion != blank -%}
+      <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.sub_region' | t }}</span><span class="pdp-fact-value">{%- if subregion_link != blank -%}<a href="{{ subregion_link }}">{{ subregion }}</a>{%- else -%}{{ subregion }}{%- endif -%}</span></div>
+    {%- endif -%}
+    {%- if district != blank -%}
+      <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.district' | t }}</span><span class="pdp-fact-value">{%- if district_link != blank -%}<a href="{{ district_link }}">{{ district }}</a>{%- else -%}{{ district }}{%- endif -%}</span></div>
+    {%- endif -%}
+    {%- if serving_temperature != blank -%}
+      <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.serve_temp' | t }}</span><span class="pdp-fact-value">{{ serving_temperature }}</span></div>
+    {%- endif -%}
+    <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.production_method' | t }}</span><span class="pdp-fact-value">Biodynamic</span></div>
+    {%- if vendor != blank -%}
+      <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.winery' | t }}</span><span class="pdp-fact-value">{%- if vendor_link != blank -%}<a href="{{ vendor_link }}">{{ vendor }}</a>{%- else -%}{{ vendor }}{%- endif -%}</span></div>
+    {%- endif -%}
+    <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.sku' | t }}</span><span class="pdp-fact-value">95676513256</span></div>
+    <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.maturity' | t }}</span><span class="pdp-fact-value">Ready to drink</span></div>
+    {%- assign grapes = variant.metafields.custom.grapes.value -%}
+    {%- if grapes != blank -%}
+      <div class="pdp-fact">
+        <span class="pdp-fact-label">{{ 'jkl.grapes' | t }}</span>
+        {%- capture grape_list -%}
+          {%- for grape in grapes -%}
+            {%- if grape.collection.value != blank -%}
+              <a href="{{ grape.collection.value.url }}">{{ grape.name | strip_newlines | strip }}</a>{%- unless forloop.last %}, {% endunless -%}
+            {%- else -%}
+              {{ grape.name | strip_newlines | strip }}{%- unless forloop.last %}, {% endunless -%} 
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endcapture -%}
+        <span class="pdp-fact-value">{{ grape_list }}</span>
+      </div>
+    {%- endif -%}
+  </div>
+  {% comment %}
+  <a href="#" class="pdp-fact-sheet-btn">
+    Download fact sheet
+  </a>
+  {% endcomment %}
+</section>
+
+<!-- === The Wine === -->
+<section class="pdp-the-wine color-green-coal">
+  <p class="pdp-section-label">{{ 'jkl.the_wine' | t }}</p>
+  <h2 class="pdp-section-title title">{{ description_headline }}</h2>
+  <div class="pdp-section-body">
+    {{ description }}
+  </div>
+</section>
+
+<!-- === Reviews === -->
+<section class="pdp-reviews bg-olive color-cream">
+  <p class="pdp-section-label">Ratings and reviews</p>
+  <h2 class="pdp-section-title title">What Trusted Wine Critics Say About This Wine</h2>
+  <div class="pdp-reviews-grid">
+    {%- for review in matching_reviews -%}
+      <article class="pdp-review-card">
+        <span class="pdp-review-score">{{ review.reviewscore }} Points</span>
+        <span class="pdp-review-critic">{{ review.reviewer.value.showing_name }}</span>
+        <span class="pdp-review-vintage">Vintage {{ review.vintage }}</span>
+        <p class="pdp-review-text">{{ review.reviewtext | metafield_tag }}</p>
+        <a href="#" class="pdp-review-link">Read full review</a>
+      </article>
+    {%- endfor -%}
+  </div>
+</section>
+
+<!-- === The Winery === -->
+<section class="pdp-the-winery color-green-coal">
+  <p class="pdp-section-label">The winery</p>
+  <h2 class="pdp-section-title title">Chateau de Chamirey is one of Mercurey's leading estates.</h2>
+  <div class="pdp-section-body">
+    {{ product.metafields.custom.vendor.value.short_top_text | metafield_tag }}
+  </div>
+  {%- assign vendor_image_vertical = product.metafields.custom.vendor.value.images_vertical.value | first -%}
+  {%- assign vendor_image_horizontal = product.metafields.custom.vendor.value.images_horizontal.value | first -%}
+  <div class="pdp-winery-images">
+    {%- if vendor_image_vertical != blank -%}
+      <figure class="pdp-winery-image-small">
+        <img src="{{ vendor_image_vertical | image_url: width: 600 }}" alt="{{ vendor }}">
+        <figcaption>{{ vendor }}</figcaption>
+      </figure>
+    {%- endif -%}
+    {%- if vendor_image_horizontal != blank -%}
+      <figure class="pdp-winery-image-large">
+        <img src="{{ vendor_image_horizontal | image_url: width: 1200 }}" alt="{{ vendor }}">
+        <figcaption>{{ vendor }}</figcaption>
+      </figure>
+    {%- endif -%}
+  </div>
+</section>
+
+<!-- === Wine Pairing === -->
+<section class="pdp-wine-pairing color-green-coal">
+  <p class="pdp-section-label">Wine pairing</p>
+  <h2 class="pdp-section-title title">Chateau de Chamirey is one of Mercurey's leading estates.</h2>
+  <div class="pdp-section-body">
+    <p class="pdp-pairing-intro">2022 Mercurey from Chateau de Chamirey is a classic red Burgundy made from 100% Pinot Noir. The 2022 vintage was generous and ripe, giving the wine a beautiful concentration of raspberry and cherry, balanced by elegant minerality and characteristically silky tannins.</p>
+    <div class="pdp-pairing-list">
+      <div class="pdp-pairing-item">
+        <h3>Pork and veal</h3>
+        <p>The wine's soft tannins and red fruit profile pair beautifully with roasted pork tenderloin, veal chops, or a classic blanquette de veau. The subtle oak adds warmth without overpowering lighter meats.</p>
+      </div>
+      <div class="pdp-pairing-item">
+        <h3>Poultry and lighter meats</h3>
+        <p>A roast chicken with herbs, duck confit, or guinea fowl are natural partners. Pinot Noir's acidity cuts through richness, while its earthy undertones complement the savory depth of poultry dishes.</p>
+      </div>
+      <div class="pdp-pairing-item">
+        <h3>Lamb and game</h3>
+        <p>Grilled lamb cutlets, venison, or a slow-cooked rabbit stew match well with the wine's structure and earthy, spice-driven notes. These pairings bring out the wine's depth and finesse.</p>
+      </div>
+      <div class="pdp-pairing-item">
+        <h3>Cheese</h3>
+        <p>Try with Epoisses, Comté, or Brillat-Savarin. Burgundy Pinot Noir and washed-rind or nutty cheeses are a classic pairing — the wine's fruit and acidity balance the richness of the cheese.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- === PDP Image Banner === -->
+<section class="pdp-image-banner color-cream">
+  <img class="pdp-banner-bg" src="https://cdn.shopify.com/s/files/1/0945/9030/4603/files/toender_04c6526a-f65f-47bd-9a3b-48a2e3d43c1e.png?v=1773222380" alt="Burgundy vineyard">
+  <div class="pdp-banner-line-left"></div>
+  <div class="pdp-banner-line-right"></div>
+  <div class="pdp-banner-content">
+    <h2 class="pdp-banner-title title">Burgundy, carefully selected</h2>
+    <p class="pdp-banner-desc">From village expressions to Premier Cru, each bottle reflects terroir, craftsmanship, and quiet authority. Chosen for character. Offered with conviction.</p>
+    <a href="#" class="pdp-banner-btn">Discover the Collection</a>
+  </div>
+</section>
+
+{% render 'jkl-member-popup', product: product, variant: variant, vintage: vintage %}
+
+<script>
+  (function () {
+    if (window.__jklPdpVintageSelectorInitialized) return;
+    window.__jklPdpVintageSelectorInitialized = true;
+
+    document.addEventListener('click', function (event) {
+      if (!(event.target instanceof Element)) return;
+
+      var button = event.target.closest('.pdp-vintage-btn[data-variant-url]');
+      if (!button) return;
+
+      var currentSelector = button.closest('.pdp-vintage-selector');
+      var currentSection = button.closest('.shopify-section');
+      var variantUrl = button.getAttribute('data-variant-url');
+      var variantId = button.getAttribute('data-variant-id');
+
+      if (!currentSelector || !currentSection || !variantUrl || button.classList.contains('active')) return;
+
+      var formInput = currentSection.querySelector('form[action*="/cart/add"] input[name="id"]');
+      if (formInput && variantId) formInput.value = variantId;
+
+      currentSelector.querySelectorAll('.pdp-vintage-btn').forEach(function (selectorButton) {
+        var isActive = selectorButton === button;
+        selectorButton.classList.toggle('active', isActive);
+        selectorButton.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      });
+
+      fetch(variantUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(function (response) {
+          return response.text();
+        })
+        .then(function (htmlText) {
+          var nextDocument = new DOMParser().parseFromString(htmlText, 'text/html');
+          var nextSection = nextDocument.getElementById(currentSection.id);
+
+          if (!nextSection) {
+            window.location.href = variantUrl;
+            return;
+          }
+
+          currentSection.outerHTML = nextSection.outerHTML;
+          window.history.replaceState({}, '', variantUrl);
+        })
+        .catch(function () {
+          window.location.href = variantUrl;
+        });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "JKL Product Page",
+  "tag": "section",
+  "class": "jkl-pdp-section",
+  "settings": [],
+  "presets": []
+}
+{% endschema %}

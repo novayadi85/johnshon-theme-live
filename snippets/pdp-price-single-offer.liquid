@@ -1,0 +1,26 @@
+{%- comment -%}
+  Renders the single price variant on offer.
+  Required: single_price, single_price_before, single_price_save_amount,
+            single_price_save_percent, currency
+  Optional: scope (class prefix, default 'pdp')
+{%- endcomment -%}
+{%- assign scope = scope | default: 'pdp' -%}
+<div class="{{ scope }}-pricing {{ scope }}-pricing--single-offer">
+  <span class="{{ scope }}-save-badge">{{ 'jkl.on_sale_save_percent' | t: percent: single_price_save_percent }}</span>
+
+  <div class="{{ scope }}-price-section">
+    <div class="{{ scope }}-price-row">
+      <span class="{{ scope }}-price">{% render 'format-amount', amount: single_price %}</span>
+      <span class="{{ scope }}-currency">{{ currency | downcase }}</span>
+      <span class="save-badge">{{ 'jkl.save' | t }} {% render 'format-amount', amount: single_price_save_amount %}</span>
+    </div>
+    <span class="{{ scope }}-club-note">{{ 'jkl.price_per_bottle' | t }}</span>
+  </div>
+
+  <div class="{{ scope }}-member-prices">
+    <div class="{{ scope }}-member-price-row">
+      <span class="{{ scope }}-member-value">{% render 'format-amount', amount: single_price_before %} {{ currency | downcase }}</span>
+      <span class="{{ scope }}-member-label">{{ 'jkl.per_bottle' | t }}</span>
+    </div>
+  </div>
+</div>

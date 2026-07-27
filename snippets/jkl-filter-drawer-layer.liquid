@@ -1,0 +1,166 @@
+{%- liquid
+  assign filters = facets | default: collection.filters
+  assign has_shopify_filters = false
+  if filters.size > 0
+    assign has_shopify_filters = true
+  endif
+-%}
+
+<div class="filter-drawer-overlay" id="filterDrawerOverlay" data-style="layer" aria-hidden="true">
+  <div class="filter-backdrop overlay" data-filter-close></div>
+  <aside class="filter-drawer" role="dialog" aria-modal="true" aria-label="Filter products">
+    <form class="filter-drawer-form" id="filterDrawerForm">
+      {%- if search_terms != blank -%}
+        <input type="hidden" name="q" value="{{ search_terms | escape }}">
+        <input type="hidden" name="type" value="product">
+        <input type="hidden" name="options[prefix]" value="last">
+      {%- endif -%}
+      {%- comment -%} Root layer: list of filter groups {%- endcomment -%}
+      <div class="filter-layer filter-layer-root is-active" data-layer="root">
+        <div class="filter-drawer-header">
+          <h2 class="filter-drawer-title">Filter</h2>
+          <button class="filter-drawer-close" type="button" data-filter-close aria-label="Close filter"></button>
+        </div>
+        <ul class="filter-layer-list">
+          {%- if has_shopify_filters -%}
+            {%- for filter in filters -%}
+              <li>
+                <button type="button" class="filter-layer-item" data-layer-open="filter-{{ forloop.index }}">
+                  <span class="filter-layer-item-label">{{ filter.label }}</span>
+                  <span class="filter-layer-item-meta">
+                    <span class="filter-layer-item-selected" data-layer-selected="filter-{{ forloop.index }}"></span>
+                    <span class="filter-layer-item-arrow" aria-hidden="true"></span>
+                  </span>
+                </button>
+              </li>
+            {%- endfor -%}
+          {%- else -%}
+            <li>
+              <button type="button" class="filter-layer-item" data-layer-open="type">
+                <span class="filter-layer-item-label">Type</span>
+                <span class="filter-layer-item-meta">
+                  <span class="filter-layer-item-selected" data-layer-selected="type"></span>
+                  <span class="filter-layer-item-arrow" aria-hidden="true"></span>
+                </span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="filter-layer-item" data-layer-open="price">
+                <span class="filter-layer-item-label">Price</span>
+                <span class="filter-layer-item-meta">
+                  <span class="filter-layer-item-selected" data-layer-selected="price"></span>
+                  <span class="filter-layer-item-arrow" aria-hidden="true"></span>
+                </span>
+              </button>
+            </li>
+          {%- endif -%}
+        </ul>
+        <div class="filter-drawer-footer">
+          <button type="reset" class="filter-btn-clear">Clear all</button>
+          <button type="submit" class="filter-btn-apply">
+            Show <span data-result-count>{{ result_count | default: collection.products_count }}</span> results
+          </button>
+        </div>
+      </div>
+
+      {%- comment -%} Sub layers: one per filter group {%- endcomment -%}
+      {%- if has_shopify_filters -%}
+        {%- for filter in filters -%}
+          <div class="filter-layer filter-layer-sub" data-layer="filter-{{ forloop.index }}">
+            <div class="filter-drawer-header">
+              <button class="filter-layer-back" type="button" data-layer-back aria-label="Back">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.2" fill="none"/>
+                </svg>
+              </button>
+              <h2 class="filter-drawer-title">{{ filter.label }}</h2>
+              <button class="filter-drawer-close" type="button" data-filter-close aria-label="Close filter"></button>
+            </div>
+            <div class="filter-layer-body">
+              {%- case filter.type -%}
+                {%- when 'list' or 'boolean' -%}
+                  <ul class="filter-options-list">
+                    {%- for value in filter.values -%}
+                      <li>
+                        <label class="filter-option">
+                          <input
+                            type="checkbox"
+                            name="{{ value.param_name }}"
+                            value="{{ value.value }}"
+                            data-layer-input="filter-{{ forloop.parentloop.index }}"
+                            {% if value.active %}checked{% endif %}
+                            {% if value.count == 0 and value.active == false %}disabled{% endif %}
+                          >
+                          <span class="filter-option-label">{{ value.label }}</span>
+                          <span class="filter-option-count">({{ value.count }})</span>
+                        </label>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                {%- when 'price_range' -%}
+                  <div class="filter-price-range">
+                    <label class="filter-price-field">
+                      <span>Min</span>
+                      <input type="number" name="{{ filter.min_value.param_name }}" value="{{ filter.min_value.value | default: '' }}" placeholder="{{ 0 | money_without_currency }}" min="0" data-layer-input="filter-{{ forloop.index }}">
+                    </label>
+                    <label class="filter-price-field">
+                      <span>Max</span>
+                      <input type="number" name="{{ filter.max_value.param_name }}" value="{{ filter.max_value.value | default: '' }}" placeholder="{{ filter.range_max | money_without_currency }}" min="0" data-layer-input="filter-{{ forloop.index }}">
+                    </label>
+                  </div>
+              {%- endcase -%}
+            </div>
+          </div>
+        {%- endfor -%}
+      {%- else -%}
+        <div class="filter-layer filter-layer-sub" data-layer="type">
+          <div class="filter-drawer-header">
+            <button class="filter-layer-back" type="button" data-layer-back aria-label="Back">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.2" fill="none"/>
+              </svg>
+            </button>
+            <h2 class="filter-drawer-title">Type</h2>
+            <button class="filter-drawer-close" type="button" data-filter-close aria-label="Close filter"></button>
+          </div>
+          <div class="filter-layer-body">
+            <ul class="filter-options-list">
+              {%- assign types = 'Red,White,Rose,Sparkling' | split: ',' -%}
+              {%- for type in types -%}
+                <li>
+                  <label class="filter-option">
+                    <input type="checkbox" name="filter.p.product_type" value="{{ type }}" data-layer-input="type">
+                    <span class="filter-option-label">{{ type }}</span>
+                  </label>
+                </li>
+              {%- endfor -%}
+            </ul>
+          </div>
+        </div>
+        <div class="filter-layer filter-layer-sub" data-layer="price">
+          <div class="filter-drawer-header">
+            <button class="filter-layer-back" type="button" data-layer-back aria-label="Back">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.2" fill="none"/>
+              </svg>
+            </button>
+            <h2 class="filter-drawer-title">Price</h2>
+            <button class="filter-drawer-close" type="button" data-filter-close aria-label="Close filter"></button>
+          </div>
+          <div class="filter-layer-body">
+            <div class="filter-price-range">
+              <label class="filter-price-field">
+                <span>Min</span>
+                <input type="number" name="filter.v.price.gte" placeholder="0" min="0" data-layer-input="price">
+              </label>
+              <label class="filter-price-field">
+                <span>Max</span>
+                <input type="number" name="filter.v.price.lte" placeholder="1000" min="0" data-layer-input="price">
+              </label>
+            </div>
+          </div>
+        </div>
+      {%- endif -%}
+    </form>
+  </aside>
+</div>

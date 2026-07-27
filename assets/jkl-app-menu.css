@@ -1,0 +1,344 @@
+/* ==========================================================================
+   JKL — SiteLoom App Menu overrides
+   --------------------------------------------------------------------------
+   Styling for the SiteLoom mega-menu app (mobile drawer + submenus).
+   The app injects its markup client-side, so these rules override the app's
+   own CSS. Loaded via sections/jkl-header.liquid.
+
+   DOM reference (from the app, runtime-rendered):
+     .mobile-drawer
+     └─ nav.drawer-menu(.open)
+        ├─ .drawer-header
+        │    ├─ button.drawer-back
+        │    ├─ span.drawer-title
+        │    └─ button.drawer-close
+        └─ .drawer-panel
+             └─ ul.sp-menu-mobile.menu-child
+                  ├─ li.side-column-menu__type.has-children
+                  │    ├─ a.menu-item-normal > span.menu-item__title
+                  │    └─ .sp-submenu.menu-level
+                  │         └─ ul.column-container
+                  │              └─ li.menu-item--normal
+                  │                   └─ a.normal-item-container > span.normal-text
+                  └─ li.single-column-menu__type   (simpelt link)
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   1. Drawer container
+   .drawer-menu / .drawer-menu.open
+   Figma: background "Egg" #fef3dd
+   -------------------------------------------------------------------------- */
+/* Cream background on ALL layers of the drawer — outer wrapper, the panel,
+   the header, the top-level list, and every nested submenu level — so no
+   white shows through when navigating deeper. Uses the [data-sl-menu-id]
+   attribute to match/beat the app's own high-specificity background rules. */
+.mobile-drawer,
+.mobile-drawer[data-sl-menu-id],
+.mobile-drawer[data-sl-menu-id] .drawer-menu,
+.mobile-drawer[data-sl-menu-id] .drawer-header,
+.mobile-drawer[data-sl-menu-id] .drawer-panel,
+.mobile-drawer[data-sl-menu-id] [id^="siteloom__drawer-panel"],
+.mobile-drawer[data-sl-menu-id] .menu-panel,
+.mobile-drawer[data-sl-menu-id] .menu-slide,
+.mobile-drawer[data-sl-menu-id] .sp-menu-mobile,
+.mobile-drawer[data-sl-menu-id] .menu-child,
+.mobile-drawer[data-sl-menu-id] .sp-submenu,
+.mobile-drawer[data-sl-menu-id] .menu-level,
+.mobile-drawer[data-sl-menu-id] .column-container {
+  background: #fef3dd !important;
+}
+
+/* Make sure the cream panel fills the full viewport height (the white
+   area under the last item is the full-height container showing through) */
+.mobile-drawer .drawer-menu {
+  min-height: 100%;
+}
+
+/* Width + background on DESKTOP (≥768px).
+   The SiteLoom app forces these with a high-specificity, media-scoped rule:
+     @media (min-width:768px) .mobile-drawer[data-sl-menu-id] .drawer-menu
+       { background: white !important; width: auto !important }   → (0,3,0)
+   We beat it by ALSO matching the attribute AND adding .open → (0,4,0),
+   inside the same media query so mobile keeps its full-width rule below. */
+@media (min-width: 768px) {
+  .mobile-drawer[data-sl-menu-id] .drawer-menu,
+  .mobile-drawer[data-sl-menu-id] .drawer-menu.open {
+    width: 365px !important;
+    max-width: 365px !important;
+    background: #fef3dd !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   2. Drawer header  (.drawer-header, .drawer-title, .drawer-close, .drawer-back)
+   Figma: thin stroke divider, serif title (Gascogne 20px/300, #1a1914)
+   -------------------------------------------------------------------------- */
+.mobile-drawer .drawer-header {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  font-weight: 400;
+  border-bottom: 1px solid rgba(49, 9, 18, 0.15);
+}
+
+.mobile-drawer .drawer-title {
+  font-family: 'Gascogne', serif;
+  font-weight: 300;
+  font-size: 20px;
+  line-height: 1.1;
+  color: #1a1914;
+  text-transform: none;
+  letter-spacing: 0;
+  /* Reset the app's margin-top:-4px / margin-left that knock "MENU"
+     out of vertical alignment with the close (X) button. */
+  margin: 0 !important;
+}
+
+/* Keep the close (X) button centered on the same line as the title */
+.mobile-drawer .drawer-close,
+.mobile-drawer .drawer-back {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+}
+
+.mobile-drawer .drawer-back {
+  padding-right: 0;
+}
+
+/* Desktop header spacing.
+   The app has a competing !important rule at the same specificity
+   (@media min-768 { .drawer-header { padding: 15px 20px 10px !important } })
+   and loads later, so we raise specificity with [data-sl-menu-id] to win. */
+@media (min-width: 768px) {
+  .mobile-drawer[data-sl-menu-id] .drawer-header {
+    padding: 40px 25px 15px !important;
+    border-bottom: none !important;
+  }
+}
+
+.mobile-drawer .drawer-close,
+.mobile-drawer .drawer-back {
+  color: #1a1914;
+}
+
+.mobile-drawer .drawer-close svg,
+.menu-header .close-button svg {
+  width: 28px !important;
+  height: 28px !important;
+}
+
+/* The close (X) icon's SVG <circle> has a hard-coded white fill, showing a
+   white disc on the cream header. Recolor it to cream so it blends.
+   Covers both the main drawer close and the submenu header close button. */
+.mobile-drawer .drawer-close svg circle,
+.menu-header .close-button svg circle {
+  fill: #fef3dd !important;
+}
+
+/* Padding inside the circle: shrink the X (path) around the circle's centre
+   so it doesn't touch the edge. transform-box: view-box makes the origin
+   the centre of the 0 0 24 24 viewBox (= the circle centre). */
+.mobile-drawer .drawer-close svg path,
+.menu-header .close-button svg path {
+  transform-box: view-box;
+  transform-origin: center;
+  transform: scale(0.6);
+}
+
+/* --------------------------------------------------------------------------
+   3. Top-level menu items  (.sp-menu-mobile > li, span.menu-item__title)
+   Figma: Gascogne 20px/300, #1a1914, ~24px rhythm, no grey dividers,
+          title left / chevron right
+   -------------------------------------------------------------------------- */
+.mobile-drawer .sp-menu-mobile {
+  padding: 0px 25px;
+  margin: 0;
+}
+
+/* Remove the app's margin-top: 10px on the list / child items */
+.mobile-drawer .sp-menu-mobile,
+.mobile-drawer .menu-child li {
+  margin-top: 0 !important;
+}
+
+.mobile-drawer .sp-menu-mobile > li {
+  margin: 0;
+  border-bottom: none !important; /* override app's grey #dee1e5 divider */
+}
+
+.mobile-drawer .sp-menu-mobile > li > a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  color: #1a1914;
+  text-decoration: none;
+}
+
+.mobile-drawer .sp-menu-mobile > li > a span.menu-item__title {
+  padding: 0;
+  font-family: 'Gascogne', serif;
+  font-weight: 300;
+  font-size: 20px;
+  line-height: 1.1;
+  color: #1a1914;
+}
+
+/* --------------------------------------------------------------------------
+   4. Submenus  (.sp-submenu, .normal-item-container, .normal-text)
+   -------------------------------------------------------------------------- */
+
+/* The app paints submenu containers white here:
+     .column-container, .image-menu-container,
+     .columns-multi-column-container, .menu-header { background: #fff }
+   No !important, so a plain !important override wins. */
+.column-container,
+.image-menu-container,
+.columns-multi-column-container,
+.menu-header {
+  background: #fef3dd !important;
+}
+
+/* Same horizontal padding as the top-level list (.sp-menu-mobile) */
+.column-container {
+  padding: 0px 25px !important;
+  margin: 0 !important;
+}
+
+/* .menu-header (submenu / flyout header) — same as .drawer-header.
+   It is a <span> containing .custom-menu-title (title) + .close-button. */
+.menu-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 16px 20px !important;
+  font-weight: 400 !important;
+  border-bottom: 1px solid rgba(49, 9, 18, 0.15) !important;
+  background: #fef3dd !important;
+}
+
+/* Title text — match .drawer-title (Gascogne serif 20/300, #1a1914).
+   The app adds padding-left: 11px + font-size:16px/bold/#333 on
+   [data-type="mobile-side-column"] .menu-header .custom-menu-title — we
+   reset padding/margin so it aligns with "MENU", and override the font. */
+.menu-header .custom-menu-title {
+  font-family: 'Gascogne', serif !important;
+  font-weight: 700 !important; /* Gascogne supports 200/300/400/500/700/800/900 */
+  font-size: 20px !important;
+  line-height: 1.1 !important;
+  color: #1a1914 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* The app overrides .menu-header on desktop with same specificity + !important
+   (@media min-768 { .menu-header { padding: 35px 15px 9px !important;
+   font-weight: 900 } }) and loads later, so we raise specificity to win.
+   Covered for both the drawer and the desktop flyout (.mobile-menu-panel). */
+@media (min-width: 768px) {
+  .mobile-drawer[data-sl-menu-id] .menu-header,
+  .mobile-menu-panel .menu-header,
+  .menu-slide .menu-header {
+    padding: 45px 25px 20px !important;
+    border-bottom: none !important;
+    font-weight: 400 !important;
+  }
+}
+
+/* Make the links in the other columns / submenu levels match the first
+   column: Gascogne serif, 20px, weight 300, #1a1914 (instead of the app's
+   default sans-serif). */
+.normal-item-container,
+.normal-item-container .normal-text,
+.sp-submenu .normal-text,
+.sp-submenu .menu-item__title,
+.column-container .menu-item__title {
+  font-family: 'Gascogne', serif !important;
+  font-weight: 300 !important;
+  font-size: 20px !important;
+  line-height: 1.1 !important;
+  color: #1a1914 !important;
+  text-decoration: none !important;
+}
+
+/* Give .normal-item-container the same layout as the top-level
+   .menu-item-normal anchor (flex, title left / arrow right, same padding). */
+.normal-item-container {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0 !important;
+}
+
+/* Desktop submenu flyout — the app renders level 2+ in a SEPARATE panel
+   (.mobile-menu-panel > .menu-slide), not inside .mobile-drawer.
+   Force cream background here too, and override the app's min-width:400px
+   + grey #999 border so it matches the 365px cream drawer. */
+@media (min-width: 768px) {
+  .mobile-menu-panel,
+  .mobile-menu-panel.active,
+  .mobile-menu-panel .menu-slide,
+  .mobile-menu-panel.active > .menu-slide {
+    background: #fef3dd !important;
+  }
+
+  .mobile-menu-panel.active > .menu-slide {
+    width: 365px !important;
+    min-width: 365px !important;
+    max-width: 365px !important;
+    border-left: 1px solid rgba(49, 9, 18, 0.15) !important;
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   5. "Has children" arrows  (li.has-children > a::after)
+   Figma: chevron pointing right, in Green Coal #1a1914
+   -------------------------------------------------------------------------- */
+.mobile-drawer .sp-menu-mobile > li.has-children > a::after {
+  width: 16px;
+  height: 16px;
+  margin-right: 0;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><polyline points="9 5 16 12 9 19" stroke="%231a1914" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+}
+
+
+/* --------------------------------------------------------------------------
+   6. Responsive tweaks
+   -------------------------------------------------------------------------- */
+/* Figma mobile is full-width — keep near-full width below the desktop breakpoint */
+@media (max-width: 767px) {
+  .mobile-drawer .drawer-menu,
+  .mobile-drawer .drawer-menu.open {
+    width: calc(100% - 15px) !important;
+    max-width: none !important;
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   7. Dimmed backdrop behind the open drawer
+   The SiteLoom app injects no backdrop, so the page behind the menu stays
+   undimmed — unlike the filter drawer (.filter-backdrop) and the theme
+   nav-overlay (.nav-overlay-backdrop), which both dim with rgba(0,0,0,.3).
+   We render a matching dim with a fixed pseudo-element on .mobile-drawer.
+   It lives inside the app's own stacking context and, as the first child,
+   paints BEHIND the .drawer-menu — so we don't have to guess the app's
+   z-index. pointer-events stay off so we never interfere with the app's
+   own open/close handling.
+   -------------------------------------------------------------------------- */
+.mobile-drawer::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.mobile-drawer:has(.drawer-menu.open)::before {
+  opacity: 1;
+}

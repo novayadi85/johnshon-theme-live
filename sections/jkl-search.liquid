@@ -1,0 +1,160 @@
+{%- comment -%}
+  Search results page — same build as the PLP (sections/jkl-plp.liquid) but
+  driven by `search` instead of `collection`. Product-scoped (type=product),
+  so `search.filters` powers the same filter drawer.
+{%- endcomment -%}
+{{ 'jkl-filter-drawer.css' | asset_url | stylesheet_tag }}
+
+<!-- === Search Top === -->
+<div class="plp-top">
+  <div class="plp-top-container">
+    <h1 class="plp-title">{{ search.terms | escape }}</h1>
+    {%- if search.performed -%}
+      <div class="plp-description">{{ search.results_count }} resultat</div>
+    {%- endif -%}
+  </div>
+</div>
+
+<!-- === Search Container === -->
+<div class="plp-container">
+
+  {%- if search.results_count > 0 -%}
+
+  <!-- Filter Bar -->
+  <div class="plp-filter">
+    <div class="filter-left">
+      <a href="#" class="filter-tab active">All</a>
+      <a href="#" class="filter-tab">Red</a>
+      <a href="#" class="filter-tab">White</a>
+      <a href="#" class="filter-tab">Rose</a>
+      <a href="#" class="filter-tab">Sparkling</a>
+    </div>
+    <div class="filter-right">
+      <button class="filter-sort">
+        <span>Sort by Top Rated</span>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.2"/>
+        </svg>
+      </button>
+      <span class="filter-divider"></span>
+      <button class="filter-btn" id="filterDrawerOpen" type="button" aria-haspopup="dialog" aria-controls="filterDrawerOverlay">
+        <span>Filter (<span class="filter-count" data-filter-count>0</span>)</span>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2 4h12M4 8h8M6 12h4" stroke="currentColor" stroke-width="1.2"/>
+        </svg>
+      </button>
+      <span class="filter-divider"></span>
+      <div class="view-switcher">
+        <button class="view-btn active" data-view="grid">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0.5" y="0.5" width="5" height="5" stroke="currentColor"/><rect x="8.5" y="0.5" width="5" height="5" stroke="currentColor"/><rect x="0.5" y="8.5" width="5" height="5" stroke="currentColor"/><rect x="8.5" y="8.5" width="5" height="5" stroke="currentColor"/>
+          </svg>
+        </button>
+        <button class="view-btn" data-view="list">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="0" y1="2" x2="14" y2="2" stroke="currentColor"/><line x1="0" y1="7" x2="14" y2="7" stroke="currentColor"/><line x1="0" y1="12" x2="14" y2="12" stroke="currentColor"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- === Product Grid === -->
+  <div class="plp-product-list plp-grid active" data-no-results="{{ 'content.no_products_found' | t }}" data-section-id="{{ section.id }}">
+    {%- for item in search.results -%}
+      {%- if item.object_type == 'product' -%}
+        {%- for variant in item.variants -%}
+          {% render 'jkl-product-card', product: item, variant: variant %}
+        {%- endfor -%}
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+
+  {%- else -%}
+
+  <!-- No results: newsletter signup, same as an empty PLP -->
+  <div class="plp-empty-signup">
+    <h3>Ups - vi fandt ingen varer for "{{ search.terms | escape }}".</h3>
+    <p>Prøv en anden søgning, eller skriv dig op herunder så vi kan hjælpe dig.</p>
+    {% render 'jkl-signup-form' %}
+  </div>
+
+  {%- endif -%}
+
+</div>
+
+<!-- === Filter Drawer === -->
+{%- case section.settings.filter_style -%}
+  {%- when 'layer' -%}
+    {% render 'jkl-filter-drawer-layer', facets: search.filters, result_count: search.results_count, search_terms: search.terms %}
+  {%- else -%}
+    {% render 'jkl-filter-drawer-expand', facets: search.filters, result_count: search.results_count, search_terms: search.terms %}
+{%- endcase -%}
+
+<script>
+  // Move each card's save badge up next to the wine name (same as PLP).
+  (function () {
+    function moveSaveBadges() {
+      document.querySelectorAll('.product-card').forEach(function (card) {
+        var badge = card.querySelector('.plp-save-badge');
+        var nameEl = card.querySelector('.wine-name');
+        if (badge && nameEl && badge.dataset.moved !== '1') {
+          badge.dataset.moved = '1';
+          nameEl.appendChild(badge);
+        }
+      });
+    }
+    moveSaveBadges();
+    document.addEventListener('DOMContentLoaded', moveSaveBadges);
+    var list = document.querySelector('.plp-product-list');
+    if (list && window.MutationObserver) {
+      new MutationObserver(moveSaveBadges).observe(list, { childList: true });
+    }
+  })();
+</script>
+
+<script>
+  (function () {
+    var gridBtn = document.querySelector('[data-view="grid"]');
+    var listBtn = document.querySelector('[data-view="list"]');
+    var productList = document.querySelector('.plp-product-list');
+    if (!gridBtn || !listBtn || !productList) return;
+
+    gridBtn.addEventListener('click', function () {
+      productList.classList.add('plp-grid');
+      productList.classList.remove('plp-list');
+      gridBtn.classList.add('active');
+      listBtn.classList.remove('active');
+    });
+
+    listBtn.addEventListener('click', function () {
+      productList.classList.add('plp-list');
+      productList.classList.remove('plp-grid');
+      listBtn.classList.add('active');
+      gridBtn.classList.remove('active');
+    });
+  })();
+</script>
+
+<script src="{{ 'jkl-filter-drawer.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "JKL Search Page",
+  "tag": "section",
+  "class": "jkl-plp-section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "filter_style",
+      "label": "Filter drawer style",
+      "options": [
+        { "value": "expand", "label": "Filters - Expand" },
+        { "value": "layer", "label": "Filters - Layer" }
+      ],
+      "default": "expand"
+    }
+  ],
+  "presets": []
+}
+{% endschema %}

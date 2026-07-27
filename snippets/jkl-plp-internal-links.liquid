@@ -1,0 +1,18 @@
+{%- comment -%}
+  Internal links for the collection page.
+  Data comes from the collection metafield `custom.internal_links`
+  (list of collection references).
+
+  Accepts:
+  - collection: {Object} Collection to read the metafield from. Default: collection
+{%- endcomment -%}
+
+{%- assign internal_links = collection.metafields.custom.internal_links.value -%}
+
+{%- if internal_links != blank and internal_links.size > 0 -%}
+  <div class="plp-links">
+    {%- for linked_collection in internal_links -%}
+      <a href="{{ linked_collection.url }}" class="plp-link">{{ linked_collection.title }}</a>
+    {%- endfor -%}
+  </div>
+{%- endif -%}

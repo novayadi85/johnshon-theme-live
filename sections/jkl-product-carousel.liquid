@@ -1,0 +1,33 @@
+<section class="product-carousel color-green-coal">
+  <div class="section-header">
+    <p class="section-label">Todays selection for you</p>
+    <h2 class="title">A curated selection based on what you love, right now.</h2>
+  </div>
+  <div class="product-list-wrapper">
+  <div class="product-list">
+    {% render 'jkl-product-card' %}
+    {% render 'jkl-product-card' %}
+    {% render 'jkl-product-card' %}
+  </div>
+  </div>
+  <button class="nav-button nav-prev" aria-label="Previous">
+    <img src="https://www.figma.com/api/mcp/asset/c0dd75d7-8024-4fa2-a3ac-e05abff544b5" alt="Previous">
+  </button>
+  <button class="nav-button nav-next" aria-label="Next">
+    <img src="https://www.figma.com/api/mcp/asset/12a3ddb9-029d-4dab-9469-8b946551e896" alt="Next">
+  </button>
+</section>
+
+{% schema %}
+{
+  "name": "JKL Product Carousel",
+  "tag": "section",
+  "class": "jkl-product-carousel-section",
+  "settings": [],
+  "presets": [
+    {
+      "name": "JKL Product Carousel"
+    }
+  ]
+}
+{% endschema %}

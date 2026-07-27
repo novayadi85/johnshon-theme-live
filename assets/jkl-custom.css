@@ -1,0 +1,36 @@
+
+/*** customize adjustment **/
+
+.mobile-drawer .drawer-title{
+  display: none !important;
+}
+
+@media (max-width: 767px) {
+  .sp-submenu {
+    background: #fef3dd !important
+  }
+
+  .sp-submenu .close-button {
+    display: none;
+  }
+
+  .sp-submenu > .submenu-header {
+    padding: 0 0 10px !important;
+    margin: 0 !important;
+  }
+
+  .sp-submenu > .submenu-header > .submenu-title {
+    text-align: center;
+    font-weight: normal;
+    font-family: Gascogne,serif !important
+  }
+  .column-container {
+    padding: 0 5px !important;
+    margin: 0 !important;
+  }
+
+  .sp-menu-mobile > li, .sp-submenu > li, .menu-child > li {
+    margin: 0 !important;
+  }
+
+}

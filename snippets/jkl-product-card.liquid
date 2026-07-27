@@ -1,0 +1,81 @@
+{%- comment -%} Renders one card per variant. `variant` is passed in from the PLP;
+  falls back to the first available variant if rendered without one. {%- endcomment -%}
+{%- assign variant = variant | default: product.selected_or_first_available_variant -%}
+{%- assign winery = product.metafields.custom.vendor.value.name -%}
+{%- assign winery_link = product.metafields.custom.vendor.value.vendor_collection.value.url -%}
+{%- assign vintage = variant.metafields.custom.vintage.value | default: variant.metafields.custom.vintage -%}
+
+{%- comment -%} Reviews — same source as the PDP (shop.metaobjects.reviews by wsi) {%- endcomment -%}
+{%- assign product_wsi = product.metafields.custom.wsi -%}
+{%- assign matching_reviews = shop.metaobjects.reviews.values | where: 'wsi_object', product_wsi | sort: 'reviewscore' | reverse -%}
+{%- assign top_review = matching_reviews.first -%}
+
+<article class="product-card">
+  {%- if variant.metafields.custom.show_member_price.value -%}
+    <div class="member-banner-bar"></div>
+  {%- endif -%}
+  <a href="#" class="wishlist-icon" aria-label="Wishlist">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 21s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 11c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.5" fill="none"></path>
+    </svg>
+  </a>
+  {%- assign card_image = variant.image | default: product.featured_image -%}
+  <a href="{{ product.url }}?variant={{ variant.id }}" class="image-container">
+    <div class="bottle-shadow"></div>
+    {%- if card_image != blank -%}
+      <img class="product-image" src="{{ card_image | image_url: width: 400 }}" alt="{{ card_image.alt | default: product.title | escape }}" loading="lazy">
+    {%- endif -%}
+  </a>
+  <div class="card-meta"><div class="badges">
+    <span class="badge highlight">Top choice by members</span>
+    <span class="badge">Trusted winery</span>
+    <span class="badge">Critics pick</span>
+  </div>
+  {%- if top_review -%}
+    <div class="ratings">
+      <div class="rating">
+        <div class="points">{{ top_review.reviewscore }} Points</div>
+        <div class="points-label">Average score</div>
+        <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <div class="reviewer">{{ top_review.reviewer.value.showing_name }}</div>
+      </div>
+    </div>
+  {%- endif -%}
+  </div>
+  {%- if variant.metafields.custom.show_member_price.value -%}
+    <div class="member-banner">Member price — Member price — Member price — Member price — Member price</div>
+  {%- endif -%}
+  <div class="card-divider"></div>
+  <div class="card-bottom">
+    <div class="product-info">
+      <div class="winery">
+        {%- if winery_link != blank -%}
+          <a href="{{ winery_link }}">{{ winery | default: product.vendor }}</a>
+        {%- else -%}
+          {{ winery | default: product.vendor }}
+        {%- endif -%}
+      </div>
+      <a href="{{ product.url }}?variant={{ variant.id }}" class="wine-name-link"><p class="wine-name">{{ variant.option1 }} {{ product.title }}</p></a>
+      {%- assign collection_text = product.metafields.custom.collection_text | default: variant.metafields.custom.collection_text -%}
+      {%- if collection_text != blank -%}
+        <p class="wine-description">{{ collection_text }}</p>
+      {%- endif -%}
+    </div>
+    <div class="price-section">
+      {%- comment -%} Same price block as the PDP, always the full (non-simple)
+        version. scope: 'plp' renders clean plp-* classes (no pdp traces). {%- endcomment -%}
+      {% render 'pdp-price', product: product, variant: variant, scope: 'plp', force_full: true %}
+      <div class="actions">
+        
+        <div class="quantity-selector"><span>-</span><span>6</span><span>+</span></div>
+        {%- form 'product', product, id: 'jkl-product-form-{{ variant.id }}' -%}
+          <input type="hidden" name="id" value="{{ variant.id }}">
+          <input type="hidden" name="quantity" value="{% render 'qty-bulk-size', variant: variant %}" min="1" class="pdp-qty-value">  
+          <button type="submit" class="btn-add-to-basket">
+            {%- if product.available -%}{{ 'actions.add_to_cart' | t }} {%- else -%}{{ 'content.product_badge_sale' | t }}{%- endif -%}
+          </button>
+        {%- endform -%}
+      </div>
+    </div>
+  </div>
+</article>

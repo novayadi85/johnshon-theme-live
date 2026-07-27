@@ -1,0 +1,60 @@
+{%- liquid
+  assign clean_description = collection.metafields.custom.short_text | metafield_tag | strip_html | strip_newlines | strip
+  assign producent_url = canonical_url
+  assign url_parts = canonical_url | split: '/'
+  assign origin = url_parts[0] | append: '//' | append: url_parts[2]
+  assign producenter_url = origin | append: routes.collections_url | append: '/vinproducenter'
+  assign all_wines_url = origin | append: routes.collections_url | append: '/all'
+-%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "{{ producent_url }}#webpage",
+      "url": {{ producent_url | json | replace: '\/', '/' }},
+      "name": {{ collection.title | json | replace: '\/', '/' }}
+      {%- if clean_description != blank -%}
+        ,"description": {{ clean_description | json | replace: '\/', '/' }}
+      {%- endif -%}
+      ,"mainEntity": { "@id": "{{ producent_url }}#producer" }
+      ,"breadcrumb": { "@id": "{{ producent_url }}#breadcrumb" }
+    },
+    {
+      "@type": ["Organization", "Winery"],
+      "@id": "{{ producent_url }}#producer",
+      "name": {{ collection.title | json | replace: '\/', '/' }},
+      "url": {{ producent_url | json | replace: '\/', '/' }}
+      {%- if clean_description != blank -%}
+        ,"description": {{ clean_description | json | replace: '\/', '/' }}
+      {%- endif -%}
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "{{ producent_url }}#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": {{ 'jkl.all_wines' | t | json | replace: '\/', '/' }},
+          "item": {{ all_wines_url | json | replace: '\/', '/' }}
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ 'jkl.wine_producers' | t | json | replace: '\/', '/' }},
+          "item": {{ producenter_url | json | replace: '\/', '/' }}
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": {{ collection.title | json | replace: '\/', '/' }},
+          "item": {{ producent_url | json | replace: '\/', '/' }}
+        }
+      ]
+    }
+  ]
+}
+</script>

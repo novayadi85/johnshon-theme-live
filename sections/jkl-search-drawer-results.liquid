@@ -1,0 +1,133 @@
+{%- comment -%}
+  Renders search results for the drawer.
+  Fetched via Section Rendering API: /search/suggest?section_id=jkl-search-drawer-results
+{%- endcomment -%}
+
+{%- liquid
+  assign products = predictive_search.resources.products
+-%}
+ 
+<div data-drawer-results>
+  {%- if products.size > 0 -%}
+    <ul class="jkl-search-drawer__products">
+      {%- for product in products -%}
+        {%- assign winery = product.metafields.custom.vendor.value.name | default: product.vendor -%}
+        {%- assign variant = product.selected_or_first_available_variant -%}
+        {%- assign vintage = variant.metafields.custom.vintage.value | default: variant.metafields.custom.vintage -%}
+
+        {%- comment -%} Mirrors the headline price + save badge of pdp-price.liquid so
+          the drawer matches the product page. Source: variant custom.prices JSON for
+          the current country. Priority (same as PDP): member price > offer > standard.
+          Mode: bundle (biggest qty tier, "{qty}+ bottle") when show_volume_price,
+          otherwise single ("per bottle"). {%- endcomment -%}
+        {%- liquid
+          assign show_volume_price = variant.metafields.custom.show_volume_price.value
+          assign on_sale_for_all = variant.metafields.custom.on_sale_for_all.value
+          assign show_member_price = variant.metafields.custom.show_member_price.value
+
+          assign prices_data = variant.metafields.custom.prices.value
+          assign country_code = localization.country.iso_code
+          assign country_data = prices_data[country_code]
+          assign currency = country_data.currency
+
+          assign single_tier = nil
+          assign bundle_tier = nil
+          for tier in country_data.none_member
+            if tier.qty == 1
+              assign single_tier = tier
+            else
+              assign bundle_tier = tier
+            endif
+          endfor
+
+          assign member_single_tier = nil
+          assign member_bundle_tier = nil
+          for tier in country_data.member.bronze
+            if tier.qty == 1
+              assign member_single_tier = tier
+            else
+              assign member_bundle_tier = tier
+            endif
+          endfor
+
+          if show_volume_price and bundle_tier
+            assign qty_bulk_size = bundle_tier.qty
+            assign active_tier = bundle_tier
+            assign active_member_tier = member_bundle_tier
+          else
+            assign qty_bulk_size = 1
+            assign active_tier = single_tier
+            assign active_member_tier = member_single_tier
+          endif
+
+          assign has_discount = false
+
+          if show_member_price and active_member_tier
+            assign display_price = active_member_tier.price
+            assign save_amount = single_tier.price | minus: active_member_tier.price | times: qty_bulk_size
+            assign has_discount = true
+          elsif on_sale_for_all and active_tier.offer_price
+            assign display_price = active_tier.offer_price
+            assign save_amount = active_tier.offer_save_amount
+            assign has_discount = true
+          else
+            assign display_price = active_tier.price
+            if qty_bulk_size > 1
+              assign save_amount = single_tier.price | minus: active_tier.price | times: qty_bulk_size
+              if save_amount > 0
+                assign has_discount = true
+              endif
+            endif
+          endif
+        -%}
+
+        <li>
+          <a href="{{ product.url }}" class="jkl-search-drawer__product">
+            <div class="jkl-search-drawer__product-image">
+              {%- if product.featured_image -%}
+                <img
+                  src="{{ product.featured_image | image_url: width: 160 }}"
+                  alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                  width="56"
+                  height="80"
+                  loading="lazy">
+              {%- endif -%}
+            </div>
+
+            <div class="jkl-search-drawer__product-info">
+              {%- if winery != blank -%}
+                <span class="jkl-search-drawer__product-winery">{{ winery }}</span>
+              {%- endif -%}
+              <span class="jkl-search-drawer__product-name">{{ product.title }}{% if vintage != blank %} {{ vintage }}{% endif %}</span>
+            </div>
+
+            <div class="jkl-search-drawer__product-pricing">
+              <div class="jkl-search-drawer__product-price-row">
+                {%- if display_price != nil -%}
+                  <span class="jkl-search-drawer__product-price">{% render 'format-amount', amount: display_price %}</span>
+                  {%- if qty_bulk_size > 1 -%}
+                    <span class="jkl-search-drawer__product-unit">{{ qty_bulk_size }}+ bottle</span>
+                  {%- else -%}
+                    <span class="jkl-search-drawer__product-unit">per bottle</span>
+                  {%- endif -%}
+                {%- else -%}
+                  <span class="jkl-search-drawer__product-price">{{ product.price_min | money }}</span>
+                  <span class="jkl-search-drawer__product-unit">per bottle</span>
+                {%- endif -%}
+              </div>
+              {%- if has_discount -%}
+                <span class="save-badge">Save {% render 'format-amount', amount: save_amount %} {{ currency | downcase }}</span>
+              {%- endif -%}
+            </div>
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "JKL Search Drawer Results"
+}
+{% endschema %}

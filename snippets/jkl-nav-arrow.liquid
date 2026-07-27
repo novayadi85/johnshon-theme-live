@@ -1,0 +1,14 @@
+{%- comment -%}
+  Inline icon for nav links.
+  Usage: {% render 'jkl-nav-arrow', kind: 'chevron' %} for has-children,
+         {% render 'jkl-nav-arrow', kind: 'arrow' %} for leaves.
+{%- endcomment -%}
+{%- if kind == 'chevron' -%}
+  <svg class="nav-link-icon nav-link-icon--chevron" width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M1 1l5 5-5 5" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+{%- else -%}
+  <svg class="nav-link-icon nav-link-icon--arrow" width="14" height="10" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M1 5h12M9 1l4 4-4 4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+{%- endif -%}

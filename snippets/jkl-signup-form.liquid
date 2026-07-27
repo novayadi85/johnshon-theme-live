@@ -1,0 +1,274 @@
+{% assign lang = request.locale.iso_code %}
+
+{% if lang == 'da' %}
+  {% assign placeholder = 'Skriv din email her' %}
+  {% assign cta = 'Tilmeld dig' %}
+  {% assign consent = 'Jeg accepterer, at JKL Fine Wines sender information og tilbud via e-mail. Jeg kan til enhver tid afmelde mig.' %}
+  {% assign success_msg = 'Tak! Du er nu tilmeldt.' %}
+  {% assign error_email_empty = 'Indtast din e-mailadresse.' %}
+  {% assign error_email_at = "E-mail mangler et @ - eks. dit.navn@gmail.com" %}
+  {% assign error_email_domain = 'Du mangler domænenavn efter @ - eks. @gmail.com' %}
+  {% assign error_email_dot = "Punktum mangler i e-mail - eks. dit.navn@gmail.com" %}
+  {% assign error_email_end = "Endelsen på e-mail mangler - eks. dit.navn@gmail.com" %}
+  {% assign error_consent = 'Du skal acceptere betingelserne.' %}
+  {% assign error_heading = 'Der er fejl:' %}
+
+{% elsif lang == 'sv' %}
+  {% assign placeholder = 'Skriv din e-postadress här' %}
+  {% assign cta = 'Skriv upp dig' %}
+  {% assign consent = 'Jag godkänner att JKL Fine Wines skickar information och erbjudanden via e-post. Jag kan när som helst avregistrera mig.' %}
+  {% assign success_msg = 'Tack! Du är nu registrerad.' %}
+  {% assign error_email_empty = 'Ange din e-postadress.' %}
+  {% assign error_email_at = "E-post saknar ett @ - t.ex. ditt.namn@gmail.com" %}
+  {% assign error_email_domain = 'Domännamn saknas efter @ - t.ex. @gmail.com' %}
+  {% assign error_email_dot = "Punkt saknas i e-post - t.ex. ditt.namn@gmail.com" %}
+  {% assign error_email_end = "Ändelsen på e-post saknas - t.ex. ditt.namn@gmail.com" %}
+  {% assign error_consent = 'Du måste godkänna villkoren.' %}
+  {% assign error_heading = 'Det finns fel:' %}
+
+{% elsif lang == 'fi' %}
+  {% comment %}NEEDS REVIEW{% endcomment %}
+  {% assign placeholder = 'Kirjoita sähköpostiosoitteesi' %}
+  {% assign cta = 'Liity' %}
+  {% assign consent = 'Hyväksyn, että JKL Fine Wines lähettää tietoja ja tarjouksia sähköpostitse. Voin peruuttaa tilauksen milloin tahansa.' %}
+  {% assign success_msg = 'Kiitos! Olet nyt rekisteröitynyt.' %}
+  {% assign error_email_empty = 'Syötä sähköpostiosoitteesi.' %}
+  {% assign error_email_at = "Sähköpostista puuttuu @ - esim. nimi@gmail.com" %}
+  {% assign error_email_domain = 'Verkkotunnus puuttuu @:n jälkeen - esim. @gmail.com' %}
+  {% assign error_email_dot = "Sähköpostista puuttuu piste - esim. nimi@gmail.com" %}
+  {% assign error_email_end = "Sähköpostin pääte puuttuu - esim. nimi@gmail.com" %}
+  {% assign error_consent = 'Sinun on hyväksyttävä ehdot.' %}
+  {% assign error_heading = 'Virheitä löytyi:' %}
+
+{% elsif lang == 'pl' %}
+  {% comment %}NEEDS REVIEW{% endcomment %}
+  {% assign placeholder = 'Wpisz swój adres e-mail' %}
+  {% assign cta = 'Zapisz się' %}
+  {% assign consent = 'Wyrażam zgodę na otrzymywanie informacji i ofert od JKL Fine Wines drogą e-mailową. Mogę zrezygnować w dowolnym momencie.' %}
+  {% assign success_msg = 'Dziękujemy! Zostałeś zapisany.' %}
+  {% assign error_email_empty = 'Wpisz swój adres e-mail.' %}
+  {% assign error_email_at = "W e-mailu brakuje @ - np. twoje.imie@gmail.com" %}
+  {% assign error_email_domain = 'Brakuje nazwy domeny po @ - np. @gmail.com' %}
+  {% assign error_email_dot = "W e-mailu brakuje kropki - np. twoje.imie@gmail.com" %}
+  {% assign error_email_end = "Brakuje końcówki e-maila - np. twoje.imie@gmail.com" %}
+  {% assign error_consent = 'Musisz zaakceptować warunki.' %}
+  {% assign error_heading = 'Wystąpiły błędy:' %}
+
+{% elsif lang == 'de' %}
+  {% assign placeholder = 'E-Mail-Adresse eingeben' %}
+  {% assign cta = 'Jetzt anmelden' %}
+  {% assign consent = 'Ich stimme zu, dass JKL Fine Wines mir Informationen und Angebote per E-Mail zusendet. Ich kann mich jederzeit abmelden.' %}
+  {% assign success_msg = 'Danke! Du bist jetzt angemeldet.' %}
+  {% assign error_email_empty = 'Gib deine E-Mail-Adresse ein.' %}
+  {% assign error_email_at = "In der E-Mail fehlt ein @ - z.B. dein.name@gmail.com" %}
+  {% assign error_email_domain = 'Domainname fehlt nach @ - z.B. @gmail.com' %}
+  {% assign error_email_dot = "In der E-Mail fehlt ein Punkt - z.B. dein.name@gmail.com" %}
+  {% assign error_email_end = "Die Endung der E-Mail fehlt - z.B. dein.name@gmail.com" %}
+  {% assign error_consent = 'Du musst die Bedingungen akzeptieren.' %}
+  {% assign error_heading = 'Es gibt Fehler:' %}
+
+{% elsif lang == 'et' %}
+  {% comment %}NEEDS REVIEW{% endcomment %}
+  {% assign placeholder = 'Sisesta oma e-posti aadress' %}
+  {% assign cta = 'Liitu' %}
+  {% assign consent = 'Nõustun, et JKL Fine Wines saadab mulle teavet ja pakkumisi e-posti teel. Saan igal ajal loobuda.' %}
+  {% assign success_msg = 'Aitäh! Oled nüüd registreeritud.' %}
+  {% assign error_email_empty = 'Sisesta oma e-posti aadress.' %}
+  {% assign error_email_at = "E-postis puudub @ - nt. sinu.nimi@gmail.com" %}
+  {% assign error_email_domain = 'Domeeninimi puudub pärast @ - nt. @gmail.com' %}
+  {% assign error_email_dot = "E-postis puudub punkt - nt. sinu.nimi@gmail.com" %}
+  {% assign error_email_end = "E-posti lõpp puudub - nt. sinu.nimi@gmail.com" %}
+  {% assign error_consent = 'Pead nõustuma tingimustega.' %}
+  {% assign error_heading = 'Leiti vigu:' %}
+
+{% elsif lang == 'lv' %}
+  {% comment %}NEEDS REVIEW{% endcomment %}
+  {% assign placeholder = 'Ievadi savu e-pasta adresi' %}
+  {% assign cta = 'Pievienoties' %}
+  {% assign consent = 'Piekrītu, ka JKL Fine Wines sūta man informāciju un piedāvājumus pa e-pastu. Varu atteikties jebkurā laikā.' %}
+  {% assign success_msg = 'Paldies! Tu esi reģistrēts.' %}
+  {% assign error_email_empty = 'Ievadi savu e-pasta adresi.' %}
+  {% assign error_email_at = "E-pastā trūkst @ - piem. tavs.vards@gmail.com" %}
+  {% assign error_email_domain = 'Domēna nosaukums trūkst pēc @ - piem. @gmail.com' %}
+  {% assign error_email_dot = "E-pastā trūkst punkta - piem. tavs.vards@gmail.com" %}
+  {% assign error_email_end = "E-pasta beigas trūkst - piem. tavs.vards@gmail.com" %}
+  {% assign error_consent = 'Tev jāpiekrīt noteikumiem.' %}
+  {% assign error_heading = 'Ir kļūdas:' %}
+
+{% elsif lang == 'lt' %}
+  {% comment %}NEEDS REVIEW{% endcomment %}
+  {% assign placeholder = 'Įveskite savo el. pašto adresą' %}
+  {% assign cta = 'Prisijungti' %}
+  {% assign consent = 'Sutinku, kad JKL Fine Wines siųstų man informaciją ir pasiūlymus el. paštu. Galiu atsisakyti bet kuriuo metu.' %}
+  {% assign success_msg = 'Ačiū! Dabar esate užregistruotas.' %}
+  {% assign error_email_empty = 'Įveskite savo el. pašto adresą.' %}
+  {% assign error_email_at = "El. pašte trūksta @ - pvz. jusu.vardas@gmail.com" %}
+  {% assign error_email_domain = 'Domeno pavadinimas trūksta po @ - pvz. @gmail.com' %}
+  {% assign error_email_dot = "El. pašte trūksta taško - pvz. jusu.vardas@gmail.com" %}
+  {% assign error_email_end = "El. pašto pabaiga trūksta - pvz. jusu.vardas@gmail.com" %}
+  {% assign error_consent = 'Turite sutikti su sąlygomis.' %}
+  {% assign error_heading = 'Yra klaidų:' %}
+
+{% endif %}
+
+<style>
+  .signup-form .h-captcha { position: absolute !important; width: 0 !important; height: 0 !important; overflow: hidden !important; }
+  .signup-form-errors { display: none; color: red; margin-bottom: -8px; font-size: 14px; }
+  .signup-form-errors.is-visible { display: block; text-align: left; margin-bottom: 0px; }
+  .signup-form-errors ul { margin: 4px 0 0; padding-left: 18px; }
+  .signup-form-errors li { list-style: disc; }
+</style>
+
+{% form 'customer', class: 'signup-form' %}
+  {% if customer_tags_endpoint != blank %}
+    <input type="hidden" data-customer-tags-endpoint value="{{ customer_tags_endpoint | escape }}">
+    <input type="hidden" data-customer-tags-shop-id value="{{ shop.permanent_domain | default: 'johnsonwine.myshopify.com' | escape }}">
+    <input type="hidden" data-customer-tags-customer-id value="{% if customer %}{{ customer.id }}{% else %}1234567890{% endif %}">
+    <input type="hidden" data-customer-tags-tag value="{{ customer_tags_tag | default: 'bronze' | escape }}">
+    <input type="hidden" data-customer-tags-action value="{{ customer_tags_action | default: 'add' | escape }}">
+  {% endif %}
+  <input type="hidden" name="contact[tags]" value="newsletter,landing">
+  <input type="hidden" name="contact[accepts_marketing]" value="true">
+  <div class="signup-form-errors"
+    data-heading="{{ error_heading }}"
+    data-email-empty="{{ error_email_empty }}"
+    data-email-at="{{ error_email_at }}"
+    data-email-domain="{{ error_email_domain }}"
+    data-email-dot="{{ error_email_dot }}"
+    data-email-end="{{ error_email_end }}"
+    data-consent="{{ error_consent }}">
+  </div>
+  <div class="signup-form-row">
+    <input type="email" name="contact[email]" class="signup-form-input" placeholder="{{ placeholder }}">
+    <button type="submit" class="signup-form-btn">{{ cta }}</button>
+  </div>
+  <label class="signup-form-consent">
+    <input type="checkbox">
+    <span class="signup-form-checkmark"></span>
+    <span>{{ consent }}</span>
+  </label>
+  <p class="signup-form-success" style="display:none;"><strong>{{ success_msg }}</strong></p>
+{% endform %}
+
+<script>
+  if (!window.__signupFormInit) {
+    window.__signupFormInit = true;
+    document.querySelectorAll('.signup-form').forEach(function(f) {
+      f.setAttribute('novalidate', '');
+    });
+    function updateErrors(f) {
+      var box = f.querySelector('.signup-form-errors');
+      var emailInput = f.querySelector('input[type="email"]');
+      var cb = f.querySelector('.signup-form-consent input[type="checkbox"]');
+      var checkmark = f.querySelector('.signup-form-checkmark');
+      var errors = [];
+      var val = emailInput.value.trim();
+      if (!val) {
+        errors.push(box.dataset.emailEmpty);
+      } else if (val.indexOf('@') === -1) {
+        errors.push(box.dataset.emailAt);
+      } else {
+        var domain = val.split('@')[1];
+        var dotPos = domain ? domain.indexOf('.') : -1;
+        if (!domain || dotPos === -1) {
+          errors.push(box.dataset.emailDot);
+        } else if (dotPos === 0) {
+          errors.push(box.dataset.emailDomain);
+        } else if (domain.endsWith('.')) {
+          errors.push(box.dataset.emailEnd);
+        }
+      }
+      var emailValid = errors.length === 0;
+      if (!cb.checked) {
+        errors.push(box.dataset.consent);
+      }
+      emailInput.style.borderColor = emailValid ? '' : 'red';
+      checkmark.style.borderColor = cb.checked ? '' : 'red';
+      if (errors.length > 0) {
+        box.innerHTML = '<strong>' + box.dataset.heading + '</strong><ul>' +
+          errors.map(function(e) { return '<li>' + e + '</li>'; }).join('') + '</ul>';
+        box.classList.add('is-visible');
+      } else {
+        box.classList.remove('is-visible');
+        box.innerHTML = '';
+      }
+      return errors.length === 0;
+    }
+    document.addEventListener('change', function(e) {
+      var cb = e.target;
+      if (cb.type !== 'checkbox' || !cb.closest('.signup-form-consent')) return;
+      var f = cb.closest('.signup-form');
+      if (f.querySelector('.signup-form-errors.is-visible')) updateErrors(f);
+    });
+    document.addEventListener('input', function(e) {
+      if (e.target.type !== 'email' || !e.target.closest('.signup-form')) return;
+      var f = e.target.closest('.signup-form');
+      if (f.querySelector('.signup-form-errors.is-visible')) updateErrors(f);
+    });
+    function submitForm(f) {
+      var customerTagsEndpoint = f.querySelector('[data-customer-tags-endpoint]');
+      if (customerTagsEndpoint) {
+        var payload = {
+          shopId: f.querySelector('[data-customer-tags-shop-id]').value,
+          customerId: f.querySelector('[data-customer-tags-customer-id]').value,
+          tags: [f.querySelector('[data-customer-tags-tag]').value],
+          action: f.querySelector('[data-customer-tags-action]').value
+        };
+
+        f.querySelector('.signup-form-btn').disabled = true;
+
+        fetch(customerTagsEndpoint.value, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        })
+          .then(function(response) {
+            if (!response.ok) throw new Error('Customer tag request failed');
+            f.querySelector('.signup-form-row').style.display = 'none';
+            f.querySelector('.signup-form-consent').style.display = 'none';
+            f.querySelector('.signup-form-errors').classList.remove('is-visible');
+            f.querySelector('.signup-form-success').style.display = 'block';
+          })
+          .catch(function() {
+            var box = f.querySelector('.signup-form-errors');
+            box.innerHTML = '<strong>Unable to join right now. Please try again.</strong>';
+            box.classList.add('is-visible');
+          })
+          .finally(function() {
+            f.querySelector('.signup-form-btn').disabled = false;
+          });
+
+        return;
+      }
+
+      var iframeName = 'signup-target-' + Date.now();
+      var iframe = document.createElement('iframe');
+      iframe.name = iframeName;
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+      f.setAttribute('target', iframeName);
+      iframe.addEventListener('load', function() {
+        f.removeAttribute('target');
+        iframe.remove();
+        f.querySelector('.signup-form-row').style.display = 'none';
+        f.querySelector('.signup-form-consent').style.display = 'none';
+        f.querySelector('.signup-form-errors').classList.remove('is-visible');
+        f.querySelector('.signup-form-success').style.display = 'block';
+      });
+      f.submit();
+    }
+    document.addEventListener('submit', function(e) {
+      var f = e.target;
+      if (!f.classList.contains('signup-form')) f = f.closest('.signup-form');
+      if (!f) return;
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      if (!updateErrors(f)) return;
+      submitForm(f);
+    }, true);
+  }
+</script>

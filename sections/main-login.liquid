@@ -1,0 +1,323 @@
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<section class="account-login color-{{ section.settings.color_scheme }}">
+  <div class="account-login__shell page-width-content">
+    <div class="account-login__panel">
+      <div class="account-login__intro">
+        <p class="account-login__eyebrow">Customer account</p>
+        <h1 class="account-login__title">{{ 'customer.login_page.title' | t }}</h1>
+        <p class="account-login__copy">
+          Sign in to review orders, manage your saved details, and get back to the bottles you’ve been thinking about.
+        </p>
+      </div>
+
+      <div class="account-login__forms">
+        <div id="recover" class="account-login__card account-login__card--recover">
+          <h2 class="account-login__card-title">{{ 'customer.recover_password.title' | t }}</h2>
+          <p class="account-login__helper">{{ 'customer.recover_password.subtext' | t }}</p>
+
+          {% form 'recover_customer_password', class: 'account-login__form' %}
+            {% if form.errors %}
+              <div class="account-login__message account-login__message--error">
+                {{ form.errors.messages.form }}
+              </div>
+            {% endif %}
+
+            {% if form.posted_successfully? %}
+              <div class="account-login__message account-login__message--success">
+                {{ 'customer.recover_password.success' | t }}
+              </div>
+            {% endif %}
+
+            <label class="account-login__field">
+              <span>Email</span>
+              <input
+                type="email"
+                name="email"
+                id="RecoverEmail"
+                autocorrect="off"
+                autocapitalize="off"
+                autocomplete="email"
+                required
+              >
+            </label>
+
+            <button class="account-login__button account-login__button--primary" type="submit">
+              {{ 'customer.login_page.submit' | t }}
+            </button>
+
+            <button class="account-login__button account-login__button--ghost" type="button" onclick="window.location.hash=''">
+              {{ 'customer.login_page.cancel' | t }}
+            </button>
+          {% endform %}
+        </div>
+
+        <div class="account-login__card account-login__card--login" id="login">
+          <h2 class="account-login__card-title">{{ 'customer.login_page.title' | t }}</h2>
+
+          {% form 'customer_login', class: 'account-login__form' %}
+            {% if form.errors %}
+              <div class="account-login__message account-login__message--error">
+                {{ form.errors | default_errors }}
+              </div>
+            {% endif %}
+
+            <label class="account-login__field">
+              <span>{{ 'customer.login_page.email' | t }}</span>
+              <input
+                type="email"
+                name="customer[email]"
+                id="CustomerEmail"
+                autocomplete="email"
+                autocorrect="off"
+                autocapitalize="off"
+                required
+                {% if form.email %}
+                  value="{{ form.email }}"
+                {% endif %}
+              >
+            </label>
+
+            {% if form.password_needed %}
+              <label class="account-login__field">
+                <span>{{ 'customer.login_page.password' | t }}</span>
+                <input
+                  type="password"
+                  name="customer[password]"
+                  id="CustomerPassword"
+                  autocomplete="current-password"
+                  required
+                >
+              </label>
+            {% endif %}
+
+            <div class="account-login__actions">
+              <button class="account-login__button account-login__button--primary" type="submit">
+                {{ 'customer.login_page.sign_in' | t }}
+              </button>
+              <a class="account-login__text-link" href="#recover">
+                {{ 'customer.login_page.forgot_password' | t }}
+              </a>
+            </div>
+          {% endform %}
+
+          {% if shop.checkout.guest_login %}
+            <div class="account-login__guest">
+              <h3 class="account-login__guest-title">{{ 'customer.login_page.guest_title' | t }}</h3>
+              {% form 'guest_login' %}
+                <button class="account-login__button account-login__button--ghost" type="submit">
+                  {{ 'customer.login_page.guest_continue' | t }}
+                </button>
+              {% endform %}
+            </div>
+          {% endif %}
+
+          <div class="account-login__footer">
+            <span>New here?</span>
+            <a class="account-login__text-link" href="{{ routes.account_register_url }}">Create an account</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .account-login {
+    background:
+      radial-gradient(circle at top left, rgba(198, 176, 102, 0.12), transparent 30%),
+      linear-gradient(180deg, rgba(254, 243, 221, 0.65) 0%, rgba(255, 252, 246, 1) 24%, rgba(255, 252, 246, 1) 100%);
+    color: var(--color-green-coal);
+    padding: 40px 20px 88px;
+  }
+
+  .account-login__shell {
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  .account-login__panel {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.95fr) minmax(0, 1.05fr);
+    gap: 28px;
+    align-items: start;
+  }
+
+  .account-login__intro,
+  .account-login__card {
+    border: 1px solid var(--color-stroke-dark-15);
+    background: rgba(255, 252, 246, 0.96);
+    padding: 32px;
+  }
+
+  .account-login__eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.65;
+  }
+
+  .account-login__title,
+  .account-login__card-title,
+  .account-login__guest-title {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    line-height: 0.95;
+    margin: 10px 0 0;
+  }
+
+  .account-login__title {
+    font-size: clamp(40px, 6vw, 68px);
+    max-width: 8ch;
+  }
+
+  .account-login__copy,
+  .account-login__helper {
+    margin-top: 14px;
+    line-height: 1.6;
+    color: rgba(var(--color-green-coal-rgb), 0.78);
+  }
+
+  .account-login__forms {
+    display: grid;
+    gap: 24px;
+  }
+
+  .account-login__card--recover {
+    display: none;
+  }
+
+  #recover:target {
+    display: block;
+  }
+
+  #recover:target + .account-login__card--login {
+    display: none;
+  }
+
+  .account-login__form {
+    display: grid;
+    gap: 16px;
+    margin-top: 22px;
+  }
+
+  .account-login__field {
+    display: grid;
+    gap: 8px;
+  }
+
+  .account-login__field span {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.64;
+  }
+
+  .account-login__field input {
+    min-height: 52px;
+    border: 1px solid var(--color-stroke-dark-15);
+    background: #fff;
+    padding: 14px 16px;
+    color: var(--color-green-coal);
+  }
+
+  .account-login__actions,
+  .account-login__footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 18px;
+    align-items: center;
+  }
+
+  .account-login__guest {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--color-stroke-dark-15);
+  }
+
+  .account-login__guest-title {
+    font-size: 28px;
+  }
+
+  .account-login__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 12px 18px;
+    border: 1px solid var(--color-stroke-dark-40);
+    transition: background-color var(--transition), color var(--transition), border-color var(--transition);
+  }
+
+  .account-login__button--primary {
+    background: var(--color-burgundy);
+    border-color: var(--color-burgundy);
+    color: var(--color-cream);
+  }
+
+  .account-login__button--primary:hover {
+    background: var(--color-teracotta);
+    border-color: var(--color-teracotta);
+    color: var(--color-cream);
+  }
+
+  .account-login__button--ghost {
+    background: transparent;
+    color: inherit;
+  }
+
+  .account-login__button--ghost:hover {
+    background: rgba(49, 9, 18, 0.05);
+  }
+
+  .account-login__text-link {
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+  }
+
+  .account-login__message {
+    padding: 14px 16px;
+    border: 1px solid currentColor;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .account-login__message--error {
+    color: var(--color-burgundy);
+    background: rgba(197, 94, 49, 0.08);
+  }
+
+  .account-login__message--success {
+    color: var(--color-olive);
+    background: rgba(198, 176, 102, 0.12);
+  }
+
+  @media screen and (max-width: 989px) {
+    .account-login {
+      padding-inline: 16px;
+      padding-bottom: 64px;
+    }
+
+    .account-login__panel {
+      grid-template-columns: 1fr;
+    }
+
+    .account-login__intro,
+    .account-login__card {
+      padding: 24px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Main login",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ]
+}
+{% endschema %}

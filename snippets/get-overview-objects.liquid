@@ -1,0 +1,184 @@
+{%- liquid
+  assign overview_type = collection.metafields.custom.overview_object.value
+-%}
+
+<div class="plp-container overview">
+  {%- if overview_type != blank -%}
+
+    {%- if collection.title != blank -%}
+      <h1 class="overview__title">{{ collection.title }}</h1>
+    {%- endif -%}
+    {%- if collection.metafields.custom.short_text != blank -%}
+      <div class="overview__intro">{{ collection.metafields.custom.short_text | metafield_tag }}</div>
+    {%- endif -%}
+
+    {% paginate shop.metaobjects[overview_type].values by 250 %}
+
+      <div class="overview-grid">
+        {%- for object in shop.metaobjects[overview_type].values -%}
+          <article class="overview-card">
+            {%- if object.country.value or object.region.value -%}
+              <div class="overview-card__meta">
+                {%- if object.country.value -%}
+                  {%- if object.country.value.collection.value.url != blank -%}
+                    <a href="{{ object.country.value.collection.value.url }}">{{ object.country.value.name.value }}</a>
+                  {%- else -%}
+                    <span>{{ object.country.value.name.value }}</span>
+                  {%- endif -%}
+                {%- endif -%}
+                {%- if object.region.value -%}
+                  {%- if object.region.value.collection.value.url != blank -%}
+                    <a href="{{ object.region.value.collection.value.url }}">{{ object.region.value.name.value }}</a>
+                  {%- else -%}
+                    <span>{{ object.region.value.name.value }}</span>
+                  {%- endif -%}
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+
+            <h2 class="overview-card__title">{{ object.name.value }}</h2>
+
+            {%- if object.short_top_text != blank -%}
+              <p class="overview-card__text">{{ object.short_top_text | metafield_tag | strip_html | strip_newlines | strip | truncate: 160 }}</p>
+            {%- endif -%}
+
+            {%- if object.vendor_collection.value -%}
+              <a class="overview-card__link" href="{{ object.vendor_collection.value.url }}">
+                Læs om vinproducenten {{ object.name.value }}
+              </a>
+            {%- elsif object.collection.value -%}
+              <a class="overview-card__link" href="{{ object.collection.value.url }}">Læs mere</a>
+            {%- endif -%}
+          </article>
+        {%- endfor -%}
+      </div>
+
+      {% if paginate.pages > 1 %}
+        <nav class="pagination">
+          {{ paginate | default_pagination }}
+        </nav>
+      {% endif %}
+
+    {% endpaginate %}
+
+  {%- else -%}
+    <p>Ingen 'custom.overview_object' metafelt sat på denne collection.</p>
+  {%- endif -%}
+</div>
+
+<style>
+  .overview {
+    padding-top: 40px;
+    padding-bottom: 64px;
+  }
+
+  .overview__title {
+    font-family: 'Gascogne', serif;
+    font-weight: 250;
+    font-size: 32px;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
+  .overview__intro {
+    max-width: 669px;
+    margin: 0 auto 40px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.3;
+  }
+
+  .overview-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-top: 8px;
+  }
+
+  .overview-card {
+    display: flex;
+    flex-direction: column;
+    padding: 28px;
+    background-color: var(--color-cream);
+    border: 1px solid var(--color-stroke-dark-15);
+    border-radius: 4px;
+    transition: box-shadow var(--transition), transform var(--transition);
+  }
+
+  .overview-card:hover {
+    box-shadow: 0 8px 24px var(--color-stroke-dark-15);
+    transform: translateY(-2px);
+  }
+
+  .overview .overview-grid .overview-card__title {
+    font-family: 'Gascogne', serif;
+    font-weight: 300;
+    font-size: 22px;
+    color: var(--color-burgundy);
+    margin: 0 0 8px;
+  }
+
+  .overview-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 400;
+    margin-bottom: 8px;
+  }
+
+  .overview-card__meta a,
+  .overview-card__meta span {
+    color: var(--color-olive);
+  }
+
+  .overview-card__meta a:hover {
+    text-decoration: underline;
+  }
+
+  .overview-card__meta > *:not(:last-child)::after {
+    content: '·';
+    margin-left: 8px;
+    color: var(--color-stroke-dark-40);
+  }
+
+  .overview-card__text {
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.45;
+    margin: 0 0 20px;
+  }
+
+  .overview-card__link {
+    margin-top: auto;
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 20px;
+    border: 1px solid var(--color-stroke-dark-15);
+    border-radius: 2px;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--color-burgundy);
+  }
+
+  .overview-card__link:hover {
+    background-color: var(--color-green-coal);
+    color: var(--color-cream);
+    transition: all var(--transition);
+  }
+
+  @media (min-width: 768px) {
+    .overview-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .overview-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

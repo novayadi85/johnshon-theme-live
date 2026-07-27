@@ -1,0 +1,11 @@
+{%- comment -%}
+  Single source of truth for the free-shipping / minimum-order threshold.
+  Rendered (and captured) wherever the amount appears in copy, so it only
+  needs to be maintained here. Can later be made country/currency-aware.
+
+  Usage:
+    {%- capture fs_threshold -%}{% render 'jkl-shipping-threshold' %}{%- endcapture -%}
+    {%- assign fs_threshold = fs_threshold | strip -%}
+    {{ 'jkl.shop_minimum' | t: amount: fs_threshold }}
+{%- endcomment -%}
+{{- '499 kr.' -}}

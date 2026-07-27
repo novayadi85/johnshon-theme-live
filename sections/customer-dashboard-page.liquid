@@ -1,0 +1,809 @@
+<section class="customer-dashboard">
+  <div class="customer-dashboard__shell">
+    <div class="customer-dashboard__layout">
+      <aside class="customer-dashboard__sidebar">
+        <h1 class="customer-dashboard__greeting">Hi {{ customer.first_name | default: 'there' }}</h1>
+        {%- if page.title != blank -%}
+          <p class="customer-dashboard__sidebar-title">{{ page.title }}</p>
+        {%- endif -%}
+
+        <nav class="customer-dashboard__nav" aria-label="Customer dashboard">
+          <button class="customer-dashboard__nav-link is-active" type="button" data-dashboard-nav="dashboard">
+            <span>Dashboard</span>
+            <span aria-hidden="true">&rsaquo;</span>
+          </button>
+          <button class="customer-dashboard__nav-link" type="button" data-dashboard-nav="orders">
+            <span>Orders</span>
+            <span aria-hidden="true">&rsaquo;</span>
+          </button>
+          <button class="customer-dashboard__nav-link" type="button" data-dashboard-nav="account">
+            <span>Account</span>
+            <span aria-hidden="true">&rsaquo;</span>
+          </button>
+          <button class="customer-dashboard__nav-link" type="button" data-dashboard-nav="address">
+            <span>Address</span>
+            <span aria-hidden="true">&rsaquo;</span>
+          </button>
+          <button class="customer-dashboard__nav-link" type="button" data-dashboard-nav="payment">
+            <span>Payment Methods</span>
+            <span aria-hidden="true">&rsaquo;</span>
+          </button>
+          <button class="customer-dashboard__nav-link" type="button" data-dashboard-nav="club">
+            <span>JKL Club points</span>
+            <span aria-hidden="true">&rsaquo;</span>
+          </button>
+          <a class="customer-dashboard__nav-link customer-dashboard__nav-link--logout" href="#">
+            <span>Log out</span>
+            <span aria-hidden="true">&rsaquo;</span>
+          </a>
+        </nav>
+      </aside>
+
+      <div class="customer-dashboard__main">
+        <div class="customer-dashboard__view is-active" data-dashboard-view="dashboard">
+          <div class="customer-dashboard__top">
+            <article class="customer-dashboard__panel customer-dashboard__panel--favorites">
+              <div class="customer-dashboard__panel-heading">
+                <h2>Reorder favorites</h2>
+              </div>
+
+              <div class="customer-dashboard__favorites-list">
+                <article class="customer-dashboard__favorite">
+                  <div class="customer-dashboard__favorite-copy">
+                    <h3 class="customer-dashboard__favorite-title">Chateau Poujeaux 2016</h3>
+                  </div>
+                  <a class="customer-dashboard__favorite-link" href="#" aria-label="View Chateau Poujeaux 2016">&rarr;</a>
+                </article>
+
+                <article class="customer-dashboard__favorite">
+                  <div class="customer-dashboard__favorite-copy">
+                    <h3 class="customer-dashboard__favorite-title">Chateau Tour Saint Christophe 2022</h3>
+                  </div>
+                  <a class="customer-dashboard__favorite-link" href="#" aria-label="View Chateau Tour Saint Christophe 2022">
+                    &rarr;
+                  </a>
+                </article>
+
+                <article class="customer-dashboard__favorite">
+                  <div class="customer-dashboard__favorite-copy">
+                    <h3 class="customer-dashboard__favorite-title">Chateau Poujeaux 2019</h3>
+                  </div>
+                  <a class="customer-dashboard__favorite-link" href="#" aria-label="View Chateau Poujeaux 2019">&rarr;</a>
+                </article>
+              </div>
+            </article>
+
+            <div class="customer-dashboard__stats">
+              <article class="customer-dashboard__stat-card customer-dashboard__stat-card--gold">
+                <p class="customer-dashboard__stat-value">6429</p>
+                <div class="customer-dashboard__stat-meta">
+                  <span>Club points</span>
+                  <span>JKL Club &rsaquo;</span>
+                </div>
+              </article>
+
+              <article class="customer-dashboard__stat-card customer-dashboard__stat-card--wine">
+                <p class="customer-dashboard__stat-value">27</p>
+                <div class="customer-dashboard__stat-meta">
+                  <span>Bottles</span>
+                  <span>Your wine cellar &rsaquo;</span>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          <article class="customer-dashboard__panel customer-dashboard__panel--orders">
+            <div class="customer-dashboard__panel-heading">
+              <h2>Lastest orders</h2>
+              <button class="customer-dashboard__text-button" type="button" data-dashboard-nav="orders">View all</button>
+            </div>
+
+            <div class="customer-dashboard__orders-table">
+              <table role="table">
+                <tbody>
+                  <tr>
+                    <td data-label="Order">
+                      <button class="customer-dashboard__text-button" type="button" data-order-open="#12347">#12347</button>
+                    </td>
+                    <td data-label="Date">6 August, 2025</td>
+                    <td data-label="Paid">Paid</td>
+                    <td data-label="Fulfillment">Unfulfilled</td>
+                    <td data-label="Total">500,00 kr.</td>
+                  </tr>
+                  <tr>
+                    <td data-label="Order">
+                      <button class="customer-dashboard__text-button" type="button" data-order-open="#12348">#12348</button>
+                    </td>
+                    <td data-label="Date">7 August, 2025</td>
+                    <td data-label="Paid">Pending</td>
+                    <td data-label="Fulfillment">Fulfilled</td>
+                    <td data-label="Total">950,00 kr.</td>
+                  </tr>
+                  <tr>
+                    <td data-label="Order">
+                      <button class="customer-dashboard__text-button" type="button" data-order-open="#12349">#12349</button>
+                    </td>
+                    <td data-label="Date">8 August, 2025</td>
+                    <td data-label="Paid">Paid</td>
+                    <td data-label="Fulfillment">Pending</td>
+                    <td data-label="Total">1.500,00 kr.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          {% if page.content != blank %}
+            <article class="customer-dashboard__panel customer-dashboard__panel--content rte">
+              {{ page.content }}
+            </article>
+          {% endif %}
+        </div>
+
+        <div class="customer-dashboard__view" data-dashboard-view="orders">
+          <article class="customer-dashboard__panel">
+            <div class="customer-dashboard__panel-heading">
+              <h2>Orders</h2>
+            </div>
+
+            <div class="customer-dashboard__orders-table">
+              <table role="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Order</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Paid</th>
+                    <th scope="col">Fulfillment</th>
+                    <th scope="col">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td data-label="Order">
+                      <button class="customer-dashboard__text-button" type="button" data-order-open="#12346">#12346</button>
+                    </td>
+                    <td data-label="Date">5 August, 2025</td>
+                    <td data-label="Paid">Paid</td>
+                    <td data-label="Fulfillment">Unfulfilled</td>
+                    <td data-label="Total">1.200,00 kr.</td>
+                  </tr>
+                  <tr>
+                    <td data-label="Order">
+                      <button class="customer-dashboard__text-button" type="button" data-order-open="#12347">#12347</button>
+                    </td>
+                    <td data-label="Date">6 August, 2025</td>
+                    <td data-label="Paid">Paid</td>
+                    <td data-label="Fulfillment">Unfulfilled</td>
+                    <td data-label="Total">500,00 kr.</td>
+                  </tr>
+                  <tr>
+                    <td data-label="Order">
+                      <button class="customer-dashboard__text-button" type="button" data-order-open="#12348">#12348</button>
+                    </td>
+                    <td data-label="Date">7 August, 2025</td>
+                    <td data-label="Paid">Pending</td>
+                    <td data-label="Fulfillment">Fulfilled</td>
+                    <td data-label="Total">950,00 kr.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+
+        <div class="customer-dashboard__view" data-dashboard-view="account">
+          <article class="customer-dashboard__panel customer-dashboard__panel--placeholder">
+            <div class="customer-dashboard__panel-heading">
+              <h2>Account</h2>
+            </div>
+            <p>This area can hold customer profile details in the next step.</p>
+          </article>
+        </div>
+
+        <div class="customer-dashboard__view" data-dashboard-view="address">
+          <article class="customer-dashboard__panel customer-dashboard__panel--placeholder">
+            <div class="customer-dashboard__panel-heading">
+              <h2>Address</h2>
+            </div>
+            <p>This area can hold saved addresses and default shipping information.</p>
+          </article>
+        </div>
+
+        <div class="customer-dashboard__view" data-dashboard-view="payment">
+          <article class="customer-dashboard__panel customer-dashboard__panel--placeholder">
+            <div class="customer-dashboard__panel-heading">
+              <h2>Payment Methods</h2>
+            </div>
+            <p>This area can hold customer payment methods when we connect real data.</p>
+          </article>
+        </div>
+
+        <div class="customer-dashboard__view" data-dashboard-view="club">
+          <article class="customer-dashboard__panel customer-dashboard__panel--placeholder">
+            <div class="customer-dashboard__panel-heading">
+              <h2>JKL Club points</h2>
+            </div>
+            <p>This area can hold member points, benefits, and loyalty activity.</p>
+          </article>
+        </div>
+
+        <div class="customer-dashboard__view" data-dashboard-view="order-detail">
+          <article class="customer-dashboard__panel customer-dashboard__panel--order-detail">
+            <div class="customer-dashboard__order-header">
+              <div class="customer-dashboard__order-headline">
+                <button class="customer-dashboard__back" type="button" data-dashboard-nav="orders" aria-label="Back to orders">
+                  &lsaquo;
+                </button>
+                <h2>Order <span>#12346</span></h2>
+              </div>
+              <p class="customer-dashboard__order-date">Placed on 5 August, 2025 at 10:09</p>
+            </div>
+
+            <div class="customer-dashboard__orders-table customer-dashboard__orders-table--detail">
+              <table role="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Product</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td data-label="Product">Chateau Poujeaux 2016</td>
+                    <td data-label="Price">700 kr.</td>
+                    <td data-label="Quantity">1</td>
+                    <td data-label="Total">700 kr.</td>
+                  </tr>
+                  <tr>
+                    <td data-label="Product">Chateau Tour Saint Christophe 2022</td>
+                    <td data-label="Price">500 kr.</td>
+                    <td data-label="Quantity">1</td>
+                    <td data-label="Total">500 kr.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="customer-dashboard__summary">
+              <div class="customer-dashboard__summary-row">
+                <span>Subtotal</span>
+                <span>1.200,00 kr.</span>
+              </div>
+              <div class="customer-dashboard__summary-row">
+                <span>Discount</span>
+                <span>60,00 kr.</span>
+              </div>
+              <div class="customer-dashboard__summary-row">
+                <span>Shipping</span>
+                <span>Free</span>
+              </div>
+              <div class="customer-dashboard__summary-row customer-dashboard__summary-row--total">
+                <span>Total</span>
+                <span>1.200,00 kr.</span>
+              </div>
+            </div>
+          </article>
+
+          <div class="customer-dashboard__detail-grid">
+            <article class="customer-dashboard__panel customer-dashboard__panel--address-card">
+              <h3 class="customer-dashboard__detail-title">Billing Address</h3>
+              <div class="customer-dashboard__detail-card">
+                <p>Payment status: Paid</p>
+                <p>Michael Jurgensen</p>
+                <p>Fontenay 42</p>
+                <p>Wunsiedel 95621</p>
+                <p>Germany</p>
+              </div>
+            </article>
+
+            <article class="customer-dashboard__panel customer-dashboard__panel--address-card">
+              <h3 class="customer-dashboard__detail-title">Shipping Address</h3>
+              <div class="customer-dashboard__detail-card">
+                <p>Fulfilment Status: Unfulfilled</p>
+                <p>Michael Jurgensen</p>
+                <p>Fontenay 42</p>
+                <p>Wunsiedel 95621</p>
+                <p>Germany</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (() => {
+    const section = document.currentScript?.previousElementSibling;
+    if (!(section instanceof HTMLElement)) return;
+
+    const navButtons = section.querySelectorAll('[data-dashboard-nav]');
+    const views = section.querySelectorAll('[data-dashboard-view]');
+    const orderOpenButtons = section.querySelectorAll('[data-order-open]');
+
+    const setView = (viewName) => {
+      views.forEach((view) => {
+        view.classList.toggle('is-active', view.getAttribute('data-dashboard-view') === viewName);
+      });
+
+      navButtons.forEach((button) => {
+        if (!(button instanceof HTMLElement)) return;
+        button.classList.toggle('is-active', button.getAttribute('data-dashboard-nav') === viewName);
+      });
+    };
+
+    navButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const viewName = button.getAttribute('data-dashboard-nav');
+        if (!viewName || !section.querySelector(`[data-dashboard-view="${viewName}"]`)) return;
+        setView(viewName);
+      });
+    });
+
+    orderOpenButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        setView('order-detail');
+      });
+    });
+  })();
+</script>
+
+{% stylesheet %}
+  .customer-dashboard {
+    background: var(--color-cream);
+    color: var(--color-green-coal);
+    padding: 48px 40px 72px;
+  }
+
+  .customer-dashboard__shell {
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+
+  .customer-dashboard__layout {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+  }
+
+  .customer-dashboard__sidebar {
+    display: grid;
+    gap: 20px;
+  }
+
+  .customer-dashboard__greeting,
+  .customer-dashboard__panel-heading h2,
+  .customer-dashboard__stat-value {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    letter-spacing: 0;
+    margin: 0;
+  }
+
+  .customer-dashboard__greeting {
+    font-size: clamp(34px, 4vw, 52px);
+    line-height: 0.95;
+  }
+
+  .customer-dashboard__sidebar-title,
+  .customer-dashboard__eyebrow {
+    margin: 0;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(var(--color-green-coal-rgb), 0.55);
+  }
+
+  .customer-dashboard__nav {
+    border: 1px solid var(--color-stroke-dark-15);
+    border-radius: 2px;
+    background: rgba(var(--color-green-coal-rgb), 0.02);
+  }
+
+  .customer-dashboard__nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--color-stroke-dark-15);
+    font-size: 13px;
+    background: transparent;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    color: currentColor;
+    text-decoration: none;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color var(--transition);
+  }
+
+  .customer-dashboard__nav-link:last-child {
+    border-bottom: none;
+  }
+
+  .customer-dashboard__nav-link:hover,
+  .customer-dashboard__nav-link.is-active {
+    background: rgba(var(--color-green-coal-rgb), 0.06);
+  }
+
+  .customer-dashboard__nav-link--logout {
+    color: var(--color-teracotta);
+  }
+
+  .customer-dashboard__main {
+    position: relative;
+  }
+
+  .customer-dashboard__view {
+    display: none;
+    gap: 14px;
+  }
+
+  .customer-dashboard__view.is-active {
+    display: grid;
+  }
+
+  .customer-dashboard__top {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(240px, 0.75fr);
+    gap: 10px;
+  }
+
+  .customer-dashboard__stats {
+    display: grid;
+    gap: 10px;
+  }
+
+  .customer-dashboard__panel {
+    border: 1px solid var(--color-stroke-dark-15);
+    border-radius: 2px;
+    background: var(--color-background);
+    padding: 18px;
+  }
+
+  .customer-dashboard__panel--placeholder p {
+    margin: 0;
+    max-width: 48ch;
+    font-size: 14px;
+    color: rgba(var(--color-green-coal-rgb), 0.66);
+  }
+
+  .customer-dashboard__panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+
+  .customer-dashboard__panel-heading h2 {
+    font-size: 31px;
+    line-height: 1;
+  }
+
+  .customer-dashboard__favorites-list {
+    display: grid;
+    gap: 0;
+  }
+
+  .customer-dashboard__favorite {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: center;
+    padding: 14px 0;
+    border-top: 1px solid var(--color-stroke-dark-15);
+  }
+
+  .customer-dashboard__favorite:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .customer-dashboard__favorite:last-child {
+    padding-bottom: 0;
+  }
+
+  .customer-dashboard__favorite-title {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  .customer-dashboard__favorite-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border: 1px solid var(--color-stroke-dark-40);
+    border-radius: 2px;
+    color: currentColor;
+    text-decoration: none;
+    font-size: 10px;
+    line-height: 1;
+  }
+
+  .customer-dashboard__stat-card {
+    min-height: 123px;
+    padding: 16px 18px;
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: var(--color-cream);
+  }
+
+  .customer-dashboard__stat-card--gold {
+    background: var(--color-green-coal);
+  }
+
+  .customer-dashboard__stat-card--wine {
+    background: var(--color-burgundy);
+  }
+
+  .customer-dashboard__stat-value {
+    font-size: clamp(42px, 5vw, 56px);
+    line-height: 0.95;
+  }
+
+  .customer-dashboard__stat-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 10px;
+    opacity: 0.8;
+  }
+
+  .customer-dashboard__orders-table {
+    overflow-x: auto;
+  }
+
+  .customer-dashboard__orders-table table {
+    width: 100%;
+    margin: 0;
+    background: transparent;
+    border-collapse: collapse;
+  }
+
+  .customer-dashboard__orders-table th,
+  .customer-dashboard__orders-table td {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--color-stroke-dark-15);
+    font-size: 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .customer-dashboard__orders-table th:last-child,
+  .customer-dashboard__orders-table td:last-child {
+    text-align: right;
+  }
+
+  .customer-dashboard__orders-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .customer-dashboard__text-link {
+    color: currentColor;
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+  }
+
+  .customer-dashboard__text-button {
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: currentColor;
+    font: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+    cursor: pointer;
+  }
+
+  .customer-dashboard__order-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: start;
+    margin-bottom: 16px;
+  }
+
+  .customer-dashboard__order-headline {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .customer-dashboard__order-headline h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    font-size: 32px;
+    line-height: 1;
+  }
+
+  .customer-dashboard__order-headline h2 span {
+    display: inline-flex;
+    padding: 5px 8px;
+    border: 1px solid var(--color-stroke-dark-15);
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 12px;
+  }
+
+  .customer-dashboard__order-date {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: rgba(var(--color-green-coal-rgb), 0.62);
+  }
+
+  .customer-dashboard__back {
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: currentColor;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .customer-dashboard__orders-table--detail tbody tr:last-child td {
+    border-bottom: 1px solid var(--color-stroke-dark-15);
+  }
+
+  .customer-dashboard__summary {
+    margin-top: 0;
+    margin-left: auto;
+    width: min(100%, 360px);
+    padding: 16px 18px 0;
+    background: var(--color-burgundy-grey-2);
+    border: 1px solid var(--color-stroke-dark-15);
+    border-top: none;
+    border-radius: 2px;
+  }
+
+  .customer-dashboard__summary-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 6px 0;
+    font-size: 12px;
+  }
+
+  .customer-dashboard__summary-row--total {
+    margin-top: 8px;
+    padding-top: 12px;
+    border-top: 1px solid var(--color-stroke-dark-15);
+    font-size: 14px;
+  }
+
+  .customer-dashboard__detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .customer-dashboard__detail-title {
+    margin: 0 0 12px;
+    font-size: 28px;
+    font-family: var(--font-serif);
+    font-weight: 400;
+    line-height: 1;
+  }
+
+  .customer-dashboard__detail-card {
+    border: 1px solid var(--color-stroke-dark-15);
+    border-radius: 2px;
+    background: var(--color-background);
+    padding: 14px;
+  }
+
+  .customer-dashboard__detail-card p {
+    margin: 0 0 6px;
+    font-size: 13px;
+  }
+
+  .customer-dashboard__detail-card p:last-child {
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 768px) {
+    .customer-dashboard {
+      padding: 32px 16px 56px;
+    }
+
+    .customer-dashboard__layout,
+    .customer-dashboard__top,
+    .customer-dashboard__detail-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .customer-dashboard__panel-heading {
+      align-items: start;
+      flex-direction: column;
+      margin-bottom: 14px;
+    }
+
+    .customer-dashboard__panel-heading h2 {
+      font-size: 26px;
+    }
+
+    .customer-dashboard__order-header {
+      flex-direction: column;
+    }
+
+    .customer-dashboard__order-headline h2 {
+      font-size: 28px;
+    }
+
+    .customer-dashboard__detail-title {
+      font-size: 24px;
+    }
+
+    .customer-dashboard__orders-table table,
+    .customer-dashboard__orders-table thead,
+    .customer-dashboard__orders-table tbody,
+    .customer-dashboard__orders-table th,
+    .customer-dashboard__orders-table td,
+    .customer-dashboard__orders-table tr {
+      display: block;
+    }
+
+    .customer-dashboard__orders-table thead {
+      display: none;
+    }
+
+    .customer-dashboard__orders-table tbody tr {
+      padding: 16px 0;
+      border-bottom: 1px solid var(--color-stroke-dark-15);
+    }
+
+    .customer-dashboard__orders-table tbody tr:first-child {
+      padding-top: 0;
+    }
+
+    .customer-dashboard__orders-table tbody tr:last-child {
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .customer-dashboard__orders-table tbody td {
+      border: none;
+      padding: 0 0 10px;
+      text-align: left;
+    }
+
+    .customer-dashboard__orders-table tbody td:last-child {
+      padding-bottom: 0;
+      text-align: left;
+    }
+
+    .customer-dashboard__orders-table tbody td::before {
+      content: attr(data-label);
+      display: block;
+      margin-bottom: 4px;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(var(--color-green-coal-rgb), 0.52);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Customer dashboard page",
+  "settings": []
+}
+{% endschema %}

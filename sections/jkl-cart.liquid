@@ -1,0 +1,212 @@
+<main class="cart-page">
+  <h1 class="cart-page-title">Cart</h1>
+  <div class="cart-page-divider"></div>
+
+  {%- if cart.item_count > 0 -%}
+    <div class="cart-page-content">
+      <div class="cart-page-items">
+        {%- for item in cart.items -%}
+          <div class="cart-item">
+            {%- if item.image -%}
+              <img class="cart-item-image" src="{{ item.image | image_url: width: 200 }}" alt="{{ item.title }}">
+            {%- endif -%}
+            <div class="cart-item-details">
+              <p class="cart-item-winery">{{ item.vendor }}</p>
+              <p class="cart-item-name">{{ item.product.title }}</p>
+              {%- if item.variant.title != 'Default Title' -%}
+                <span class="cart-item-badge">{{ item.variant.title }}</span>
+              {%- endif -%}
+              <div class="cart-item-bottom">
+                <div class="cart-item-qty-row">
+                  <div class="cart-item-qty">
+                    <span class="cart-qty-btn" data-key="{{ item.key }}" data-qty="{{ item.quantity | minus: 1 }}">-</span>
+                    <span>{{ item.quantity }}</span>
+                    <span class="cart-qty-btn" data-key="{{ item.key }}" data-qty="{{ item.quantity | plus: 1 }}">+</span>
+                  </div>
+                  <button class="cart-item-remove cart-qty-btn" data-key="{{ item.key }}" data-qty="0" aria-label="Remove item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14zM10 11v6M14 11v6"></path></svg>
+                  </button>
+                </div>
+                {%- liquid
+                  # Old price = single-bottle price from the prices JSON (none_member, qty 1)
+                  # × line quantity. Falls back to original_line_price if the JSON is missing.
+                  assign single_unit_price = nil
+                  assign prices_data = item.variant.metafields.custom.prices.value
+                  assign country_data = prices_data[localization.country.iso_code]
+                  if country_data
+                    for tier in country_data.none_member
+                      if tier.qty == 1
+                        assign single_unit_price = tier.price
+                      endif
+                    endfor
+                  endif
+                  assign old_line_price = nil
+                  if single_unit_price != nil
+                    assign old_line_price = single_unit_price | times: item.quantity | times: 100 | round
+                  else
+                    assign old_line_price = item.original_line_price
+                  endif
+                -%}
+                <div class="cart-item-prices">
+                  {%- if old_line_price > item.final_line_price -%}
+                    <span class="cart-item-old-price">{% render 'jkl-money', cents: old_line_price %}</span>
+                  {%- endif -%}
+                  <span class="cart-item-price">{% render 'jkl-money', cents: item.final_line_price %}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+
+      <div class="cart-page-sidebar">
+        <div class="cart-page-shipping">
+          {%- assign free_shipping_threshold = 49900 -%}
+          {%- assign remaining = free_shipping_threshold | minus: cart.total_price -%}
+          {%- if remaining > 0 -%}
+            <p class="cart-shipping-text">Spend an additional <strong>{% render 'jkl-money', cents: remaining %}</strong> and get free shipping</p>
+          {%- else -%}
+            <p class="cart-shipping-text"><strong>You have free shipping!</strong></p>
+          {%- endif -%}
+          <div class="cart-shipping-bar">
+            {%- assign fill_pct = cart.total_price | times: 100 | divided_by: free_shipping_threshold -%}
+            {%- if fill_pct > 100 %}{% assign fill_pct = 100 %}{% endif -%}
+            <div class="cart-shipping-bar-fill" style="width: {{ fill_pct }}%"></div>
+          </div>
+        </div>
+
+        <div class="cart-page-club-banner">
+          <p class="cart-club-save">Save an additional 180kr. <a href="#" class="cart-club-join">Join JKL Club</a></p>
+          <p class="cart-club-login">Allerede medlem? <a href="#">Login</a> og få din rabat</p>
+        </div>
+
+        {%- liquid
+          # Subtotal = sum of single-bottle price (prices JSON, none_member qty 1) × quantity
+          # across all lines. Discount = that subtotal minus the actual cart total.
+          # Falls back to original_line_price for any line missing JSON data.
+          assign json_subtotal = 0
+          for item in cart.items
+            assign item_single = nil
+            assign pdata = item.variant.metafields.custom.prices.value
+            assign cdata = pdata[localization.country.iso_code]
+            if cdata
+              for tier in cdata.none_member
+                if tier.qty == 1
+                  assign item_single = tier.price
+                endif
+              endfor
+            endif
+            if item_single != nil
+              assign line_old = item_single | times: item.quantity | times: 100 | round
+            else
+              assign line_old = item.original_line_price
+            endif
+            assign json_subtotal = json_subtotal | plus: line_old
+          endfor
+          assign json_discount = json_subtotal | minus: cart.total_price
+        -%}
+        <div class="cart-page-summary">
+          <div class="cart-summary-row">
+            <span>Subtotal Prices</span>
+            <span>{% render 'jkl-money', cents: json_subtotal %}</span>
+          </div>
+          {%- if json_discount > 0 -%}
+            <div class="cart-summary-row">
+              <span>Discount</span>
+              <span>-{% render 'jkl-money', cents: json_discount %}</span>
+            </div>
+          {%- endif -%}
+          <div class="cart-summary-divider"></div>
+          <div class="cart-summary-row cart-summary-total">
+            <span>Total</span>
+            <span class="cart-total-price">{% render 'jkl-money', cents: cart.total_price %}</span>
+          </div>
+          {%- assign terms_url = shop.terms_of_service.url | default: '/policies/terms-of-service' -%}
+          {%- capture terms_link -%}<a href="{{ terms_url }}" class="cart-terms-link" target="_blank" rel="noopener">{{ 'jkl.terms_link' | t }}</a>{%- endcapture -%}
+          {%- assign terms_text = 'jkl.accept_terms' | t: link: '||LINK||' -%}
+          <label class="cart-terms" id="cartPageTerms">
+            <input type="checkbox" class="cart-terms-checkbox" id="cartPageTermsCheckbox">
+            <span class="cart-terms-label">{{ terms_text | replace: '||LINK||', terms_link }}</span>
+          </label>
+          <a href="/checkout" class="cart-page-checkout" id="cartPageCheckoutBtn">Checkout</a>
+        </div>
+      </div>
+    </div>
+  {%- else -%}
+    <p>Your cart is empty.</p>
+  {%- endif -%}
+</main>
+
+<script>
+  (function () {
+    var wrap = document.getElementById('cartPageTerms');
+    var box = document.getElementById('cartPageTermsCheckbox');
+    var btn = document.getElementById('cartPageCheckoutBtn');
+    if (!wrap || !box || !btn) return;
+
+    btn.addEventListener('click', function (e) {
+      if (!box.checked) {
+        e.preventDefault();
+        wrap.classList.add('terms-error');
+      }
+    });
+    box.addEventListener('change', function () {
+      if (box.checked) wrap.classList.remove('terms-error');
+    });
+    // Link sits inside the <label>; let it just open the policy page, not toggle the box.
+    var link = wrap.querySelector('.cart-terms-link');
+    if (link) link.addEventListener('click', function (e) { e.stopPropagation(); });
+  })();
+
+  // Quantity +/- and remove on the cart page. The buttons carry the line item key
+  // (the drawer's handler only reacts to data-line, so it ignores these). POST to
+  // /cart/change.js and re-render this section via the Section Rendering API — no
+  // full page reload — so the JSON-based prices recompute server-side in Liquid.
+  (function () {
+    var SECTION_ID = {{ section.id | json }};
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('.cart-page-items .cart-qty-btn');
+      if (!btn || btn.dataset.key == null) return;
+      e.preventDefault();
+      var key = btn.dataset.key;
+      var qty = parseInt(btn.dataset.qty, 10);
+      btn.style.pointerEvents = 'none';
+      var row = btn.closest('.cart-item');
+      if (row) row.style.opacity = '0.5';
+      fetch('/cart/change.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ id: key, quantity: qty, sections: SECTION_ID, sections_url: window.location.pathname })
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (cart) {
+          var html = cart.sections && cart.sections[SECTION_ID];
+          var fresh = html ? new DOMParser().parseFromString(html, 'text/html').querySelector('.cart-page') : null;
+          var current = document.querySelector('.cart-page');
+          if (fresh && current) {
+            current.replaceWith(fresh);
+          } else {
+            window.location.reload();
+            return;
+          }
+          // Keep the header cart price/strikethrough in sync (separate section).
+          if (typeof window.jklUpdateCartTotals === 'function') window.jklUpdateCartTotals(cart);
+        })
+        .catch(function (err) {
+          console.error('Cart update failed:', err);
+          btn.style.pointerEvents = '';
+          if (row) row.style.opacity = '';
+        });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "JKL Cart",
+  "tag": "div",
+  "class": "jkl-cart-section",
+  "settings": [],
+  "presets": []
+}
+{% endschema %}

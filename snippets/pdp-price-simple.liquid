@@ -1,0 +1,174 @@
+{%- comment -%}
+  Renders a simple price selector with up to 3 boxes:
+  - Single (always)
+  - Bundle (if show_volume_price)
+  - Member (if show_member_price)
+
+  Required: variant
+{%- endcomment -%}
+{%- liquid
+  assign show_volume_price = variant.metafields.custom.show_volume_price.value
+  assign show_member_price = variant.metafields.custom.show_member_price.value
+
+  assign prices_data = variant.metafields.custom.prices.value
+  assign country_code = localization.country.iso_code
+  assign country_data = prices_data[country_code]
+  assign currency = country_data.currency
+
+  assign single_tier = nil
+  assign bundle_tier = nil
+  for tier in country_data.none_member
+    if tier.qty == 1
+      assign single_tier = tier
+    else
+      assign bundle_tier = tier
+    endif
+  endfor
+
+  assign member_single_tier = nil
+  assign member_bundle_tier = nil
+  for tier in country_data.member.bronze
+    if tier.qty == 1
+      assign member_single_tier = tier
+    else
+      assign member_bundle_tier = tier
+    endif
+  endfor
+
+  if show_volume_price
+    assign qty_bulk_size = bundle_tier.qty
+    assign member_tier = member_bundle_tier
+  else
+    assign qty_bulk_size = 1
+    assign member_tier = member_single_tier
+  endif
+
+  assign single_price = single_tier.price
+
+  capture bundle_save_percent_raw
+    if show_volume_price
+      assign bundle_diff = single_price | minus: bundle_tier.price | times: 100.0
+      echo bundle_diff | divided_by: single_price
+    endif
+  endcapture
+  capture bundle_save_percent
+    render 'round-percent', percent: bundle_save_percent_raw
+  endcapture
+
+  capture member_save_percent_raw
+    if show_member_price
+      assign member_diff = single_price | minus: member_tier.price | times: 100.0
+      echo member_diff | divided_by: single_price
+    endif
+  endcapture
+  capture member_save_percent
+    render 'round-percent', percent: member_save_percent_raw
+  endcapture
+-%}
+
+<div class="pdp-price-simple">
+  <label class="pdp-price-simple-option">
+    <input type="radio" name="pdp-price-option" value="single" data-qty="1"{% unless show_volume_price or show_member_price %} checked{% endunless %}>
+    <div class="pdp-price-simple-content">
+      <div class="pdp-price-simple-header">
+        <span class="pdp-price-simple-title">{{ 'jkl.buy_single' | t }}</span>
+      </div>
+      <div class="pdp-price-simple-price">
+        <span class="pdp-price-simple-amount">{% render 'format-amount', amount: single_price %}</span>
+        <span class="pdp-price-simple-unit">{{ 'jkl.per_bottle' | t }}</span>
+      </div>
+    </div>
+  </label>
+
+  {%- if show_volume_price -%}
+    <label class="pdp-price-simple-option">
+      <input type="radio" name="pdp-price-option" value="bundle" data-qty="{{ qty_bulk_size }}"{% unless show_member_price %} checked{% endunless %}>
+      <div class="pdp-price-simple-content">
+        <div class="pdp-price-simple-header">
+          <span class="pdp-price-simple-title">{{ 'jkl.buy_case' | t: count: qty_bulk_size }}</span>
+          <span class="save-badge">{{ 'jkl.save_percent' | t: percent: bundle_save_percent }}</span>
+        </div>
+        <div class="pdp-price-simple-price">
+          <span class="pdp-price-simple-amount">{% render 'format-amount', amount: bundle_tier.price %}</span>
+          <span class="pdp-price-simple-unit">{{ 'jkl.per_bottle' | t }}</span>
+        </div>
+      </div>
+    </label>
+  {%- endif -%}
+
+  {%- if show_member_price -%}
+    <label class="pdp-price-simple-option">
+      <input type="radio" name="pdp-price-option" value="member" data-qty="{{ qty_bulk_size }}" checked>
+      <div class="pdp-price-simple-content">
+        <div class="pdp-price-simple-header">
+          <span class="pdp-price-simple-title">{{ 'jkl.club_price' | t }}</span>
+          <span class="save-badge">{{ 'jkl.save_percent' | t: percent: member_save_percent }}</span>
+        </div>
+        <div class="pdp-price-simple-price">
+          <span class="pdp-price-simple-amount">{% render 'format-amount', amount: member_tier.price %}</span>
+          <span class="pdp-price-simple-unit">{{ 'jkl.per_bottle' | t }}</span>
+        </div>
+      </div>
+    </label>
+  {%- endif -%}
+</div>
+
+<script>
+  (function () {
+    if (window.__pdpQtyBoxSyncInit) return;
+    window.__pdpQtyBoxSyncInit = true;
+
+    // Select the BEST price the quantity qualifies for. Among the options
+    // whose threshold (data-qty) is <= the quantity, pick the cheapest by rank
+    // (member/club > bundle > single). Below the bundle threshold only "single"
+    // qualifies; at/above it the club price (best) wins.
+    // Elements are queried at event time (document delegation) because this
+    // snippet renders before the quantity field exists in the DOM.
+    var PRICE_RANK = { single: 1, bundle: 2, member: 3 };
+
+    function selectForQty() {
+      var qtyInput = document.querySelector('.pdp-qty-value');
+      var radios = document.querySelectorAll('input[name="pdp-price-option"]');
+      if (!qtyInput || !radios.length) return;
+
+      var qty = parseInt(qtyInput.value, 10) || 1;
+      var best = null;
+      var bestRank = -1;
+      radios.forEach(function (r) {
+        var rq = parseInt(r.getAttribute('data-qty'), 10) || 1;
+        if (qty < rq) return;
+        var rank = PRICE_RANK[r.value] || 0;
+        if (rank > bestRank) {
+          bestRank = rank;
+          best = r;
+        }
+      });
+      if (best && !best.checked) best.checked = true;
+    }
+
+    // Typing in the quantity field.
+    document.addEventListener('input', function (e) {
+      if (e.target.classList && e.target.classList.contains('pdp-qty-value')) selectForQty();
+    });
+    document.addEventListener('change', function (e) {
+      if (e.target.classList && e.target.classList.contains('pdp-qty-value')) selectForQty();
+    });
+
+    // The +/- buttons set the value via inline onclick (no event fired), so
+    // re-check after their click has run (bubble phase = after inline handler).
+    document.addEventListener('click', function (e) {
+      if (e.target.closest && e.target.closest('.pdp-qty-btn')) selectForQty();
+    });
+
+    // Clicking a price box → set the quantity to that box's threshold.
+    // Setting .value via JS doesn't fire input/change, so this won't loop back
+    // into selectForQty (which would otherwise override the chosen box).
+    document.addEventListener('change', function (e) {
+      var t = e.target;
+      if (!t || t.name !== 'pdp-price-option') return;
+      var qtyInput = document.querySelector('.pdp-qty-value');
+      var q = parseInt(t.getAttribute('data-qty'), 10);
+      if (qtyInput && q) qtyInput.value = q;
+    });
+  })();
+</script>

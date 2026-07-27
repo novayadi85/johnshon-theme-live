@@ -1,0 +1,28 @@
+{%- liquid
+  assign collection_type = collection.metafields.custom.type.value | downcase
+  assign country_obj = collection.metafields.custom.country.value
+  assign region_obj = collection.metafields.custom.region.value
+  assign subregion_obj = collection.metafields.custom.subregion.value
+-%}
+
+{%- if collection_type == 'vendor' -%}
+  <div class="breadcrumbs">
+    <a href="/collections/all">{{ 'jkl.all_wines' | t }}</a> /
+    <a href="/collections/vinproducenter">{{ 'jkl.wine_producers' | t }}</a> /
+    {{ collection.title }}
+  </div>
+{%- else -%}
+  <div class="breadcrumbs">
+    <a href="/collections/all">{{ 'jkl.all_wines' | t }}</a> /
+    {%- if country_obj != blank %}
+      <a href="{{ country_obj.collection.value.url }}">{{ country_obj.name.value }}</a> /
+    {%- endif %}
+    {%- if region_obj != blank %}
+      <a href="{{ region_obj.collection.value.url }}">{{ region_obj.name.value }}</a> /
+    {%- endif %}
+    {%- if subregion_obj != blank %}
+      <a href="{{ subregion_obj.collection.value.url }}">{{ subregion_obj.name.value }}</a> /
+    {%- endif %}
+    {{ collection.title }}
+  </div>
+{%- endif -%}

@@ -1,0 +1,27 @@
+{%- comment -%}
+  Compact horizontal result card for the live search overlay — laid out to the
+  Figma spec (node 1:2006, 440×103): image (30px @ left 24), info block @ left 78
+  (width 362) with vendor (Helvetica 12) + title (Helvetica Medium 14), and a
+  price column (Gascogne 24).
+  Price is a simple money value for now — the full bundle/save price block
+  (`pdp-price`) is a follow-up.
+{%- endcomment -%}
+{%- assign variant = product.selected_or_first_available_variant -%}
+{%- assign winery = product.metafields.custom.vendor.value.name | default: product.vendor -%}
+<a href="{{ product.url }}" class="jkl-search-card">
+  <span class="jkl-search-card__img">
+    <img
+      src="{{ variant.image | default: product.featured_image | image_url: width: 90 }}"
+      alt="{{ product.title | escape }}"
+      loading="lazy">
+  </span>
+  <span class="jkl-search-card__info">
+    <span class="jkl-search-card__text">
+      {%- if winery != blank -%}
+        <span class="jkl-search-card__winery">{{ winery }}</span>
+      {%- endif -%}
+      <span class="jkl-search-card__title">{{ variant.option1 }} {{ product.title }}</span>
+    </span>
+    <span class="jkl-search-card__price">{{ product.price | money }}</span>
+  </span>
+</a>

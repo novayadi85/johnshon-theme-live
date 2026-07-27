@@ -1,0 +1,520 @@
+<style>
+  /* Toggle empty vs filled cart state (kept in sync by JS via .is-empty) */
+  .cart-drawer.is-empty .cart-drawer-filled { display: none; }
+  .cart-drawer:not(.is-empty) .cart-drawer-empty { display: none; }
+</style>
+
+<div class="cart-drawer-overlay" id="cartDrawerOverlay">
+  <div class="cart-backdrop overlay"></div>
+  <div class="cart-panels">
+    <aside class="cart-upsell-panel" id="cartUpsellPanel">
+      <div class="cart-upsell-header">
+        <h3 class="cart-upsell-title">Upsell products</h3>
+      </div>
+      <div class="cart-upsell-content">
+        {%- comment -%}
+          Static upsell content placeholder. Replace with dynamic logic as needed.
+        {%- endcomment -%}
+         {% for item in (1..5) %}
+        <article class="upsell-item">
+          <div class="upsell-item-top">
+            <div class="upsell-item-info">
+              <p class="upsell-item-winery">Château Poujeaux</p>
+              <p class="upsell-item-name">Château Poujeaux 2016</p>
+            </div>
+            
+          </div>
+
+          <div class="upsell-item-price-wrapper">
+            <button class="upsell-item-add" aria-label="Add to cart">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 7h12l1 15H5L6 7z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                <path d="M9 7V5a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.5" fill="none"/>
+              </svg>
+            </button>
+            <div class="upsell-item-price-block">
+              <span class="upsell-item-price">559,95</span>
+              <span class="upsell-item-price-label">Per bottle</span>
+            </div>
+          </div>
+          <div class="upsell-item-image-wrap">
+            <span class="upsell-item-ribbon">Member price — Member price — Member price</span>
+            <div class="upsell-item-bottle-shadow"></div>
+            <img src="https://cdn.shopify.com/s/files/1/0945/9030/4603/files/Bourgogne_Blanc_Chateau_Fuisse.webp?v=1761735898" alt="Château Poujeaux 2016" class="upsell-item-image">
+          </div>
+        </article>
+        {% endfor  %}
+      </div>
+    </aside>
+
+    <aside class="cart-drawer{% if cart.item_count == 0 %} is-empty{% endif %}">
+    <div class="cart-drawer-header">
+      <h2 class="cart-drawer-title">Cart</h2>
+      <button class="cart-drawer-close" id="cartDrawerClose" aria-label="Close cart"></button>
+    </div>
+
+    {%- comment -%} Empty state — always in the DOM, shown via .is-empty on .cart-drawer {%- endcomment -%}
+    <div class="cart-drawer-empty" id="cartDrawerEmpty">
+      <h1 class="cart-empty-text">Your cart is empty</h1>
+      <div class="cart-empty-actions">
+        <button class="btn btn-primary" onclick="window.location.href='{{ routes.collections_url }}'">Explore the shop</button>
+      </div>
+    </div>
+
+    {%- comment -%} Filled state — always in the DOM so AJAX can populate it {%- endcomment -%}
+    <div class="cart-drawer-filled" id="cartDrawerFilled">
+    <div class="cart-drawer-shipping">
+      {%- assign free_shipping_threshold = 49900 -%}
+      {%- assign remaining = free_shipping_threshold | minus: cart.total_price -%}
+      {%- if remaining > 0 -%}
+        <p class="cart-shipping-text">Spend an additional <strong>{% render 'jkl-money', cents: remaining %}</strong> and get free shipping</p>
+      {%- else -%}
+        <p class="cart-shipping-text"><strong>You have free shipping!</strong></p>
+      {%- endif -%}
+      <div class="cart-shipping-bar">
+        {%- assign fill_pct = cart.total_price | times: 100 | divided_by: free_shipping_threshold -%}
+        {%- if fill_pct > 100 %}{% assign fill_pct = 100 %}{% endif -%}
+        <div class="cart-shipping-bar-fill" style="width: {{ fill_pct }}%"></div>
+      </div>
+    </div>
+    <div class="cart-drawer-items" id="cartDrawerItems">
+      {%- for item in cart.items -%}
+        <div class="cart-item">
+          <img class="cart-item-image" src="{{ item.image | image_url: width: 100 }}" alt="{{ item.title }}">
+          <div class="cart-item-details">
+            <p class="cart-item-winery">{{ item.vendor }}</p>
+            <p class="cart-item-name">{{ item.product.title }}</p>
+            {%- if item.variant.title != 'Default Title' -%}
+              <span class="cart-item-badge">{{ item.variant.title }}</span>
+            {%- endif -%}
+            <div class="cart-item-bottom">
+              <div class="cart-item-qty-row">
+                <div class="cart-item-qty">
+                  <span class="cart-qty-btn" data-line="{{ forloop.index }}" data-qty="{{ item.quantity | minus: 1 }}">-</span>
+                  <span>{{ item.quantity }}</span>
+                  <span class="cart-qty-btn" data-line="{{ forloop.index }}" data-qty="{{ item.quantity | plus: 1 }}">+</span>
+                </div>
+                <button class="cart-item-remove cart-qty-btn" data-line="{{ forloop.index }}" data-qty="0" aria-label="Remove item">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14zM10 11v6M14 11v6"></path></svg>
+                </button>
+              </div>
+              {%- liquid
+                # Old price = single-bottle price from the prices JSON (none_member, qty 1)
+                # × line quantity. Falls back to original_line_price if the JSON is missing.
+                # The JS re-render (buildItemHTML) mirrors this via the window.__jklUnit map.
+                assign single_unit_price = nil
+                assign prices_data = item.variant.metafields.custom.prices.value
+                assign country_data = prices_data[localization.country.iso_code]
+                if country_data
+                  for tier in country_data.none_member
+                    if tier.qty == 1
+                      assign single_unit_price = tier.price
+                    endif
+                  endfor
+                endif
+                assign old_line_price = nil
+                if single_unit_price != nil
+                  assign old_line_price = single_unit_price | times: item.quantity | times: 100 | round
+                else
+                  assign old_line_price = item.original_line_price
+                endif
+              -%}
+              <div class="cart-item-prices">
+                {%- if old_line_price > item.final_line_price -%}
+                  <span class="cart-item-old-price">{% render 'jkl-money', cents: old_line_price %}</span>
+                {%- endif -%}
+                <span class="cart-item-price">{% render 'jkl-money', cents: item.final_line_price %}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+    <div class="cart-drawer-club-banner">
+      <p class="cart-club-save">Save an additional 180kr. <a href="#" class="cart-club-join">Join JKL Club</a></p>
+      <p class="cart-club-login">Allerede medlem? <a href="#">Login</a> og få din rabat</p>
+    </div>
+    {%- liquid
+      # Subtotal = sum of single-bottle price (prices JSON, none_member qty 1) × quantity
+      # across all lines. Discount = that subtotal minus the actual cart total.
+      # Falls back to original_line_price for any line missing JSON data.
+      # The JS updateCartTotals() recomputes the same subtotal/discount from
+      # window.__jklUnit on live cart changes, so they stay in sync.
+      assign json_subtotal = 0
+      for item in cart.items
+        assign item_single = nil
+        assign pdata = item.variant.metafields.custom.prices.value
+        assign cdata = pdata[localization.country.iso_code]
+        if cdata
+          for tier in cdata.none_member
+            if tier.qty == 1
+              assign item_single = tier.price
+            endif
+          endfor
+        endif
+        if item_single != nil
+          assign line_old = item_single | times: item.quantity | times: 100 | round
+        else
+          assign line_old = item.original_line_price
+        endif
+        assign json_subtotal = json_subtotal | plus: line_old
+      endfor
+      assign json_discount = json_subtotal | minus: cart.total_price
+    -%}
+    <div class="cart-drawer-bottom">
+      <div class="cart-summary-row">
+        <span>Subtotal</span>
+        <span id="cartSubtotal">{% render 'jkl-money', cents: json_subtotal %}</span>
+      </div>
+      <div class="cart-summary-row" id="cartDiscountRow"{% unless json_discount > 0 %} style="display:none"{% endunless %}>
+        <span>Discount</span>
+        <span id="cartDiscount">-{% render 'jkl-money', cents: json_discount %}</span>
+      </div>
+      <div class="cart-summary-divider"></div>
+      <div class="cart-summary-row cart-summary-total">
+        <span>Total</span>
+        <span class="cart-total-price" id="cartTotal">{% render 'jkl-money', cents: cart.total_price %}</span>
+      </div>
+      {%- assign terms_url = shop.terms_of_service.url | default: '/policies/terms-of-service' -%}
+      {%- capture terms_link -%}<a href="{{ terms_url }}" class="cart-terms-link" target="_blank" rel="noopener">{{ 'jkl.terms_link' | t }}</a>{%- endcapture -%}
+      {%- assign terms_text = 'jkl.accept_terms' | t: link: '||LINK||' -%}
+      <label class="cart-terms" id="cartTerms">
+        <input type="checkbox" class="cart-terms-checkbox" id="cartTermsCheckbox">
+        <span class="cart-terms-label">{{ terms_text | replace: '||LINK||', terms_link }}</span>
+      </label>
+      <div class="cart-drawer-buttons">
+        <a href="{{ routes.cart_url }}" class="cart-btn-outline">See Cart</a>
+        <a href="/checkout" class="btn btn-primary" id="cartCheckoutBtn">Checkout</a>
+      </div>
+    </div>
+    </div>{%- comment -%} /.cart-drawer-filled {%- endcomment -%}
+    </aside>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var overlay = document.getElementById('cartDrawerOverlay');
+    var closeBtn = document.getElementById('cartDrawerClose');
+    var backdrop = overlay.querySelector('.cart-backdrop');
+    var cartBtns = document.querySelectorAll('.cart-button');
+
+    function openCart() {
+      overlay.classList.add('cart-open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeCart() {
+      var cartDrawer = document.querySelector('.cart-drawer');
+      var cartUpsell = document.querySelector('.cart-upsell-panel');
+
+      if (cartDrawer) cartDrawer.classList.add('closing');
+      if (cartUpsell) cartUpsell.classList.add('closing');
+
+      // Wait for animations to complete (1s duration)
+      setTimeout(function() {
+        overlay.classList.remove('cart-open');
+        document.body.style.overflow = '';
+        if (cartDrawer) cartDrawer.classList.remove('closing');
+        if (cartUpsell) cartUpsell.classList.remove('closing');
+      }, 1000);
+    }
+
+    cartBtns.forEach(function (cartBtn) {
+      cartBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        openCart();
+      });
+    });
+
+    closeBtn.addEventListener('click', closeCart);
+
+    // Require terms acceptance before checkout. On click, if the box is unchecked,
+    // block navigation and turn the checkbox + label red until it's ticked.
+    var termsWrap = document.getElementById('cartTerms');
+    var termsBox = document.getElementById('cartTermsCheckbox');
+    var checkoutBtn = document.getElementById('cartCheckoutBtn');
+
+    if (checkoutBtn && termsBox && termsWrap) {
+      checkoutBtn.addEventListener('click', function (e) {
+        if (!termsBox.checked) {
+          e.preventDefault();
+          termsWrap.classList.add('terms-error');
+        }
+      });
+      termsBox.addEventListener('change', function () {
+        if (termsBox.checked) termsWrap.classList.remove('terms-error');
+      });
+      // The terms link sits inside the <label>, so a click would otherwise toggle
+      // the checkbox — let it just open the policy page instead.
+      var termsLink = termsWrap.querySelector('.cart-terms-link');
+      if (termsLink) termsLink.addEventListener('click', function (e) { e.stopPropagation(); });
+    }
+
+    // Close when clicking outside the drawer panel (backdrop or empty overlay area).
+    overlay.addEventListener('click', function (e) {
+      if (!e.target.closest('.cart-drawer')) {
+        closeCart();
+      }
+    });
+
+    // Close on Escape while the drawer is open.
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && overlay.classList.contains('cart-open')) {
+        closeCart();
+      }
+    });
+
+    // Re-render the drawer line items from a /cart.js payload, then refresh totals.
+    function renderDrawer(cart) {
+      var drawer = document.querySelector('.cart-drawer');
+      var isEmpty = !cart.items || cart.items.length === 0;
+
+      // Toggle empty vs filled state so the drawer flips correctly even when it
+      // loaded empty (both states are always present in the DOM now).
+      if (drawer) drawer.classList.toggle('is-empty', isEmpty);
+
+      var itemsEl = document.getElementById('cartDrawerItems');
+      if (itemsEl) {
+        if (isEmpty) {
+          itemsEl.innerHTML = '';
+        } else {
+          itemsEl.innerHTML = cart.items.map(function (item, i) {
+            return buildItemHTML(item, i + 1);
+          }).join('');
+        }
+      }
+      updateCartTotals(cart);
+    }
+
+    function buildItemHTML(item, line) {
+      var image = item.image
+        ? '<img class="cart-item-image" src="' + item.image + '" alt="' + escapeHtml(item.product_title) + '">'
+        : '';
+      var badge = item.variant_title
+        ? '<span class="cart-item-badge">' + escapeHtml(item.variant_title) + '</span>'
+        : '';
+      var unit = __jklUnit[item.variant_id];
+      var oldLineVal = (typeof unit === 'number') ? unit * item.quantity : item.original_line_price;
+      var oldPrice = oldLineVal > item.final_line_price
+        ? '<span class="cart-item-old-price">' + formatMoney(oldLineVal, item.currency) + '</span>'
+        : '';
+
+      return '' +
+        '<div class="cart-item">' +
+          image +
+          '<div class="cart-item-details">' +
+            '<p class="cart-item-winery">' + escapeHtml(item.vendor || '') + '</p>' +
+            '<p class="cart-item-name">' + escapeHtml(item.product_title) + '</p>' +
+            badge +
+            '<div class="cart-item-bottom">' +
+              '<div class="cart-item-qty-row">' +
+                '<div class="cart-item-qty">' +
+                  '<span class="cart-qty-btn" data-line="' + line + '" data-qty="' + (item.quantity - 1) + '">-</span>' +
+                  '<span>' + item.quantity + '</span>' +
+                  '<span class="cart-qty-btn" data-line="' + line + '" data-qty="' + (item.quantity + 1) + '">+</span>' +
+                '</div>' +
+                '<button class="cart-item-remove cart-qty-btn" data-line="' + line + '" data-qty="0" aria-label="Remove item">' +
+                  '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14zM10 11v6M14 11v6"></path></svg>' +
+                '</button>' +
+              '</div>' +
+              '<div class="cart-item-prices">' +
+                oldPrice +
+                '<span class="cart-item-price">' + formatMoney(item.final_line_price, item.currency) + '</span>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+    }
+
+    function escapeHtml(str) {
+      return String(str == null ? '' : str)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Fetch the latest cart, re-render the drawer and open it.
+    function refreshAndOpenCart() {
+      fetch('/cart.js', { headers: { 'Accept': 'application/json' } })
+        .then(function (res) { return res.json(); })
+        .then(function (cart) {
+          renderDrawer(cart);
+          openCart();
+        })
+        .catch(function (err) {
+          console.error('Could not refresh cart drawer:', err);
+        });
+    }
+
+    // AJAX add-to-cart for native (non product-form-component) /cart/add forms, e.g. the PDP form.
+    document.addEventListener('submit', function (e) {
+      var form = e.target;
+      var action = form.getAttribute && form.getAttribute('action');
+      if (!action || action.indexOf('/cart/add') === -1) return;
+      // Shopify's product-form-component handles its own submit + dispatches cart:update (handled below).
+      if (form.closest('product-form-component')) return;
+
+      e.preventDefault();
+
+      var formData = new FormData(form);
+
+      fetch('/cart/add.js', { method: 'POST', body: formData })
+        .then(function (res) {
+          if (!res.ok) throw new Error('Add to cart failed: ' + res.status);
+          return res.json();
+        })
+        .then(function () {
+          refreshAndOpenCart();
+        })
+        .catch(function (err) {
+          console.error('Add to cart failed:', err);
+        });
+    });
+
+    // Shopify product-form-component (e.g. quick-add) dispatches a bubbling cart:update on add.
+    document.addEventListener('cart:update', function (e) {
+      var data = e.detail && e.detail.data;
+      if (!data || data.didError || data.source !== 'product-form-component') return;
+      refreshAndOpenCart();
+    });
+
+    // Expose helpers globally
+    window.jklOpenCart = openCart;
+    window.openCartDrawer = openCart;
+    window.refreshAndOpenCart = refreshAndOpenCart;
+    window.jklUpdateCartTotals = updateCartTotals;
+
+    // Cart quantity buttons (works in both drawer and cart page)
+    var defaultCurrency = {{ cart.currency.iso_code | json }};
+
+    // Number formatting must follow the money's MARKET, not the storefront
+    // language — otherwise a Swedish (SEK) cart shows "3,836.56" instead of
+    // "3 836,56" when the UI language is English. These locales all use a space
+    // thousands-separator + comma decimal, matching the shop's Liquid money output.
+    var MONEY_LOCALE = { SEK: 'sv-SE', DKK: 'da-DK', NOK: 'nb-NO', EUR: 'fi-FI' };
+
+    // Single-bottle unit price (in cents) per variant, from the prices JSON
+    // (none_member, qty 1). Lets the JS re-render show the same "old price",
+    // subtotal and discount as the Liquid render. Covers every variant currently
+    // in the cart, so quantity changes and removals stay correct. Newly added
+    // variants (not yet present at page load) fall back to original_line_price
+    // until the next full page load.
+    var __jklUnit = window.__jklUnit || {};
+    {%- for item in cart.items -%}
+      {%- liquid
+        assign isp = nil
+        assign pdata = item.variant.metafields.custom.prices.value
+        assign cdata = pdata[localization.country.iso_code]
+        if cdata
+          for tier in cdata.none_member
+            if tier.qty == 1
+              assign isp = tier.price
+            endif
+          endfor
+        endif
+      -%}
+      {%- if isp != nil %}__jklUnit[{{ item.variant.id }}] = {{ isp | times: 100 | round }};{% endif -%}
+    {%- endfor -%}
+    window.__jklUnit = __jklUnit;
+
+    function formatMoney(cents, currency) {
+      currency = currency || defaultCurrency;
+      var locale = MONEY_LOCALE[currency] || 'sv-SE';
+      try {
+        return new Intl.NumberFormat(locale, {
+          style: 'currency',
+          currency: currency
+        }).format(cents / 100);
+      } catch (e) {
+        return (cents / 100).toFixed(2) + ' ' + currency;
+      }
+    }
+
+    function updateCartTotals(cart) {
+      var headerPrice = document.querySelector('.cart-button .current-price');
+      if (headerPrice) headerPrice.textContent = formatMoney(cart.total_price, cart.currency);
+
+      document.querySelectorAll('.cart-total-price').forEach(function(el) {
+        el.textContent = formatMoney(cart.total_price, cart.currency);
+      });
+      var jsonSubtotal = 0;
+      (cart.items || []).forEach(function(it) {
+        var u = __jklUnit[it.variant_id];
+        jsonSubtotal += (typeof u === 'number') ? u * it.quantity : it.original_line_price;
+      });
+      document.querySelectorAll('#cartSubtotal').forEach(function(el) {
+        el.textContent = formatMoney(jsonSubtotal, cart.currency);
+      });
+      // Header strikethrough = same JSON subtotal (shown only when above the total)
+      document.querySelectorAll('#cartHeaderOriginal').forEach(function(el) {
+        if (jsonSubtotal > cart.total_price) {
+          el.style.display = '';
+          el.textContent = formatMoney(jsonSubtotal, cart.currency);
+        } else {
+          el.style.display = 'none';
+        }
+      });
+      var jsonDiscount = jsonSubtotal - cart.total_price;
+      document.querySelectorAll('#cartDiscountRow').forEach(function(row) {
+        var val = row.querySelector('#cartDiscount');
+        if (jsonDiscount > 0) {
+          row.style.display = '';
+          if (val) val.textContent = '-' + formatMoney(jsonDiscount, cart.currency);
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      var shippingTexts = document.querySelectorAll('.cart-shipping-text');
+      var threshold = 49900;
+      var remaining = threshold - cart.total_price;
+      shippingTexts.forEach(function(el) {
+        if (remaining > 0) {
+          el.innerHTML = 'Spend an additional <strong>' + formatMoney(remaining, cart.currency) + '</strong> and get free shipping';
+        } else {
+          el.innerHTML = '<strong>You have free shipping!</strong>';
+        }
+      });
+
+      document.querySelectorAll('.cart-shipping-bar-fill').forEach(function(el) {
+        el.style.width = Math.min(100, cart.total_price * 100 / threshold) + '%';
+      });
+    }
+
+    var changeUrl = (window.Theme && Theme.routes && Theme.routes.cart_change_url) || '/cart/change.js';
+
+    document.addEventListener('click', function(e) {
+      var btn = e.target.closest('.cart-qty-btn');
+      if (!btn || btn.dataset.line == null) return;
+
+      var line = parseInt(btn.dataset.line);
+      var qty = parseInt(btn.dataset.qty);
+      var item = btn.closest('.cart-item');
+
+      // Optimistic UI feedback while the request is in flight.
+      if (qty <= 0 && item) {
+        item.style.opacity = '0.3';
+      } else if (item) {
+        var qtyDisplay = item.querySelector('.cart-item-qty span:nth-child(2)');
+        if (qtyDisplay) qtyDisplay.textContent = qty;
+      }
+      btn.style.pointerEvents = 'none';
+
+      fetch(changeUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ line: line, quantity: qty })
+      })
+      .then(function(res) { return res.json(); })
+      .then(function(cart) {
+        // Re-render from the authoritative cart so line indices stay correct
+        // after removals; renderDrawer also flips to the empty state at 0 items.
+        renderDrawer(cart);
+      })
+      .catch(function(err) {
+        console.error('Could not update cart:', err);
+        if (item) item.style.opacity = '';
+        btn.style.pointerEvents = '';
+      });
+    });
+  })();
+</script>

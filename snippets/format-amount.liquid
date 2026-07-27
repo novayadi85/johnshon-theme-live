@@ -1,0 +1,23 @@
+{%- comment -%}
+  Formats a price amount:
+  - 656     → "656"
+  - 656.00  → "656"
+  - 656.7   → "656,70"
+  - 656.05  → "656,05"
+
+  Usage: {% render 'format-amount', amount: my_value %}
+{%- endcomment -%}
+{%- liquid
+  if amount != nil
+    assign cents = amount | times: 100 | round
+    assign whole = cents | divided_by: 100
+    assign fraction = cents | modulo: 100
+    if fraction == 0
+      echo whole
+    elsif fraction < 10
+      echo whole | append: ',0' | append: fraction
+    else
+      echo whole | append: ',' | append: fraction
+    endif
+  endif
+-%}

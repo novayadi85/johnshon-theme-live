@@ -1,0 +1,77 @@
+<footer class="site-footer bg-burgundy color-cream">
+  <div class="footer-logo">
+    <p class="footer-address">JKL II ApS<br>Strandvejen 60<br>2900 Hellerup</p>
+    <p class="footer-address">+45 4011 9760<br>db@jklfinewines.com</p>
+    <p class="footer-address">CVR-nr.: 45966380</p>
+    <img src="{{ 'jkl-logo-footer.png' | asset_url }}" alt="JKL">
+  </div>
+  <div class="footer-columns">
+    <div class="footer-column">
+      <h3 class="column-title">Customer service</h3>
+      <ul class="column-links">
+        <li><a href="#">Contact</a></li>
+        <li><a href="#">Shipping and delivery</a></li>
+        <li><a href="#">Returns and refunds</a></li>
+        <li><a href="#">Help and FAQ</a></li>
+        <li><a href="#">Track your order</a></li>
+      </ul>
+    </div>
+    <div class="footer-column">
+      <h3 class="column-title">Membership</h3>
+      <ul class="column-links">
+        <li><a href="#">Join JKL Club</a></li>
+        <li><a href="#">Member benefits</a></li>
+        <li><a href="#">Log in</a></li>
+      </ul>
+    </div>
+    <div class="footer-column">
+      <h3 class="column-title">JKL Fine Wines</h3>
+      <ul class="column-links">
+        <li><a href="#">Our story</a></li>
+        <li><a href="#">Our producers</a></li>
+        <li><a href="#">Sourcing and curation</a></li>
+        <li><a href="#">Sustainability</a></li>
+        <li><a href="#">Press and partnerships</a></li>
+      </ul>
+    </div>
+    <div class="footer-column">
+      <h3 class="column-title">Follow us</h3>
+      <ul class="column-links">
+        <li><a href="#">Instagram</a></li>
+        <li><a href="#">Newsletter</a></li>
+        <li><a href="#">LinkedIn</a></li>
+        <li><a href="#">YouTube</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-contact">
+    <p>+45 7010 2020</p>
+    <p>Monday-thursday 9:00-16:00</p>
+    <p>Friday 9:00-15:00</p>
+  </div>
+  <div class="footer-bottom">
+    <div class="payment-icons">
+      <img src="{{ 'jkl-payment-apple.png' | asset_url }}" alt="Apple Pay">
+      <img src="{{ 'jkl-payment-google.png' | asset_url }}" alt="Google Pay">
+      <img src="{{ 'jkl-payment-mastercard.png' | asset_url }}" alt="Mastercard">
+      <img src="{{ 'jkl-payment-visa.png' | asset_url }}" alt="Visa">
+      <img src="{{ 'jkl-payment-paypal.png' | asset_url }}" alt="PayPal">
+      <img src="{{ 'jkl-payment-shop.png' | asset_url }}" alt="Shop Pay">
+      <img src="{{ 'jkl-payment-klarna.png' | asset_url }}" alt="Klarna">
+    </div>
+    <ul class="footer-legal">
+      <li><a href="{{ shop.terms_of_service.url }}">{{ 'jkl.terms_and_conditions' | t }}</a></li>
+      <li><a href="{{ shop.privacy_policy.url }}">{{ 'jkl.privacy_policy' | t }}</a></li>
+    </ul>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "JKL Footer",
+  "tag": "section",
+  "class": "section-wrapper",
+  "settings": [],
+  "presets": []
+}
+{% endschema %}

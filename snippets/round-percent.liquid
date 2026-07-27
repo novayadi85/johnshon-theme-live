@@ -1,0 +1,24 @@
+{%- comment -%}
+  Rounds a percent value:
+  - Floor by default
+  - If the decimal part is >= 0.95, round up
+
+  Examples:
+    19.94 → 19
+    19.95 → 20
+    19.99 → 20
+
+  Usage:
+    {%- capture my_pct -%}{% render 'round-percent', percent: my_value %}{%- endcapture -%}
+{%- endcomment -%}
+{%- liquid
+  if percent != nil
+    assign percent_floor = percent | floor
+    assign percent_remainder = percent | minus: percent_floor
+    if percent_remainder >= 0.95
+      echo percent_floor | plus: 1
+    else
+      echo percent_floor
+    endif
+  endif
+-%}

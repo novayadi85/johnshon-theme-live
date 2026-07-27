@@ -1,0 +1,964 @@
+{{ 'jkl-base.css' | asset_url | stylesheet_tag }}
+{{ 'jkl-nav-menu.css' | asset_url | stylesheet_tag }}
+{{ 'jkl-app-menu.css' | asset_url | stylesheet_tag }}
+{{ 'jkl-mobile-header.css' | asset_url | stylesheet_tag }}
+{{ 'jkl-search.css' | asset_url | stylesheet_tag }}
+{{ 'cart-drawer-global.js' | asset_url | script_tag }}
+
+<!-- === Mobile Site Header (≤768px only) === -->
+{%- capture fs_threshold -%}{% render 'jkl-shipping-threshold' %}{%- endcapture -%}
+{%- assign fs_threshold = fs_threshold | strip -%}
+{%- capture mobile_announcement_groups -%}
+  <div class="mobile-info">
+    <span class="label">{{ 'jkl.members_free_shipping' | t }}</span>
+    <span class="value">{{ 'jkl.shop_minimum' | t: amount: fs_threshold }}</span>
+  </div>
+  <div class="mobile-info">
+    <span class="label">{{ 'jkl.fast_delivery' | t }}</span>
+    <span class="value">{{ 'jkl.fast_delivery_desc' | t }}</span>
+  </div>
+  <div class="mobile-info">
+    <span class="label">CLUB JKL</span>
+    <span class="value">{{ 'jkl.free_membership' | t }}</span>
+  </div>
+  <div class="mobile-info">
+    <span class="label">{{ 'jkl.contact_us' | t }}</span>
+    <span class="value">+45 7010 2020</span>
+  </div>
+{%- endcapture -%}
+
+<div class="mobile-site-header" id="mobileSiteHeader">
+  <div class="mobile-announcement">
+    <div class="mobile-announcement-track">
+      <div class="mobile-announcement-line">{{ mobile_announcement_groups }}</div>
+      <div class="mobile-announcement-line" aria-hidden="true">{{ mobile_announcement_groups }}</div>
+    </div>
+  </div>
+
+  <div class="mobile-header-main">
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" type="button" aria-label="Menu" data-menu-trigger>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M18 6L6 18" stroke="#1A1914" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M6 6L18 18" stroke="#1A1914" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+
+      <!-- Alternate hamburger icon -->
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 8H21" stroke="#1A1914" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M3 16H21" stroke="#1A1914" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+
+
+    </button>
+
+    <a href="/" class="mobile-logo" aria-label="Home">
+      <img src="//jklfinewines.se/cdn/shop/t/10/assets/jkl-logo-full.png?v=163956150214678753371773179936" alt="JKL Fine Wines">
+    </a>
+
+    <a href="{{ routes.cart_url }}" class="cart-button mobile-cart" aria-label="Cart">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M15.0001 8C15.0001 9.65685 13.657 11 12.0001 11C10.3432 11 9.0001 9.65685 9.0001 8M4.69316 4.6895L3.81437 19.1895C3.77952 19.7645 4.23646 20.25 4.81254 20.25H19.1877C19.7637 20.25 20.2207 19.7645 20.1858 19.1895L19.307 4.6895C19.275 4.16168 18.8377 3.75 18.3089 3.75H5.69133C5.16253 3.75 4.72515 4.16168 4.69316 4.6895Z" stroke="#1A1914" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+
+    </a>
+  </div>
+</div>
+
+<!-- === Announcement Bar === -->
+<div class="jkl-announcement-bar color-cream">
+  <div class="container">
+    <div class="announcement-texts">
+      <div class="info-group">
+        <span class="label">{{ 'jkl.members_free_shipping' | t }}</span>
+        <span class="value">{{ 'jkl.shop_minimum' | t: amount: fs_threshold }}</span>
+      </div>
+      <div class="info-group">
+        <span class="label">{{ 'jkl.fast_delivery' | t }}</span>
+        <span class="value">{{ 'jkl.fast_delivery_desc' | t }}</span>
+      </div>
+      <div class="info-group">
+        <span class="label">CLUB JKL</span>
+        <span class="value">{{ 'jkl.free_membership' | t }}</span>
+      </div>
+      <div class="info-group">
+        <span class="label">{{ 'jkl.contact_us' | t }}</span>
+        <span class="value">+45 7010 2020</span>
+      </div>
+    </div>
+    <details class="language-switch">
+      <summary class="language-switch__toggle">
+        <span>{{ localization.language.endonym_name | default: 'Language' }}</span>
+        <svg class="chevron" width="8" height="4" viewBox="0 0 8 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M1 0.5L4 3.5L7 0.5" stroke="currentColor" stroke-width="1"/>
+        </svg>
+      </summary>
+      {%- form 'localization', class: 'language-switch__form' -%}
+        <input type="hidden" name="return_to" value="{{ request.path }}">
+        <ul class="language-switch__list" role="list">
+          {%- for language in localization.available_languages -%}
+            <li>
+              <button
+                type="submit"
+                name="locale_code"
+                value="{{ language.iso_code }}"
+                class="language-switch__option{% if language.iso_code == localization.language.iso_code %} is-active{% endif %}"
+                lang="{{ language.iso_code }}"
+              >
+                {{ language.endonym_name }}
+              </button>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endform -%}
+    </details>
+  </div>
+</div>
+
+<!-- === Site Header === -->
+<div class="site-header" id="siteHeader">
+  <div class="header-main">
+    <div class="header-left">
+      <div class="header-wrapper--buttons">
+        <button class="menu-button" id="menuOpenBtn">
+          <span class="menu-icon">
+            <span></span>
+            <span></span>
+          </span>
+          <span>{{ 'jkl.all_wines' | t }}</span>
+        </button>
+    </div>
+      <form class="search-bar" action="{{ routes.search_url }}" method="get" role="search" id="headerSearchForm">
+        <input type="hidden" name="type" value="product">
+        <input type="hidden" name="options[prefix]" value="last">
+        <input type="search" name="q" class="search-bar__input" id="headerSearchInput"
+          placeholder="{{ 'jkl.how_can_we_help' | t }}" autocomplete="off" aria-label="Search">
+        <button type="submit" class="search-bar__submit" aria-label="Search">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="1"/>
+            <line x1="10.5" y1="10.5" x2="15" y2="15" stroke="currentColor" stroke-width="1"/>
+          </svg>
+        </button>
+      </form>
+    </div>
+    <a href="/" class="header-logo">
+      <img class="logo-mark" src="//jklfinewines.se/cdn/shop/t/10/assets/jkl-logo-full.png?v=163956150214678753371773179936" alt="JKL Fine Wines">
+    </a>
+    <div class="header-right">
+      {%- if shop.customer_accounts_enabled -%}
+        <a href="{{ routes.account_url }}" class="icon-button" aria-label="Account">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          </svg>
+        </a>
+      {%- endif -%}
+      {%- liquid
+        # Strikethrough = JSON-based subtotal (single-bottle price × qty), matching the cart.
+        # Falls back to original_line_price for any line missing JSON data.
+        assign header_subtotal = 0
+        for item in cart.items
+          assign isp = nil
+          assign pdata = item.variant.metafields.custom.prices.value
+          assign cdata = pdata[localization.country.iso_code]
+          if cdata
+            for tier in cdata.none_member
+              if tier.qty == 1
+                assign isp = tier.price
+              endif
+            endfor
+          endif
+          if isp != nil
+            assign line_old = isp | times: item.quantity | times: 100 | round
+          else
+            assign line_old = item.original_line_price
+          endif
+          assign header_subtotal = header_subtotal | plus: line_old
+        endfor
+      -%}
+      <a href="{{ routes.cart_url }}" class="cart-button">
+        <div class="price-info">
+          <span class="current-price">{% render 'jkl-money', cents: cart.total_price %}</span>
+          <span class="original-price" id="cartHeaderOriginal"{% unless header_subtotal > cart.total_price %} style="display:none"{% endunless %}>{% render 'jkl-money', cents: header_subtotal %}</span>
+        </div>
+        <svg class="bag-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 7.99999C15 9.65684 13.6568 11 12 11C10.3431 11 8.99998 9.65684 8.99998 7.99999M4.69304 4.68949L3.81425 19.1895C3.7794 19.7645 4.23635 20.25 4.81242 20.25H19.1875C19.7636 20.25 20.2206 19.7645 20.1857 19.1895L19.3069 4.68949C19.2749 4.16167 18.8375 3.74999 18.3088 3.74999H5.69121C5.16242 3.74999 4.72503 4.16167 4.69304 4.68949Z" stroke="var(--color-cream)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+  <div class="header-divider"></div>
+  <nav class="category-nav">
+    <ul>
+      {%- for link in section.settings.top_menu.links -%}
+        <li><a href="{{ link.url }}"{% if link.links.size > 0 %} data-category="{{ link.title | handleize }}"{% endif %}>{{ link.title }}</a></li>
+      {%- endfor -%}
+    </ul>
+  </nav>
+</div>
+
+<!-- === Live Search Overlay (desktop) === -->
+<div class="jkl-search-overlay" id="jklSearchOverlay" aria-hidden="true">
+  <div class="jkl-search-overlay__backdrop" data-search-close></div>
+
+  <!-- Drawer: search field + Most searched (fixed 365px, left edge) -->
+  <div class="jkl-search-drawer" id="jklSearchDrawer">
+    <form class="jkl-search-drawer__bar" action="{{ routes.search_url }}" method="get" role="search">
+      <input type="hidden" name="type" value="product">
+      <input type="hidden" name="options[prefix]" value="last">
+      <input type="search" name="q" id="jklSearchPanelInput" class="jkl-search-drawer__input"
+        placeholder="{{ 'jkl.how_can_we_help' | t }}" autocomplete="off" aria-label="Search">
+      <button type="submit" class="jkl-search-drawer__submit" aria-label="Search">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="1"/>
+          <line x1="10.5" y1="10.5" x2="15" y2="15" stroke="currentColor" stroke-width="1"/>
+        </svg>
+      </button>
+    </form>
+    <p class="jkl-search-drawer__heading">Most searched:</p>
+    <ul class="jkl-most-searched">
+      <li><a href="{{ routes.search_url }}?q=rosé&type=product&options[prefix]=last">Rosé wine</a></li>
+      <li><a href="{{ routes.search_url }}?q=light+red&type=product&options[prefix]=last">Light red wine</a></li>
+      <li><a href="{{ routes.search_url }}?q=sparkling&type=product&options[prefix]=last">Sparkling</a></li>
+      <li><a href="{{ routes.search_url }}?q=white+burgundy&type=product&options[prefix]=last">White Burgundy</a></li>
+      <li><a href="{{ routes.search_url }}?q=burgundy&type=product&options[prefix]=last">Burgundy</a></li>
+    </ul>
+  </div>
+
+  <!-- Results panel: separate div, sits right of the drawer -->
+  <div class="jkl-search-results-panel"
+    id="jklSearchResults"
+    data-predictive-url="{{ routes.predictive_search_url }}"></div>
+</div>
+
+<script>
+  (function () {
+    var headerInput = document.getElementById('headerSearchInput');
+    var panelInput = document.getElementById('jklSearchPanelInput');
+    var overlay = document.getElementById('jklSearchOverlay');
+    var drawer = document.getElementById('jklSearchDrawer');
+    var results = document.getElementById('jklSearchResults');
+    if (!headerInput || !panelInput || !overlay || !drawer || !results) return;
+
+    var predictiveUrl = results.getAttribute('data-predictive-url');
+    var debounceTimer = null;
+    var lastTerm = null;
+    // The overlay opens on `focus` (fires at mousedown). Its full-viewport backdrop
+    // then covers the click point and the header input is hidden, so in Chrome the
+    // following `click` (mouseup) hit-tests onto the backdrop and would instantly
+    // close the drawer. We flag the opening pointer gesture on `mousedown` and let
+    // the document click handler consume it — timing-independent, no timers.
+    var suppressNextClose = false;
+
+    function openOverlay() {
+      overlay.classList.add('open');
+      overlay.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('jkl-search-open');
+      // Place the cursor in the drawer's own field so typing continues there.
+      // Deferred to the next frame so focus lands after the panel is visible
+      // (focusing mid-transition/while hidden can silently fail).
+      requestAnimationFrame(function () {
+        if (document.activeElement !== panelInput) panelInput.focus();
+      });
+    }
+
+    function closeOverlay() {
+      overlay.classList.remove('open');
+      overlay.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('jkl-search-open');
+    }
+
+    function fetchResults(term) {
+      if (term === lastTerm) return;
+      lastTerm = term;
+      var url = predictiveUrl
+        + '?q=' + encodeURIComponent(term)
+        + '&section_id=jkl-predictive-search'
+        + '&resources[type]=product,collection,page&resources[limit]=8';
+      fetch(url)
+        .then(function (res) { return res.text(); })
+        .then(function (html) {
+          // Ignore stale responses if the term changed while fetching.
+          // Trim so a whitespace-only response leaves the panel :empty (hidden).
+          if (panelInput.value.trim() === term) results.innerHTML = html.trim();
+        })
+        .catch(function () { /* keep previous results on error */ });
+    }
+
+    function handleInput() {
+      var term = panelInput.value.trim();
+      clearTimeout(debounceTimer);
+      if (term.length < 2) {
+        results.innerHTML = '';       // show only "Most searched"
+        lastTerm = null;
+        return;
+      }
+      debounceTimer = setTimeout(function () { fetchResults(term); }, 250);
+    }
+
+    // The header field is just a trigger — focusing it opens the drawer and
+    // hands off to the drawer's own input.
+    // The pointer gesture that opens the drawer also produces a `click` whose
+    // target (in Chrome) is the freshly-shown backdrop; flag it here so the close
+    // handlers below ignore that one click.
+    headerInput.addEventListener('mousedown', function () { suppressNextClose = true; });
+    headerInput.addEventListener('focus', openOverlay);
+    headerInput.addEventListener('click', openOverlay);
+    panelInput.addEventListener('input', handleInput);
+
+    // Close on backdrop click
+    overlay.addEventListener('click', function (e) {
+      if (suppressNextClose) return;
+      if (e.target.hasAttribute('data-search-close')) closeOverlay();
+    });
+
+    // Close on click outside the drawer + the header trigger.
+    // Runs last in the bubble chain, so it consumes the opening-gesture flag.
+    document.addEventListener('click', function (e) {
+      if (!overlay.classList.contains('open')) return;
+      if (suppressNextClose) { suppressNextClose = false; return; }
+      if (drawer.contains(e.target) || results.contains(e.target) || headerInput.contains(e.target) || e.target === headerInput) return;
+      closeOverlay();
+    });
+
+    // Esc closes
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && overlay.classList.contains('open')) {
+        closeOverlay();
+        panelInput.blur();
+      }
+    });
+  })();
+</script>
+
+<!-- === Navigation Overlay === -->
+<div class="nav-overlay" id="navOverlay">
+  <div class="nav-overlay-backdrop"></div>
+  <div class="nav-overlay-panel bg-cream-color color-green-coal">
+    <button class="nav-close-btn" id="navCloseBtn">
+      <span class="close-icon">
+        <span></span>
+        <span></span>
+      </span>
+      <span>{{ 'jkl.close' | t }}</span>
+    </button>
+
+    {%- liquid
+      assign main_menu = section.settings.menu
+      assign secondary_menu = section.settings.secondary_menu
+      assign use_first_child = section.settings.use_first_child_as_header
+    -%}
+
+    <div class="nav-columns">
+      <!-- Layer 1: Main categories -->
+      <div class="nav-col nav-col-main">
+        <form class="nav-search" action="{{ routes.search_url }}" method="get" role="search">
+          <input type="search" name="q" placeholder="{{ 'jkl.how_can_we_help' | t }}" autocomplete="off" aria-label="Search">
+          <button type="submit" class="nav-search-submit" aria-label="Search">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="1"/>
+              <line x1="10.5" y1="10.5" x2="15" y2="15" stroke="currentColor" stroke-width="1"/>
+            </svg>
+          </button>
+        </form>
+
+        <!-- Mobile search panel: "Most searched" + live predictive results.
+             Shown (via .is-searching on .nav-col-main) only while the search input is active. -->
+        <div class="nav-search-panel" data-nav-search-panel>
+          <div class="nav-most-searched" data-nav-most-searched>
+            <h3 class="nav-most-searched__title">Most searched:</h3>
+            <ul class="nav-most-searched__list">
+              {%- for link in section.settings.search_categories.links -%}
+                {% unless link.url == blank or link.url == "#" %}
+                <li>
+                  <a href="{{ link.url }}" class="nav-most-searched__link">
+                    <span>{{ link.title }}</span>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </a>
+                </li>
+                {%- endunless -%}
+              {%- endfor -%}
+            </ul>
+          </div>
+          <div class="nav-search-results" data-nav-search-results hidden></div>
+        </div>
+
+        <ul class="nav-main-links">
+          {%- for link in main_menu.links -%}
+            <li>
+              <a href="{{ link.url }}"
+                {%- if link.links.size > 0 %} data-category="{{ link.title | handleize }}"{% endif -%}
+              >
+                <span>{{ link.title }}</span>
+                {%- if link.links.size > 0 -%}
+                  {% render 'jkl-nav-arrow', kind: 'chevron' %}
+                {%- else -%}
+                  {% render 'jkl-nav-arrow', kind: 'arrow' %}
+                {%- endif -%}
+              </a>
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        
+        {%- if secondary_menu.links.size > 0 -%}
+          <ul class="nav-main-links nav-secondary-links nav-extra-links">
+            {%- for link in secondary_menu.links -%}
+              <li>
+                <a href="{{ link.url }}">
+                  <span>{{ link.title }}</span>
+                  {% render 'jkl-nav-arrow', kind: 'arrow' %}
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+
+        <div class="nav-language">
+          <details class="language-switch">
+            <summary class="language-switch__toggle">
+              <span>{{ localization.language.endonym_name | default: 'Language' }}</span>
+              <svg class="chevron" width="8" height="4" viewBox="0 0 8 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 0.5L4 3.5L7 0.5" stroke="currentColor" stroke-width="1"/>
+              </svg>
+            </summary>
+            {%- form 'localization', class: 'language-switch__form' -%}
+              <input type="hidden" name="return_to" value="{{ request.path }}">
+              <ul class="language-switch__list" role="list">
+                {%- for language in localization.available_languages -%}
+                  <li>
+                    <button
+                      type="submit"
+                      name="locale_code"
+                      value="{{ language.iso_code }}"
+                      class="language-switch__option{% if language.iso_code == localization.language.iso_code %} is-active{% endif %}"
+                      lang="{{ language.iso_code }}"
+                    >
+                      {{ language.endonym_name }}
+                    </button>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            {%- endform -%}
+          </details>
+        </div>
+
+        <a href="/collections/all" class="btn-outline nav-view-all">{{ 'jkl.view_all_wines' | t }}</a>
+      </div>
+
+      <!-- Layer 2: Sub-categories -->
+      <div class="nav-layer nav-layer-2">
+        {%- for link in main_menu.links -%}
+          {%- if link.links.size > 0 -%}
+            {%- liquid
+              assign header_link = link
+              assign children = link.links
+              if use_first_child
+                assign header_link = link.links.first
+                assign children = link.links | slice: 1, link.links.size
+              endif
+            -%}
+            <div class="nav-layer-group" data-group="{{ link.title | handleize }}">
+              <div class="nav-col nav-col-sub">
+                <button class="nav-back-header" type="button" data-nav-back="2">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>{{ header_link.title }}</span>
+                </button>
+                <h4 class="nav-col-title">{{ header_link.title }}</h4>
+                
+                <ul class="nav-sub-links">
+                  {%- for child_link in children -%}
+                    <li>
+                      <a href="{{ child_link.url }}"
+                        {%- if child_link.links.size > 0 %} data-sub="{{ link.title | handleize }}-{{ child_link.title | handleize }}"{% endif -%}
+                      >
+                        <span>{{ child_link.title }}</span>
+                        {%- if child_link.links.size > 0 -%}
+                          {% render 'jkl-nav-arrow', kind: 'chevron' %}
+                        {%- else -%}
+                          {% render 'jkl-nav-arrow', kind: 'arrow' %}
+                        {%- endif -%}
+                      </a>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+                <a href="{{ header_link.url }}" class="nav-all-link">
+                  <span>{{ 'jkl.all_category' | t: category: header_link.title | downcase }}</span>
+                  {% render 'jkl-nav-arrow', kind: 'arrow' %}
+                </a>
+              </div>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+      <!-- Layer 3: Details -->
+      <div class="nav-layer nav-layer-3">
+        {%- for link in main_menu.links -%}
+          {%- if link.links.size > 0 -%}
+            {%- for child_link in link.links -%}
+              {%- if child_link.links.size > 0 -%}
+                {%- liquid
+                  assign header_link = child_link
+                  assign children = child_link.links
+                  if use_first_child
+                    assign header_link = child_link.links.first
+                    assign children = child_link.links | slice: 1, child_link.links.size
+                  endif
+                -%}
+                <div class="nav-layer-group" data-detail="{{ link.title | handleize }}-{{ child_link.title | handleize }}">
+                  <div class="nav-col nav-col-sub">
+                    <button class="nav-back-header" type="button" data-nav-back="3">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span>{{ header_link.title }}</span>
+                    </button>
+                    <h4 class="nav-col-title">{{ header_link.title }}</h4>
+                    <ul class="nav-sub-links">
+                      {%- for grandchild_link in children -%}
+                        <li>
+                          <a href="{{ grandchild_link.url }}">
+                            <span>{{ grandchild_link.title }}</span>
+                            {% render 'jkl-nav-arrow', kind: 'arrow' %}
+                          </a>
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                    <a href="{{ header_link.url }}" class="nav-all-link">
+                  <span>{{ 'jkl.all_category' | t: category: header_link.title | downcase }}</span>
+                  {% render 'jkl-nav-arrow', kind: 'arrow' %}
+                </a>
+                  </div>
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Navigation overlay
+  (function () {
+    var overlay = document.getElementById("navOverlay");
+    var panel = document.querySelector(".nav-overlay-panel");
+    var openBtn = document.getElementById("menuOpenBtn");
+    var closeBtn = document.getElementById("navCloseBtn");
+    var backdrop = document.querySelector(".nav-overlay-backdrop");
+    var layer2 = document.querySelector(".nav-layer-2");
+    var layer3 = document.querySelector(".nav-layer-3");
+    var categoryLinks = document.querySelectorAll("[data-category]");
+    var subLinks = document.querySelectorAll("[data-sub]");
+    var groups = document.querySelectorAll("[data-group]");
+    var details = document.querySelectorAll("[data-detail]");
+
+    function resetLayer3() {
+      panel.classList.remove("layer-3");
+      layer3.classList.remove("visible");
+      details.forEach(function (d) { d.classList.remove("active"); });
+      subLinks.forEach(function (a) { a.classList.remove("active"); });
+    }
+
+    function resetLayer2() {
+      panel.classList.remove("layer-2");
+      layer2.classList.remove("visible");
+      groups.forEach(function (g) { g.classList.remove("active"); });
+      categoryLinks.forEach(function (a) { a.classList.remove("active"); });
+      resetLayer3();
+    }
+
+    function openMenu() {
+      overlay.classList.add("open");
+      document.body.style.overflow = "hidden";
+      document.querySelectorAll('[data-menu-trigger]').forEach(function (btn) {
+        btn.classList.add("is-open");
+      });
+      var mobileHeaderMain = document.querySelector('.mobile-header-main');
+      if (mobileHeaderMain) mobileHeaderMain.classList.add('is-open');
+    }
+
+    openBtn.addEventListener("click", openMenu);
+
+    // Mobile menu button: tap-to-toggle (close when already open)
+    var mobileMenuToggle = document.getElementById("mobileMenuToggle");
+    if (mobileMenuToggle) {
+      mobileMenuToggle.addEventListener("click", function () {
+        if (overlay.classList.contains("open")) {
+          close();
+        } else {
+          openMenu();
+        }
+      });
+    }
+
+    function close() {
+      overlay.classList.remove("open");
+      resetLayer2();
+      document.body.style.overflow = "";
+      document.querySelectorAll('[data-menu-trigger]').forEach(function (btn) {
+        btn.classList.remove("is-open");
+      });
+      var mobileHeaderMain = document.querySelector('.mobile-header-main');
+      if (mobileHeaderMain) mobileHeaderMain.classList.remove('is-open');
+    }
+
+    closeBtn.addEventListener("click", close);
+    backdrop.addEventListener("click", close);
+
+    // Mobile sticky header + dynamic --store-header-h
+    var mobileSiteHeader = document.getElementById("mobileSiteHeader");
+
+    function updateStoreHeaderOffset() {
+      if (!mobileSiteHeader) return;
+      if (getComputedStyle(mobileSiteHeader).display === "none") return;
+      document.documentElement.style.setProperty(
+        "--store-header-h",
+        mobileSiteHeader.offsetHeight + "px"
+      );
+    }
+
+    var scrollTicking = false;
+    function onMobileScroll() {
+      if (!mobileSiteHeader) return;
+      if (window.scrollY > 0) {
+        mobileSiteHeader.classList.add("is-scrolled");
+        document.body.classList.add("is-scrolled");
+      } else {
+        mobileSiteHeader.classList.remove("is-scrolled");
+        document.body.classList.remove("is-scrolled");
+      }
+      updateStoreHeaderOffset();
+      scrollTicking = false;
+    }
+
+    window.addEventListener("scroll", function () {
+      if (!scrollTicking) {
+        requestAnimationFrame(onMobileScroll);
+        scrollTicking = true;
+      }
+    }, { passive: true });
+
+    window.addEventListener("resize", updateStoreHeaderOffset);
+    updateStoreHeaderOffset();
+
+    // Mobile back buttons (drill-down)
+    document.querySelectorAll('[data-nav-back]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (btn.getAttribute('data-nav-back') === '3') {
+          resetLayer3();
+        } else {
+          resetLayer2();
+        }
+      });
+    });
+
+    // Layer 1 → Layer 2
+    categoryLinks.forEach(function (link) {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        var cat = this.getAttribute("data-category");
+        var group = document.querySelector('[data-group="' + cat + '"]');
+
+        if (this.classList.contains("active")) {
+          resetLayer2();
+          return;
+        }
+
+        resetLayer2();
+        this.classList.add("active");
+
+        if (group) {
+          group.classList.add("active");
+          layer2.classList.add("visible");
+          panel.classList.add("layer-2");
+        }
+      });
+    });
+
+    // Layer 2 → Layer 3
+    subLinks.forEach(function (link) {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        var sub = this.getAttribute("data-sub");
+        var detail = document.querySelector('[data-detail="' + sub + '"]');
+
+        if (this.classList.contains("active")) {
+          resetLayer3();
+          return;
+        }
+
+        resetLayer3();
+        this.classList.add("active");
+
+        if (detail) {
+          detail.classList.add("active");
+          layer3.classList.add("visible");
+          panel.classList.add("layer-3");
+        }
+      });
+    });
+  })();
+
+  // Category nav click to trigger drawer menu
+  (function () {
+    var drawerMenu = document.getElementById("navOverlay");
+    var categoryNavLinks = document.querySelectorAll(".category-nav a");
+    var menuOpenBtn = document.getElementById("menuOpenBtn");
+    var overlay = document.getElementById("navOverlay");
+
+    categoryNavLinks.forEach(function (link) {
+      link.addEventListener("click", function (e) {
+        // Only intercept dropdown triggers (links with a submenu / data-category).
+        // Real links (e.g. Bourgogne, Catalog) have no data-category → navigate normally.
+        if (!this.hasAttribute("data-category")) return;
+
+        e.preventDefault();
+        var linkText = this.textContent.trim();
+        var categoryHandle = linkText.toLowerCase().replace(/\s+/g, "-");
+        
+        // Find matching category link in overlay
+        var overlayLinks = drawerMenu.querySelectorAll('[data-category="' + categoryHandle + '"]');
+        var overlayLink = overlayLinks.length > 0 ? overlayLinks[0] : null;
+
+        // console.log('overlayLink:', overlayLink);
+        if (overlayLink) {
+          // Open the menu
+          overlay.classList.add("open");
+          document.body.style.overflow = "hidden";
+          document.querySelectorAll('[data-menu-trigger]').forEach(function (btn) {
+            btn.classList.add("is-open");
+          });
+          var mobileHeaderMain = document.querySelector('.mobile-header-main');
+          if (mobileHeaderMain) mobileHeaderMain.classList.add('is-open');
+          
+          // Trigger the category click to show the layer
+          overlayLink.click();
+        }
+      });
+    });
+  })();
+
+  // SiteLoom app menu: its own JS swallows clicks on real links, so force
+  // navigation for leaf links with a real path. Parent items (has-children,
+  // or hash hrefs) are left alone so the app can open their submenu.
+  (function () {
+    document.addEventListener("click", function (e) {
+      var a = e.target.closest && e.target.closest("a.normal-item-container, a.menu-item-normal");
+      if (!a) return;
+
+      var li = a.closest("li");
+      if (li && li.classList.contains("has-children")) return; // expander → app handles it
+
+      var href = a.getAttribute("href");
+      if (!href) return;
+      var isRealPath = href.charAt(0) === "/" || href.indexOf("http") === 0;
+      if (!isRealPath) return; // e.g. "#", "/#" or junk → not a navigable link
+
+      window.location.href = href;
+    }, true);
+  })();
+
+  // Sticky header
+  (function () {
+    var header = document.getElementById("siteHeader");
+    var announcementBar = document.querySelector(".jkl-announcement-bar");
+    if (!header || !announcementBar) return;
+
+    var triggerOffset = announcementBar.offsetHeight + header.offsetHeight / 2;
+    var lastScrollY = 0;
+    var mobile = function () { return window.innerWidth <= 768; };
+
+    // Ensure correct state on load
+    header.classList.remove("sticky");
+    header.classList.remove("header-hidden");
+
+    function onScroll() {
+      var currentScrollY = window.scrollY;
+
+      if (currentScrollY > triggerOffset) {
+        header.classList.add("sticky");
+        if (mobile()) {
+          if (currentScrollY > lastScrollY) {
+            header.classList.add("header-hidden");
+          } else {
+            header.classList.remove("header-hidden");
+          }
+        }
+      } else {
+        header.classList.remove("sticky");
+        header.classList.remove("header-hidden");
+      }
+
+      lastScrollY = currentScrollY;
+    }
+
+    window.addEventListener("scroll", onScroll);
+    onScroll();
+  })();
+
+  // Mobile nav search: focus -> "Most searched", typing -> live predictive results.
+  // Reuses the drawer results section (jkl-search-drawer-results) and styles.
+  (function () {
+    var form = document.querySelector(".nav-search");
+    if (!form) return;
+    var input = form.querySelector('input[type="search"]');
+    var col = form.closest(".nav-col-main");
+    var panel = col && col.querySelector("[data-nav-search-panel]");
+    if (!input || !col || !panel) return;
+
+    var mostSearched = panel.querySelector("[data-nav-most-searched]");
+    var resultsEl = panel.querySelector("[data-nav-search-results]");
+    var SECTION_ID = "jkl-search-drawer-results";
+    var MIN_CHARS = 2;
+    var activeFetch = null;
+    var cache = {};
+
+    function debounce(fn, wait) {
+      var t;
+      return function () {
+        var ctx = this, args = arguments;
+        clearTimeout(t);
+        t = setTimeout(function () { fn.apply(ctx, args); }, wait);
+      };
+    }
+
+    function showMostSearched() {
+      if (mostSearched) mostSearched.hidden = false;
+      resultsEl.hidden = true;
+    }
+
+    function showResults(html) {
+      resultsEl.innerHTML = html;
+      if (mostSearched) mostSearched.hidden = true;
+      resultsEl.hidden = false;
+    }
+
+    function renderLoading() {
+      resultsEl.innerHTML = '<div class="nav-search-results__status">Searching...</div>';
+      if (mostSearched) mostSearched.hidden = true;
+      resultsEl.hidden = false;
+    }
+
+    function renderNoResults(term) {
+      resultsEl.innerHTML =
+        '<div class="nav-search-results__status">No results for "' +
+        term.replace(/"/g, "&quot;") + '". Try a different word or phrase.</div>';
+    }
+
+    function fetchResults(term) {
+      if (cache[term]) { showResults(cache[term]); return; }
+      if (activeFetch) activeFetch.abort();
+      activeFetch = new AbortController();
+
+      var url =
+        "/search/suggest?q=" + encodeURIComponent(term) +
+        "&section_id=" + SECTION_ID +
+        "&resources[type]=product" +
+        "&resources[limit]=12";
+
+      renderLoading();
+
+      fetch(url, { signal: activeFetch.signal })
+        .then(function (res) { return res.text(); })
+        .then(function (html) {
+          var doc = new DOMParser().parseFromString(html, "text/html");
+          var inner = doc.querySelector("[data-drawer-results]");
+          var markup = inner ? inner.innerHTML : html;
+          if (markup.indexOf("jkl-search-drawer__products") > -1) {
+            cache[term] = markup;
+            showResults(markup);
+          } else {
+            renderNoResults(term);
+          }
+        })
+        .catch(function (err) {
+          if (err && err.name === "AbortError") return;
+          renderNoResults(term);
+        });
+    }
+
+    var onInput = debounce(function () {
+      var term = input.value.trim();
+      if (term.length < MIN_CHARS) { showMostSearched(); return; }
+      fetchResults(term);
+    }, 250);
+
+    input.addEventListener("focus", function () {
+      col.classList.add("is-searching");
+      if (input.value.trim().length < MIN_CHARS) showMostSearched();
+    });
+
+    input.addEventListener("input", onInput);
+
+    // Leave search mode once the field is empty and loses focus, restoring the menu.
+    input.addEventListener("blur", function () {
+      setTimeout(function () {
+        if (!input.value.trim()) col.classList.remove("is-searching");
+      }, 150);
+    });
+  })();
+
+  document.addEventListener("click", function (e) {
+    document.querySelectorAll("details.language-switch[open]").forEach(function (d) {
+      if (!d.contains(e.target)) d.removeAttribute("open");
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "JKL Header",
+  "tag": "header",
+  "class": "header-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Navigation menu"
+    },
+    {
+      "type": "link_list",
+      "id": "top_menu",
+      "label": "Top Menu",
+      "default": "main-menu",
+      "info": "Top Menu is a single-level menu used for the horizontal category navigation in the header."
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu",
+      "info": "Three-level menu used by the navigation overlay."
+    },
+    {
+      "type": "link_list",
+      "id": "secondary_menu",
+      "label": "Secondary menu (mobile only)",
+      "info": "Optional flat list shown below the main menu on the mobile drawer's first level."
+    },
+    {
+      "type": "checkbox",
+      "id": "use_first_child_as_header",
+      "label": "Use first child as header",
+      "default": false,
+      "info": "When enabled, the first child of each item is promoted to the panel heading and the \"All …\" link in Layer 2 and Layer 3, and is removed from the displayed children list."
+    },
+    {
+      "type": "header",
+      "content": "Mobile search"
+    },
+    {
+      "type": "link_list",
+      "id": "search_categories",
+      "label": "Search Categories",
+      "info": "Categories shown under 'Most searched' in the mobile search panel."
+    }
+  ],
+  "presets": []
+}
+{% endschema %}

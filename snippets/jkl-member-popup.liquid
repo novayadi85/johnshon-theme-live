@@ -1,0 +1,302 @@
+{%- comment -%}
+  Membership price popup (PDP).
+  Shown when the "JKL Club price" option is selected and the customer is not
+  logged in. Landscape modal: bottle (left) + content (right) + 2 buttons.
+
+  Open/close via window.openMemberPopup() / window.closeMemberPopup().
+{%- endcomment -%}
+
+{%- comment -%} Member savings = (standard price − club price) × bundle qty.
+  Same pricing source as pdp-price-simple.liquid. {%- endcomment -%}
+{%- liquid
+  assign member_save_amount = nil
+  assign member_currency = ''
+
+  if variant
+    assign show_volume_price = variant.metafields.custom.show_volume_price.value
+    assign prices_data = variant.metafields.custom.prices.value
+    assign country_code = localization.country.iso_code
+    assign country_data = prices_data[country_code]
+    assign member_currency = country_data.currency
+
+    assign single_tier = nil
+    assign bundle_tier = nil
+    for tier in country_data.none_member
+      if tier.qty == 1
+        assign single_tier = tier
+      else
+        assign bundle_tier = tier
+      endif
+    endfor
+
+    assign member_single_tier = nil
+    assign member_bundle_tier = nil
+    for tier in country_data.member.bronze
+      if tier.qty == 1
+        assign member_single_tier = tier
+      else
+        assign member_bundle_tier = tier
+      endif
+    endfor
+
+    if show_volume_price
+      assign qty_bulk_size = bundle_tier.qty
+      assign member_tier = member_bundle_tier
+    else
+      assign qty_bulk_size = 1
+      assign member_tier = member_single_tier
+    endif
+
+    if single_tier and member_tier
+      assign member_save_amount = single_tier.price | minus: member_tier.price | times: qty_bulk_size
+    endif
+  endif
+-%}
+
+<style>
+  .member-popup-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .member-popup-overlay.is-open { display: flex; }
+
+  .member-popup-backdrop {
+    position: absolute;
+    inset: 0;
+    /* dimming handled by the shared .overlay class (same as the cart drawer) */
+  }
+
+  .member-popup {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    border-radius: 2px;
+    background: #fffcf5;
+    box-shadow: 0 8px 28px rgba(125, 66, 72, 0.15);
+  }
+
+  .member-popup-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--color-green-coal, #1a1914);
+  }
+  .member-popup-close::before,
+  .member-popup-close::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 14px;
+    height: 1.5px;
+    background: currentColor;
+  }
+  .member-popup-close::before { transform: translate(-50%, -50%) rotate(45deg); }
+  .member-popup-close::after  { transform: translate(-50%, -50%) rotate(-45deg); }
+
+  .member-popup-bottle {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+  .member-popup-bottle img {
+    height: 130px;
+    width: auto;
+    display: block;
+  }
+
+  .member-popup-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  .member-popup-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: var(--color-green-coal, #1a1914);
+  }
+  .member-popup-title {
+    margin: 0;
+    font-family: 'Gascogne', serif;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 1.2;
+  }
+  .member-popup-savings {
+    margin: 0;
+    font-family: 'Gascogne', serif;
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 1.3;
+  }
+  .member-popup-savings .member-popup-amount { font-weight: 700; }
+  .member-popup-note {
+    margin: 0;
+    font-family: 'Gascogne', serif;
+    font-weight: 300;
+    font-size: 12px;
+    line-height: 1.3;
+  }
+
+  .member-popup-buttons {
+    display: flex;
+    gap: 12px;
+    padding-top: 14px;
+    border-top: 1px solid var(--color-stroke-dark-15, rgba(49, 9, 18, 0.15));
+  }
+  .member-popup-btn {
+    flex: 1 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 16px;
+    border-radius: 2px;
+    font-family: 'Gascogne', serif;
+    font-weight: 400;
+    font-size: 13px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .member-popup-btn--outline {
+    border: 1px solid var(--color-green-coal, #1a1914);
+    background: #fffcf5;
+    color: var(--color-green-coal, #1a1914);
+  }
+  .member-popup-btn--filled {
+    border: 1px solid var(--color-burgundy, #370511);
+    background: var(--color-burgundy, #370511);
+    color: var(--color-cream, #fff3da);
+  }
+
+  @media (max-width: 480px) {
+    .member-popup { flex-direction: column; align-items: center; text-align: center; }
+    .member-popup-buttons { width: 100%; }
+  }
+</style>
+
+<div class="member-popup-overlay" id="memberPopupOverlay" aria-hidden="true">
+  <div class="member-popup-backdrop overlay" data-member-popup-close></div>
+  <div class="member-popup" role="dialog" aria-modal="true" aria-labelledby="memberPopupTitle">
+    <button class="member-popup-close" type="button" aria-label="{{ 'actions.close' | t | default: 'Luk' }}" data-member-popup-close></button>
+
+    {%- if product.featured_image -%}
+      <div class="member-popup-bottle">
+        <img src="{{ product.featured_image | image_url: width: 200 }}" alt="{{ product.title | escape }}">
+      </div>
+    {%- endif -%}
+
+    <div class="member-popup-body">
+      <div class="member-popup-content">
+        <h2 class="member-popup-title" id="memberPopupTitle">Vil du have den bedste pris?</h2>
+        {%- if member_save_amount != nil -%}
+          <p class="member-popup-savings">Du sparer hele <strong class="member-popup-amount">{% render 'format-amount', amount: member_save_amount %} {{ member_currency | downcase }}</strong> hvis du er medlem!</p>
+        {%- endif -%}
+        <p class="member-popup-note">(er du allerede medlem, så skal du bare logge ind)</p>
+      </div>
+
+      <div class="member-popup-buttons">
+        <button type="button" class="member-popup-btn member-popup-btn--outline" data-member-popup-proceed>Fortsæt med højere pris</button>
+        <a href="{{ routes.account_login_url }}" class="member-popup-btn member-popup-btn--filled">Bliv medlem / login</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    if (window.__memberPopupInit) return;
+    window.__memberPopupInit = true;
+
+    var overlay = document.getElementById('memberPopupOverlay');
+    if (!overlay) return;
+
+    function openMemberPopup() {
+      overlay.classList.add('is-open');
+      overlay.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeMemberPopup() {
+      overlay.classList.remove('is-open');
+      overlay.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    // When true, the next PDP add-to-cart submit is allowed through without
+    // re-triggering the popup (used by "Fortsæt med højere pris").
+    var bypassPopup = false;
+
+    // Add the item at the normal (non-member) price and continue. Re-submits
+    // the actual product form so quantity/price-tier (flerstykspris) and any
+    // other form fields are preserved.
+    function proceedWithHigherPrice() {
+      var addBtn = document.querySelector('.pdp-add-to-basket');
+      var form = addBtn ? addBtn.closest('form') : null;
+      closeMemberPopup();
+      if (!form) return;
+      bypassPopup = true;
+      if (typeof form.requestSubmit === 'function') {
+        form.requestSubmit();
+      } else {
+        form.submit();
+      }
+    }
+
+    overlay.addEventListener('click', function (e) {
+      if (e.target.hasAttribute('data-member-popup-proceed')) {
+        proceedWithHigherPrice();
+        return;
+      }
+      if (e.target.hasAttribute('data-member-popup-close')) closeMemberPopup();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && overlay.classList.contains('is-open')) closeMemberPopup();
+    });
+
+    window.openMemberPopup = openMemberPopup;
+    window.closeMemberPopup = closeMemberPopup;
+
+    // Intercept add-to-cart on the PDP: if the JKL Club price option is
+    // selected and the customer is not logged in, block the add and show the
+    // popup. Capture phase so it runs BEFORE the cart drawer's submit handler.
+    // NB: the price radios are rendered OUTSIDE the product form, so query the
+    // document rather than the form.
+    document.addEventListener('submit', function (e) {
+      var form = e.target;
+      if (!form || typeof form.querySelector !== 'function') return;
+
+      var btn = form.querySelector('.pdp-add-to-basket');
+      if (!btn) return;
+
+      // Allow the "Fortsæt med højere pris" re-submit straight through.
+      if (bypassPopup) { bypassPopup = false; return; }
+
+      var selected = document.querySelector('input[name="pdp-price-option"]:checked');
+      var clubSelected = selected && selected.value === 'member';
+
+      if (clubSelected && btn.dataset.loggedIn === 'false') {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        openMemberPopup();
+      }
+    }, true);
+  })();
+</script>

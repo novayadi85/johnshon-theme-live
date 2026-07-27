@@ -1,0 +1,46 @@
+{%- comment -%}
+  JKL live search results.
+  Rendered on the predictive-search endpoint via the Section Rendering API:
+    {{ routes.predictive_search_url }}?q=TERM&section_id=jkl-predictive-search&resources[type]=product,collection,page,query
+  The header JS fetches this section's HTML and injects it into the search overlay.
+{%- endcomment -%}
+{%- if predictive_search.performed -%}
+  {%- assign products = predictive_search.resources.products -%}
+  {%- assign collections = predictive_search.resources.collections -%}
+  {%- assign pages = predictive_search.resources.pages -%}
+  {%- assign total = products.size | plus: collections.size | plus: pages.size -%}
+
+  {%- if total > 0 -%}
+    {%- if products.size > 0 -%}
+      <ul class="jkl-search-results" role="listbox" aria-label="Products">
+        {%- for product in products -%}
+          <li class="jkl-search-results__item" role="option">
+            {% render 'jkl-search-result-card', product: product %}
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+
+    {%- if collections.size > 0 or pages.size > 0 -%}
+      <ul class="jkl-search-links" aria-label="Pages">
+        {%- for collection in collections -%}
+          <li><a href="{{ collection.url }}">{{ collection.title }}</a></li>
+        {%- endfor -%}
+        {%- for page in pages -%}
+          <li><a href="{{ page.url }}">{{ page.title }}</a></li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  {%- else -%}
+    <div class="jkl-search-noresults">
+      <p class="jkl-search-noresults__title">No results</p>
+      <p class="jkl-search-noresults__desc">We couldn't find anything matching your search.</p>
+    </div>
+  {%- endif -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "JKL Predictive Search"
+}
+{% endschema %}

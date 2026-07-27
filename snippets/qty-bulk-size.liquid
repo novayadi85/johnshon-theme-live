@@ -1,0 +1,27 @@
+{%- comment -%}
+  Echoes the bulk quantity size for a given variant.
+  - Returns bundle_tier.qty if variant has show_volume_price = true
+  - Returns 1 otherwise
+
+  Usage: {% render 'qty-bulk-size', variant: variant %}
+{%- endcomment -%}
+{%- liquid
+  assign show_volume_price = variant.metafields.custom.show_volume_price.value
+
+  if show_volume_price
+    assign prices_data = variant.metafields.custom.prices.value
+    assign country_code = localization.country.iso_code
+    assign country_data = prices_data[country_code]
+
+    assign bundle_tier = nil
+    for tier in country_data.none_member
+      if tier.qty > 1
+        assign bundle_tier = tier
+      endif
+    endfor
+
+    echo bundle_tier.qty
+  else
+    echo 1
+  endif
+-%}

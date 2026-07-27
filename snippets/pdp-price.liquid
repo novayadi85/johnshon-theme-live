@@ -1,0 +1,236 @@
+{%- comment -%}
+  Renders the PDP price block. The HTML output depends on three
+  variant metafields:
+    custom.show_volume_price   (bool)  → bundle vs single
+    custom.on_sale_for_all     (bool)  → offer
+    custom.show_member_price   (bool)  → memberprice (wins over offer)
+
+  Reads pricing data from variant.metafields.custom.prices (JSON),
+  picks the country block via localization.country.iso_code, and
+  resolves the right tier (single = qty 1, bundle = qty > 1).
+
+  Accepts `variant` as parameter. Falls back to the product's
+  selected_or_first_available_variant if not passed.
+{%- endcomment -%}
+
+{%- liquid
+  unless variant
+    assign variant = product.selected_or_first_available_variant
+  endunless
+
+  assign scope = scope | default: 'pdp'
+
+  assign show_volume_price = variant.metafields.custom.show_volume_price.value
+  assign on_sale_for_all = variant.metafields.custom.on_sale_for_all.value
+  assign show_member_price = variant.metafields.custom.show_member_price.value
+
+  if show_volume_price
+    assign pricing_mode = 'bundle'
+  else
+    assign pricing_mode = 'single'
+  endif
+
+  if show_member_price
+    assign pricing_variant = 'memberprice'
+  elsif on_sale_for_all
+    assign pricing_variant = 'offer'
+  else
+    assign pricing_variant = 'no_offer'
+  endif
+
+  assign show_price_type = pricing_mode | append: '_price_' | append: pricing_variant
+
+  assign prices_data = variant.metafields.custom.prices.value
+  assign country_code = localization.country.iso_code
+  assign country_data = prices_data[country_code]
+  assign currency = country_data.currency
+
+  assign single_tier = nil
+  assign bundle_tier = nil
+  for tier in country_data.none_member
+    if tier.qty == 1
+      assign single_tier = tier
+    else
+      assign bundle_tier = tier
+    endif
+  endfor
+
+  assign member_single_tier = nil
+  assign member_bundle_tier = nil
+  for tier in country_data.member.bronze
+    if tier.qty == 1
+      assign member_single_tier = tier
+    else
+      assign member_bundle_tier = tier
+    endif
+  endfor
+
+  if show_volume_price
+    assign qty_bulk_size = bundle_tier.qty
+  else
+    assign qty_bulk_size = 1
+  endif
+
+  assign single_price = nil
+  assign single_price_before = nil
+  assign single_price_save_amount = nil
+  assign single_price_save_percent = nil
+
+  assign bundle_price = nil
+  assign bundle_price_before = nil
+  assign bundle_price_save_amount = nil
+  assign bundle_price_save_percent = nil
+
+  assign member_price = nil
+  assign member_price_before = nil
+  assign member_price_save_amount = nil
+  assign member_price_save_percent = nil
+  assign member_point = nil
+
+  case show_price_type
+    when 'single_price_no_offer'
+      assign single_price = single_tier.price
+    when 'single_price_offer'
+      assign single_price = single_tier.offer_price
+      assign single_price_before = single_tier.price
+      assign single_price_save_amount = single_tier.offer_save_amount
+      capture single_price_save_percent
+        render 'round-percent', percent: single_tier.offer_save_percent
+      endcapture
+    when 'single_price_memberprice'
+      assign single_price = single_tier.price
+      assign bundle_price = bundle_tier.price
+      assign member_price = member_single_tier.price
+      assign member_point = member_single_tier.points | times: qty_bulk_size
+      assign member_price_save_amount = single_price | minus: member_price
+      assign member_price_save_percent_raw = single_price | minus: member_price | times: 100.0 | divided_by: single_price
+      capture member_price_save_percent
+        render 'round-percent', percent: member_price_save_percent_raw
+      endcapture
+    when 'bundle_price_no_offer'
+      assign single_price = single_tier.price
+      assign bundle_price = bundle_tier.price
+      assign bundle_price_save_amount = single_price | minus: bundle_price | times: qty_bulk_size
+    when 'bundle_price_offer'
+      assign single_price = single_tier.price
+      assign bundle_price = bundle_tier.offer_price
+      assign bundle_price_before = bundle_tier.price
+      assign bundle_price_save_amount = bundle_tier.offer_save_amount
+      capture bundle_price_save_percent
+        render 'round-percent', percent: bundle_tier.offer_save_percent
+      endcapture
+    when 'bundle_price_memberprice'
+      assign single_price = single_tier.price
+      assign bundle_price = bundle_tier.price
+      assign member_price = member_bundle_tier.price
+      assign member_point = member_bundle_tier.points | times: qty_bulk_size
+      assign member_price_save_amount = single_price | minus: member_price | times: qty_bulk_size
+      assign member_price_save_percent_raw = single_price | minus: member_price | times: 100.0 | divided_by: single_price
+      capture member_price_save_percent
+        render 'round-percent', percent: member_price_save_percent_raw
+      endcapture
+  endcase
+-%}
+
+<div class="pdp-price-debug" style="padding:8px;background:#fffbe6;border:1px dashed #b58900;font-family:monospace;font-size:12px;margin-bottom:8px;display:none;grid-template-columns:max-content 1fr;gap:0 16px;">
+  <span>show_price_type:</span><strong>{{ show_price_type }}</strong>
+  <span>show_volume_price:</span><span>{{ show_volume_price }}</span>
+  <span>on_sale_for_all:</span><span>{{ on_sale_for_all }}</span>
+  <span>show_member_price:</span><span>{{ show_member_price }}</span>
+  <hr style="grid-column:1/-1;border:none;border-top:1px solid #b58900;margin:4px 0;width:100%;">
+  <span>qty_bulk_size:</span><span>{{ qty_bulk_size }}</span>
+  <hr style="grid-column:1/-1;border:none;border-top:1px solid #b58900;margin:4px 0;width:100%;">
+  <span>country:</span><span>{{ country_code }} ({{ currency }})</span>
+  <span>single_price:</span><span>{{ single_price }}</span>
+  <span>single_price_before:</span><span>{{ single_price_before }}</span>
+  <span>single_price_save_amount:</span><span>{% render 'format-amount', amount: single_price_save_amount %}</span>
+  <span>single_price_save_percent:</span><span>{{ single_price_save_percent }}</span>
+  <hr style="grid-column:1/-1;border:none;border-top:1px solid #b58900;margin:4px 0;width:100%;">
+  <span>bundle_price:</span><span>{{ bundle_price }}</span>
+  <span>bundle_price_before:</span><span>{{ bundle_price_before }}</span>
+  <span>bundle_price_save_amount:</span><span>{% render 'format-amount', amount: bundle_price_save_amount %}</span>
+  <span>bundle_price_save_percent:</span><span>{{ bundle_price_save_percent }}</span>
+  <hr style="grid-column:1/-1;border:none;border-top:1px solid #b58900;margin:4px 0;width:100%;">
+  <span>member_price:</span><span>{{ member_price }}</span>
+  <span>member_price_before:</span><span>{{ member_price_before }}</span>
+  <span>member_price_save_amount:</span><span>{% render 'format-amount', amount: member_price_save_amount %}</span>
+  <span>member_price_save_percent:</span><span>{{ member_price_save_percent }}</span>
+  <span>member_point:</span><span>{{ member_point }}</span>
+</div>
+
+<script>
+  if (new URLSearchParams(window.location.search).has('debug')) {
+    document.querySelectorAll('.pdp-price-debug').forEach(function (el) {
+      el.style.display = 'grid';
+    });
+  }
+</script>
+
+{%- if force_full != true and product.metafields.custom.show_simple_price.value -%}
+  {%- render 'pdp-price-simple', variant: variant -%}
+{%- else -%}
+{%- case show_price_type -%}
+  {%- when 'single_price_no_offer' -%}
+    {%- render 'pdp-price-single-no-offer',
+      single_price: single_price,
+      currency: currency,
+      scope: scope
+    -%}
+
+  {%- when 'single_price_offer' -%}
+    {%- render 'pdp-price-single-offer',
+      single_price: single_price,
+      single_price_before: single_price_before,
+      single_price_save_amount: single_price_save_amount,
+      single_price_save_percent: single_price_save_percent,
+      currency: currency,
+      scope: scope
+    -%}
+
+  {%- when 'single_price_memberprice' -%}
+    {%- render 'pdp-price-single-memberprice',
+      single_price: single_price,
+      member_price: member_price,
+      member_price_save_amount: member_price_save_amount,
+      member_price_save_percent: member_price_save_percent,
+      member_point: member_point,
+      currency: currency,
+      scope: scope
+    -%}
+
+  {%- when 'bundle_price_no_offer' -%}
+    {%- render 'pdp-price-bundle-no-offer',
+      single_price: single_price,
+      bundle_price: bundle_price,
+      bundle_price_save_amount: bundle_price_save_amount,
+      qty_bulk_size: qty_bulk_size,
+      currency: currency,
+      scope: scope
+    -%}
+
+  {%- when 'bundle_price_offer' -%}
+    {%- render 'pdp-price-bundle-offer',
+      single_price: single_price,
+      bundle_price: bundle_price,
+      bundle_price_before: bundle_price_before,
+      bundle_price_save_amount: bundle_price_save_amount,
+      bundle_price_save_percent: bundle_price_save_percent,
+      qty_bulk_size: qty_bulk_size,
+      currency: currency,
+      scope: scope
+    -%}
+
+  {%- when 'bundle_price_memberprice' -%}
+    {%- render 'pdp-price-bundle-memberprice',
+      single_price: single_price,
+      bundle_price: bundle_price,
+      member_price: member_price,
+      member_price_save_amount: member_price_save_amount,
+      member_price_save_percent: member_price_save_percent,
+      member_point: member_point,
+      qty_bulk_size: qty_bulk_size,
+      currency: currency,
+      scope: scope
+    -%}
+{%- endcase -%}
+{%- endif -%}

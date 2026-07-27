@@ -1,0 +1,79 @@
+{%- comment -%}
+  Formats a money amount given in CENTS as "3 014,44 kr" — non-breaking space
+  thousands-separator, comma decimal — for ALL currencies, including Shopify
+  presentment currencies where {{ x | money_with_currency }} would otherwise
+  render an English-style "3,014.44 SEK" (the shop's custom money format only
+  applies to its base currency). Mirrors the cart drawer's JS formatMoney so the
+  Liquid render and the JS re-render agree.
+
+  Required: cents     (integer amount in cents)
+  Optional: currency  (ISO code; defaults to cart.currency.iso_code)
+{%- endcomment -%}
+{%- liquid
+  assign iso = currency | default: cart.currency.iso_code
+  assign sym = iso
+  case iso
+    when 'SEK'
+      assign sym = 'kr'
+    when 'DKK'
+      assign sym = 'kr.'
+    when 'NOK'
+      assign sym = 'kr'
+    when 'EUR'
+      assign sym = '€'
+    when 'USD'
+      assign sym = '$'
+    when 'GBP'
+      assign sym = '£'
+    when 'PLN'
+      assign sym = 'zł'
+  endcase
+
+  assign c = cents | round
+  assign whole = c | divided_by: 100
+  assign frac = c | modulo: 100
+
+  # Split the integer part into groups of three (handles up to 999,999,999)
+  assign g1 = whole | modulo: 1000
+  assign r1 = whole | divided_by: 1000
+  assign g2 = r1 | modulo: 1000
+  assign r2 = r1 | divided_by: 1000
+  assign g3 = r2 | modulo: 1000
+
+  assign g1p = g1
+  if g1 < 100
+    assign g1p = '0' | append: g1
+  endif
+  if g1 < 10
+    assign g1p = '00' | append: g1
+  endif
+  assign g2p = g2
+  if g2 < 100
+    assign g2p = '0' | append: g2
+  endif
+  if g2 < 10
+    assign g2p = '00' | append: g2
+  endif
+
+  capture grouped
+    if r2 > 0
+      echo g3
+      echo '&nbsp;'
+      echo g2p
+      echo '&nbsp;'
+      echo g1p
+    elsif r1 > 0
+      echo g2
+      echo '&nbsp;'
+      echo g1p
+    else
+      echo g1
+    endif
+  endcapture
+
+  assign fracp = frac
+  if frac < 10
+    assign fracp = '0' | append: frac
+  endif
+-%}
+{{- grouped }},{{ fracp }}&nbsp;{{ sym -}}

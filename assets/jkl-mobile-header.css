@@ -1,0 +1,152 @@
+/* === component: Mobile Site Header (≤768px only) === */
+
+/* Hidden by default; only revealed on mobile */
+.mobile-site-header {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* Mobile header height — also used by .nav-overlay (jkl-nav-menu.css) to sit below the header */
+  :root {
+    --store-header-h: 115px;
+  }
+
+  /* Hide the desktop chrome on mobile */
+  .jkl-announcement-bar,
+  .site-header {
+    display: none !important;
+  }
+
+  /* Show the mobile-specific header — sticky so it stays visible during scroll */
+  .mobile-site-header {
+    display: block;
+    background-color: var(--color-cream);
+    color: var(--color-green-coal);
+    border-bottom: 1px solid var(--color-stroke-dark-15);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  /* --- Announcement marquee — collapses on scroll --- */
+  .mobile-announcement {
+    height: 28px;
+    overflow: hidden;
+    border-bottom: 1px solid var(--color-stroke-dark-15);
+    background-color: var(--color-burgundy);
+    transition: height 0.25s ease, border-bottom-width 0.25s ease;
+  }
+
+  .mobile-site-header.is-scrolled .mobile-announcement {
+    border-bottom-width: 0;
+  }
+
+  .mobile-announcement-track {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: max-content;
+    flex-shrink: 0;
+    animation: mobileAnnouncementMarquee 30s linear infinite;
+  }
+
+  .mobile-announcement-line {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding-right: 24px;
+    flex-shrink: 0;
+    font-size: 12px;
+    white-space: nowrap;
+    color: var(--color-cream);
+  }
+
+  .mobile-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .mobile-info .label {
+    font-weight: 500;
+  }
+
+  .mobile-info .value {
+    font-weight: 300;
+  }
+
+  @keyframes mobileAnnouncementMarquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* --- Header main row: hamburger · logo · cart --- */
+  .mobile-header-main {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: 12px 16px;
+    height: 64px;
+    background-color: var(--color-background);
+  }
+
+   .mobile-header-main.is-open {
+      background-color: transparent;
+   }
+
+  .mobile-menu-toggle {
+    justify-self: start;
+    width: 24px;
+    height: 24px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-green-coal);
+    position: relative;
+  }
+
+  /* Two SVGs inside: 1st = close (X), 2nd = hamburger.
+     Default (menu closed) shows hamburger; .is-open shows X. */
+  .mobile-menu-toggle svg {
+    display: none;
+  }
+
+  .mobile-menu-toggle svg:last-child {
+    display: block;
+  }
+
+  .mobile-menu-toggle.is-open svg:first-child {
+    display: block;
+  }
+
+  .mobile-menu-toggle.is-open svg:last-child {
+    display: none;
+  }
+
+  .mobile-logo {
+    justify-self: center;
+    display: flex;
+    align-items: center;
+  }
+
+  .mobile-logo img {
+    height: 40px;
+    width: auto;
+    display: block;
+  }
+
+  .mobile-cart {
+    justify-self: end;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-green-coal);
+    text-decoration: none;
+  }
+}

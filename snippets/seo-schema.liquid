@@ -1,0 +1,17 @@
+{%- comment -%}
+  SEO schema router. Detects template + collection type and renders
+  the right type-specific JSON-LD snippet. Add new types by extending
+  the case-blocks below.
+{%- endcomment -%}
+
+{%- liquid
+  assign collection_type = collection.metafields.custom.type.value | downcase
+-%}
+
+{%- case template.name -%}
+  {%- when 'collection' -%}
+    {%- case collection_type -%}
+      {%- when 'vendor' -%}
+        {%- render 'seo-schema-vendor' -%}
+    {%- endcase -%}
+{%- endcase -%}

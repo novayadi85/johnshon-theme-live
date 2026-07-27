@@ -1,0 +1,116 @@
+{%- liquid
+  assign filters = facets | default: collection.filters
+  assign has_shopify_filters = false
+  if filters.size > 0
+    assign has_shopify_filters = true
+  endif
+-%}
+
+<div class="filter-drawer-overlay" id="filterDrawerOverlay" data-style="expand" aria-hidden="true">
+  <div class="filter-backdrop overlay" data-filter-close></div>
+  <aside class="filter-drawer" role="dialog" aria-modal="true" aria-label="Filter products">
+    <div class="filter-drawer-header">
+      <h2 class="filter-drawer-title">Filter</h2>
+      <button class="filter-drawer-close" type="button" data-filter-close aria-label="Close filter"></button>
+    </div>
+
+    <form class="filter-drawer-form" id="filterDrawerForm">
+      {%- if search_terms != blank -%}
+        <input type="hidden" name="q" value="{{ search_terms | escape }}">
+        <input type="hidden" name="type" value="product">
+        <input type="hidden" name="options[prefix]" value="last">
+      {%- endif -%}
+      <div class="filter-drawer-body">
+        {%- if has_shopify_filters -%}
+          {%- for filter in filters -%}
+            <details class="filter-group" {% if forloop.first %}open{% endif %}>
+              <summary class="filter-group-head">
+                <span class="filter-group-title">{{ filter.label }}</span>
+                <span class="filter-group-icon" aria-hidden="true"></span>
+              </summary>
+              <div class="filter-group-body">
+                {%- case filter.type -%}
+                  {%- when 'list' or 'boolean' -%}
+                    <ul class="filter-options-list">
+                      {%- for value in filter.values -%}
+                        <li>
+                          <label class="filter-option">
+                            <input
+                              type="checkbox"
+                              name="{{ value.param_name }}"
+                              value="{{ value.value }}"
+                              {% if value.active %}checked{% endif %}
+                              {% if value.count == 0 and value.active == false %}disabled{% endif %}
+                            >
+                            <span class="filter-option-label">{{ value.label }}</span>
+                            <span class="filter-option-count">({{ value.count }})</span>
+                          </label>
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                  {%- when 'price_range' -%}
+                    <div class="filter-price-range">
+                      <label class="filter-price-field">
+                        <span>Min</span>
+                        <input type="number" name="{{ filter.min_value.param_name }}" value="{{ filter.min_value.value | default: '' }}" placeholder="{{ 0 | money_without_currency }}" min="0">
+                      </label>
+                      <label class="filter-price-field">
+                        <span>Max</span>
+                        <input type="number" name="{{ filter.max_value.param_name }}" value="{{ filter.max_value.value | default: '' }}" placeholder="{{ filter.range_max | money_without_currency }}" min="0">
+                      </label>
+                    </div>
+                {%- endcase -%}
+              </div>
+            </details>
+          {%- endfor -%}
+        {%- else -%}
+          {%- comment -%} Fallback: hardcoded Type + Price for development without Shopify filters configured {%- endcomment -%}
+          <details class="filter-group" open>
+            <summary class="filter-group-head">
+              <span class="filter-group-title">Type</span>
+              <span class="filter-group-icon" aria-hidden="true"></span>
+            </summary>
+            <div class="filter-group-body">
+              <ul class="filter-options-list">
+                {%- assign types = 'Red,White,Rose,Sparkling' | split: ',' -%}
+                {%- for type in types -%}
+                  <li>
+                    <label class="filter-option">
+                      <input type="checkbox" name="filter.p.product_type" value="{{ type }}">
+                      <span class="filter-option-label">{{ type }}</span>
+                    </label>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            </div>
+          </details>
+          <details class="filter-group">
+            <summary class="filter-group-head">
+              <span class="filter-group-title">Price</span>
+              <span class="filter-group-icon" aria-hidden="true"></span>
+            </summary>
+            <div class="filter-group-body">
+              <div class="filter-price-range">
+                <label class="filter-price-field">
+                  <span>Min</span>
+                  <input type="number" name="filter.v.price.gte" placeholder="0" min="0">
+                </label>
+                <label class="filter-price-field">
+                  <span>Max</span>
+                  <input type="number" name="filter.v.price.lte" placeholder="1000" min="0">
+                </label>
+              </div>
+            </div>
+          </details>
+        {%- endif -%}
+      </div>
+
+      <div class="filter-drawer-footer">
+        <button type="reset" class="filter-btn-clear">Clear all</button>
+        <button type="submit" class="filter-btn-apply">
+          Show <span data-result-count>{{ result_count | default: collection.products_count }}</span> results
+        </button>
+      </div>
+    </form>
+  </aside>
+</div>
