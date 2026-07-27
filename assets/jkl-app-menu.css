@@ -315,6 +315,15 @@
     width: calc(100% - 15px) !important;
     max-width: none !important;
   }
+
+  .column-container {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .sp-menu-mobile > li, .menu-child > li, .sp-menu-mobile > li, .sp-submenu > li, .menu-child > li {
+    border-bottom: none !important;
+  }
 }
 
 

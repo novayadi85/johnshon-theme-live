@@ -72,6 +72,8 @@ class HeaderDrawer extends Component {
 
     if (!summary) return;
 
+    this.#closeSearchDialog();
+    this.#blurSearchFocus();
     summary.setAttribute('aria-expanded', 'true');
 
     this.preventInitialAccordionAnimations(details);
@@ -113,6 +115,8 @@ class HeaderDrawer extends Component {
 
     if (!summary) return;
 
+    this.#closeSearchDialog();
+    this.#blurSearchFocus();
     summary.setAttribute('aria-expanded', 'false');
     details.classList.remove('menu-open');
     this.refs.menuDrawer.classList.remove('menu-drawer--has-submenu-opened');
@@ -127,6 +131,8 @@ class HeaderDrawer extends Component {
         reset(details);
         if (details === this.refs.details) {
           removeTrapFocus();
+          this.#blurSearchFocus();
+          summary.focus({ preventScroll: true });
           const openDetails = this.querySelectorAll('details[open]:not(accordion-custom > details)');
           openDetails.forEach(reset);
         } else {
@@ -135,6 +141,26 @@ class HeaderDrawer extends Component {
       },
       { subtree: false }
     );
+  }
+
+  #blurSearchFocus() {
+    const activeElement = document.activeElement;
+    if (
+      activeElement instanceof HTMLElement &&
+      (activeElement.matches('input[type="search"], .search-bar__input, [ref="searchInput"]') ||
+        activeElement.closest('predictive-search-component, .search-modal, .jkl-search'))
+    ) {
+      activeElement.blur();
+    }
+  }
+
+  #closeSearchDialog() {
+    const searchModal = document.getElementById('search-modal');
+    const dialog = searchModal?.querySelector('dialog');
+
+    if (dialog instanceof HTMLDialogElement && dialog.open && 'closeDialog' in searchModal) {
+      searchModal.closeDialog();
+    }
   }
 
   /**

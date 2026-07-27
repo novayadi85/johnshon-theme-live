@@ -446,7 +446,34 @@
       resetLayer3();
     }
 
+    function resetNavSearchState() {
+      overlay.querySelectorAll(".nav-col-main").forEach(function (col) {
+        var input = col.querySelector('.nav-search input[type="search"]');
+        var mostSearched = col.querySelector("[data-nav-most-searched]");
+        var results = col.querySelector("[data-nav-search-results]");
+
+        col.classList.remove("is-searching");
+        if (input) {
+          var shouldBlur = document.activeElement === input;
+          input.value = "";
+          if (shouldBlur) {
+            requestAnimationFrame(function () {
+              input.blur();
+            });
+          }
+        }
+        if (mostSearched) mostSearched.hidden = false;
+        if (results) {
+          results.hidden = true;
+          results.innerHTML = "";
+        }
+      });
+    }
+
+    window.__resetJklNavSearchState = resetNavSearchState;
+
     function openMenu() {
+      resetNavSearchState();
       overlay.classList.add("open");
       document.body.style.overflow = "hidden";
       document.querySelectorAll('[data-menu-trigger]').forEach(function (btn) {
@@ -473,6 +500,7 @@
     function close() {
       overlay.classList.remove("open");
       resetLayer2();
+      resetNavSearchState();
       document.body.style.overflow = "";
       document.querySelectorAll('[data-menu-trigger]').forEach(function (btn) {
         btn.classList.remove("is-open");
@@ -602,6 +630,7 @@
         // console.log('overlayLink:', overlayLink);
         if (overlayLink) {
           // Open the menu
+          if (window.__resetJklNavSearchState) window.__resetJklNavSearchState();
           overlay.classList.add("open");
           document.body.style.overflow = "hidden";
           document.querySelectorAll('[data-menu-trigger]').forEach(function (btn) {
