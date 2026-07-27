@@ -975,6 +975,43 @@ button {
   z-index: 2;
 }
 
+.product-card .product-sticker {
+  position: absolute;
+  top: 126px;
+  right: 84px;
+  z-index: 3;
+  width: 88px;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--color-cream);
+  font-family: 'Gascogne', serif;
+  font-size: 18px;
+  font-weight: 300;
+  line-height: 0.95;
+  text-align: center;
+}
+
+.product-card .product-sticker--best-seller {
+  background-color: var(--color-burgundy);
+}
+
+.product-card .product-sticker--other {
+  background-color: #534524;
+}
+
+.product-card .product-sticker::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border: 1px solid rgba(255, 252, 246, 0.85);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+
 .product-card .card-meta {
   position: absolute;
   top: 0;
@@ -2308,6 +2345,10 @@ button {
   left: 0;
   right: auto;
   z-index: 5;
+}
+
+.plp-list .product-card .product-sticker {
+  display: none;
 }
 
 .plp-list .product-card .image-container {
@@ -4459,17 +4500,166 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
     gap: 40px;
   }
 
+  .plp-product-list.plp-grid.active {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+  }
+
   .plp-grid .product-card {
     width: 100%;
-    height: 466px;
+    min-width: 0;
+    height: auto;
+    min-height: 0;
+    overflow: hidden;
   }
 
   .plp-grid .product-card .image-container {
-    height: 264px;
+    height: 276px;
+    padding: 12px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .plp-grid .product-card .product-image {
+    height: 280px;
+    margin-top: 8px;
+  }
+
+  .plp-grid .product-card .bottle-shadow {
+    top: 94px;
+    width: 44px;
+    height: 220px;
+  }
+
+  .plp-grid .product-card .card-meta {
+    left: 12px;
+    top: 0;
+    gap: 18px;
+  }
+
+  .plp-grid .product-card .badges {
+    gap: 7px;
+  }
+
+  .plp-grid .product-card .rating .points,
+  .plp-grid .product-card .rating .points-label,
+  .plp-grid .product-card .rating .reviewer,
+  .plp-grid .product-card .rating .stars {
+    font-size: 10px;
+    line-height: 1.15;
+  }
+
+  .plp-grid .product-card .product-sticker {
+    top: 112px;
+    left: calc(50% + 16px);
+    right: auto;
+    width: 85px;
+    font-size: 14px;
+  }
+
+  .plp-grid .product-card .member-banner {
+    z-index: 2;
+    bottom: 365px;
+  }
+
+  .plp-grid .product-card .member-banner-bar {
+    display: block;
+    z-index: 1;
+  }
+
+  .plp-grid .product-card .wishlist-icon {
+    top: 0;
+    right: 12px;
   }
 
   .plp-grid .product-card .card-bottom {
+    position: relative;
+    inset: auto;
     height: auto;
+    min-height: 0;
+    margin: 0;
+    padding: 10px 12px 12px;
+  }
+
+  .plp-grid .product-card .product-info .winery {
+    margin-bottom: 4px;
+  }
+
+  .plp-grid .product-card .product-info .wine-name {
+    margin: 0;
+    line-height: 1.18;
+  }
+
+  .plp-grid .product-card .product-info .wine-description {
+    display: none;
+  }
+
+  .plp-grid .product-card .price-section {
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .plp-grid .product-card .actions {
+    gap: 8px;
+  }
+
+  .plp-grid .product-card .actions form {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .plp-grid .quantity-selector {
+    width: 86px;
+    gap: 12px;
+    flex: 0 0 86px;
+  }
+
+  .plp-grid .btn-add-to-basket {
+    width: 100%;
+    min-height: 44px;
+    padding: 12px 14px 9px;
+    font-size: 18px;
+  }
+
+  .plp-grid .plp-pricing {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .plp-grid .plp-price-row {
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .plp-grid .plp-price {
+    font-size: 26px;
+    line-height: 1;
+  }
+
+  .plp-grid .plp-price-label,
+  .plp-grid .plp-club-note,
+  .plp-grid .plp-member-label,
+  .plp-grid .plp-currency {
+    font-size: 11px;
+  }
+
+  .plp-grid .plp-member-prices {
+    gap: 3px;
+    margin-top: 0;
+  }
+
+  .plp-grid .plp-member-value {
+    font-size: 14px;
+  }
+
+  .plp-grid .save-badge,
+  .plp-grid .plp-save-badge,
+  .product-info .wine-name .plp-save-badge {
+    font-size: 10px;
+    padding: 3px 5px;
   }
 
   .plp-list {
@@ -5904,4 +6094,3 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
     border-radius: 2px;
   }
 }
-

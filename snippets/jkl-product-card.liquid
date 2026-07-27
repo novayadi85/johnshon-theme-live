@@ -26,8 +26,20 @@
       <img class="product-image" src="{{ card_image | image_url: width: 400 }}" alt="{{ card_image.alt | default: product.title | escape }}" loading="lazy">
     {%- endif -%}
   </a>
+  {%- if collection_card -%}
+    {%- assign sticker_label = variant.metafields.custom.product_sticker.value | default: variant.metafields.custom.sticker.value | default: product.metafields.custom.product_sticker.value | default: product.metafields.custom.sticker.value | default: 'Best seller' -%}
+    {%- assign sticker_type = variant.metafields.custom.product_sticker_type.value | default: variant.metafields.custom.sticker_type.value | default: product.metafields.custom.product_sticker_type.value | default: product.metafields.custom.sticker_type.value | default: sticker_label -%}
+    {%- assign sticker_type_handle = sticker_type | handleize -%}
+    {%- if sticker_type_handle == 'best-seller' or sticker_type_handle == 'bestseller' -%}
+      {% render 'jkl-product-sticker-best-seller' %}
+    {%- else -%}
+      {% render 'jkl-product-sticker-other', label: sticker_label %}
+    {%- endif -%}
+  {%- endif -%}
   <div class="card-meta"><div class="badges">
-    <span class="badge highlight">Top choice by members</span>
+    {%- unless collection_card -%}
+      <span class="badge highlight">Top choice by members</span>
+    {%- endunless -%}
     <span class="badge">Trusted winery</span>
     <span class="badge">Critics pick</span>
   </div>

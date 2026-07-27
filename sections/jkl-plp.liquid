@@ -61,7 +61,7 @@
   <div class="plp-product-list plp-grid active" data-no-results="{{ 'content.no_products_found' | t }}" data-section-id="{{ section.id }}">
     {%- for product in collection.products -%}
       {%- for variant in product.variants -%}
-        {% render 'jkl-product-card', product: product, variant: variant %}
+        {% render 'jkl-product-card', product: product, variant: variant, collection_card: true %}
       {%- endfor -%}
     {%- endfor -%}
   </div>
