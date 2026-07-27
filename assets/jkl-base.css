@@ -942,6 +942,8 @@ button {
   overflow: hidden;
   position: relative;
   padding: 20px;
+  top: 25px;
+  z-index: 5;
 }
 
 .product-card .bottle-shadow {
@@ -962,8 +964,8 @@ button {
   height: 335px;
   object-fit: contain;
   position: relative;
-  z-index: 4;
-  margin-top: 11px;
+  z-index: 1;
+  margin-top: 6px;
 }
 
 .product-card .wishlist-icon {
@@ -977,9 +979,10 @@ button {
 
 .product-card .product-sticker {
   position: absolute;
-  top: 126px;
-  right: 84px;
-  z-index: 3;
+  top: 145px;
+  left: calc(50% + 20px);
+  right: auto;
+  z-index: 4;
   width: 88px;
   aspect-ratio: 1;
   display: flex;
@@ -1082,7 +1085,7 @@ button {
   font-size: 16px;
   color: var(--color-green-coal);
   white-space: nowrap;
-  z-index: 3;
+  z-index: 2;
 }
 
 .product-card .member-banner {
@@ -1092,10 +1095,7 @@ button {
 }
 
 .product-card .card-divider {
-  width: calc(100% - 40px);
-  height: 1px;
-  background-color: var(--color-stroke-dark-15);
-  margin: 0 auto;
+  display: none;
 }
 
 .product-card .card-bottom {
@@ -1107,9 +1107,18 @@ button {
   display: flex;
   flex-direction: column;
   background-color: var(--color-background);
-  border-top: 1px solid var(--color-stroke-dark-15);
   margin: 0 1px;
   z-index: 10;
+}
+
+.product-card .card-bottom::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20px;
+  right: 20px;
+  height: 1px;
+  background-color: var(--color-stroke-dark-15);
 }
 
 .product-card .product-info .winery {
@@ -2403,6 +2412,10 @@ button {
 
 .plp-list .product-card .card-bottom {
   display: contents;
+}
+
+.plp-list .product-card .card-bottom::before {
+  display: none;
 }
 
 .plp-list .product-card .image-container {
@@ -4580,6 +4593,11 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
     min-height: 0;
     margin: 0;
     padding: 10px 12px 12px;
+  }
+
+  .plp-grid .product-card .card-bottom::before {
+    left: 12px;
+    right: 12px;
   }
 
   .plp-grid .product-card .product-info .winery {
