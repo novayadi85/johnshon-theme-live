@@ -24,6 +24,8 @@
     <div class="bottle-shadow"></div>
     {%- if card_image != blank -%}
       <img class="product-image" src="{{ card_image | image_url: width: 400 }}" alt="{{ card_image.alt | default: product.title | escape }}" loading="lazy">
+    {%- else -%}
+      <img class="product-image product-image--placeholder" src="{{ 'no-pic.png' | asset_url }}" alt="{{ product.title | escape }}" loading="lazy">
     {%- endif -%}
   </a>
   {%- if collection_card -%}
@@ -43,16 +45,9 @@
     <span class="badge">Trusted winery</span>
     <span class="badge">Critics pick</span>
   </div>
-  {%- if top_review -%}
-    <div class="ratings">
-      <div class="rating">
-        <div class="points">{{ top_review.reviewscore }} Points</div>
-        <div class="points-label">Average score</div>
-        <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-        <div class="reviewer">{{ top_review.reviewer.value.showing_name }}</div>
-      </div>
-    </div>
-  {%- endif -%}
+  <div class="ratings">
+    {% render 'jkl-product-rating', review: top_review, product: product, variant: variant %}
+  </div>
   </div>
   {%- if variant.metafields.custom.show_member_price.value -%}
     <div class="member-banner">Member price — Member price — Member price — Member price — Member price</div>

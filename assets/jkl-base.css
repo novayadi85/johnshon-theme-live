@@ -2338,14 +2338,16 @@ button {
 
 .plp-list .product-card {
   width: 100%;
-  height: 225px;
+  height: 238px;
   border-left: none;
   border-right: none;
   border-bottom: 1px solid var(--color-stroke-dark-15);
   flex-direction: row;
   align-items: flex-start;
   padding-top: 20px;
+  padding-bottom: 16px;
   overflow: hidden;
+  gap: 0;
 }
 
 .plp-list .product-card .wishlist-icon {
@@ -2357,17 +2359,27 @@ button {
 }
 
 .plp-list .product-card .product-sticker {
-  display: none;
+  display: flex;
+  top: 35%;
+  left: 10px;
+  right: auto;
+  width: 58px;
+  font-size: 11px;
+  z-index: 4;
+}
+
+.plp-list .product-card .product-sticker::before {
+  inset: 4px;
 }
 
 .plp-list .product-card .image-container {
-  width: 145px;
+  width: 140px;
   height: 173px;
   flex-shrink: 0;
   padding: 0;
   position: relative;
   bottom: 7px;
-  z-index: 4;
+  z-index: 5;
   overflow: visible;
   top: 38px;
 }
@@ -2386,24 +2398,27 @@ button {
   position: static;
   display: flex;
   flex-direction: row;
-  gap: 80px;
-  margin-top: 62px;
+  gap: 48px;
+  margin-top: 56px;
   flex-shrink: 0;
 }
 
 .plp-list .product-card .badges {
-  width: 145px;
+  width: 120px;
   flex-shrink: 0;
   align-items: flex-start;
+  order: 2;
 }
 
 .plp-list .product-card .ratings {
-  width: 120px;
+  width: 100px;
   flex-shrink: 0;
+  order: 1;
 }
 
 .plp-list .product-card .rating .stars {
-  font-size: 18px;
+  font-size: 12px;
+  line-height: 1.2;
 }
 
 .plp-list .product-card .card-divider {
@@ -2423,8 +2438,8 @@ button {
 }
 
 .plp-list .product-card .product-info {
-  width: 350px;
-  margin-top: 61px;
+  width: 370px;
+  margin-top: 55px;
   flex-shrink: 0;
   order: 2;
 }
@@ -2437,23 +2452,27 @@ button {
   display: block;
   opacity: 0.6;
   max-height: none;
-  font-size: 12px;
-  line-height: 1.15;
+  font-size: 11px;
+  line-height: 1.2;
   overflow: hidden;
   text-overflow: ellipsis;
-  height: 41px;
-  margin-top: 24px;
+  height: 38px;
+  margin-top: 22px;
+  max-width: 320px;
 }
 
 .plp-list .product-card .price-section {
   margin-left: auto;
-  width: 352px;
-  flex-shrink: 0;
+  width: clamp(280px, 28vw, 360px);
+  flex: 1 1 clamp(280px, 28vw, 360px);
+  min-width: 360px;
+  max-width: 460px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   position: relative;
-  margin-top: 61px;
+  margin-top: 54px;
+  height: calc(100% - 54px - 16px);
   order: 5;
 }
 
@@ -2464,7 +2483,23 @@ button {
 }
 
 .plp-list .product-card .actions {
-  margin-top: -3px;
+  margin-top: auto;
+  margin-bottom: 0;
+  gap: 10px;
+}
+
+.plp-list .product-card .actions form {
+  flex: 1 1 auto;
+}
+
+.plp-list .quantity-selector {
+  width: 95px;
+  flex: 0 0 95px;
+}
+
+.plp-list .btn-add-to-basket {
+  width: 100%;
+  min-height: 44px;
 }
 
 .product-card .member-banner-bar {
@@ -2489,6 +2524,7 @@ button {
   padding: 8px 0px 5px;
   width: 226px;
   bottom: auto;
+  z-index: 2;
 }
 
 .plp-list .product-card .regular-prices {
