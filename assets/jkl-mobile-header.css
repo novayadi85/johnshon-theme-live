@@ -107,6 +107,7 @@
     justify-content: center;
     color: var(--color-green-coal);
     position: relative;
+    bottom: 10px;
   }
 
   /* Two SVGs inside: 1st = close (X), 2nd = hamburger.
@@ -148,5 +149,6 @@
     justify-content: center;
     color: var(--color-green-coal);
     text-decoration: none;
+    bottom: 10px;
   }
 }
