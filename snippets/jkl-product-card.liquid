@@ -7,9 +7,44 @@
 
 {%- comment -%} Reviews — same source as the PDP (shop.metaobjects.reviews by wsi) {%- endcomment -%}
 {%- assign product_wsi = product.metafields.custom.wsi -%}
-{%- assign matching_reviews = shop.metaobjects.reviews.values | where: 'wsi_object', product_wsi | sort: 'reviewscore' | reverse -%}
-{%- assign top_review = matching_reviews.first -%}
-
+{%- assign product_wsi_gid = product_wsi | append: '' -%}
+{%- assign matching_reviews = shop.metaobjects.reviews.values | where: 'wsi_object', product_wsi -%}
+{%- if matching_reviews.size == 0 -%}
+  {%- assign product_wsi_id = product_wsi.value.system.id | default: product_wsi.system.id | default: product_wsi -%}
+  {%- assign matching_reviews = shop.metaobjects.reviews.values | where: 'wsi_object.value.system.id', product_wsi_id -%}
+{%- endif -%}
+{%- assign reviews_to_check = matching_reviews -%}
+{%- assign manual_review_match = false -%}
+{%- if reviews_to_check.size == 0 and product_wsi_gid != blank -%}
+  {%- assign reviews_to_check = shop.metaobjects.reviews.values -%}
+  {%- assign manual_review_match = true -%}
+{%- endif -%}
+{%- assign final_matching_reviews_count = matching_reviews.size -%}
+{%- assign top_review = blank -%}
+{%- assign top_review_score = 0 -%}
+{%- for review in reviews_to_check -%}
+  {%- if manual_review_match -%}
+    {%- assign review_wsi_gid = review.wsi_object | append: '' -%}
+    {%- unless review_wsi_gid == product_wsi_gid -%}
+      {%- continue -%}
+    {%- endunless -%}
+    {%- assign final_matching_reviews_count = final_matching_reviews_count | plus: 1 -%}
+  {%- endif -%}
+  {%- assign review_score = review.reviewscore.value | default: review.reviewscore | plus: 0 -%}
+  {%- assign review_type = review.reviewtype.value | default: review.reviewtype | default: 'Points (value 0 to 100)' -%}
+  {%- assign review_type_handle = review_type | handleize -%}
+  {%- if review_type_handle contains 'star' -%}
+    {%- assign normalized_review_score = review_score | times: 100 | divided_by: 6 -%}
+  {%- elsif review_type_handle contains '20' -%}
+    {%- assign normalized_review_score = review_score | times: 5 -%}
+  {%- else -%}
+    {%- assign normalized_review_score = review_score -%}
+  {%- endif -%}
+  {%- if top_review == blank or normalized_review_score > top_review_score -%}
+    {%- assign top_review = review -%}
+    {%- assign top_review_score = normalized_review_score -%}
+  {%- endif -%}
+{%- endfor -%}
 <article class="product-card">
   {%- if variant.metafields.custom.show_member_price.value -%}
     <div class="member-banner-bar"></div>
@@ -64,6 +99,10 @@
       </div>
       <a href="{{ product.url }}?variant={{ variant.id }}" class="wine-name-link"><p class="wine-name">{{ variant.option1 }} {{ product.title }}</p></a>
       {%- assign collection_text = product.metafields.custom.collection_text | default: variant.metafields.custom.collection_text -%}
+      {%- comment -%} Metafeltet kan indeholde rich text. Et <p> inde i <p> brækker
+        kortets layout, så alle tags fjernes. Afsnit og <br> bliver til mellemrum,
+        så ord ikke klæber sammen når tags forsvinder. {%- endcomment -%}
+      {%- assign collection_text = collection_text | replace: '</p>', ' ' | replace: '<br>', ' ' | replace: '<br/>', ' ' | replace: '<br />', ' ' | strip_html | strip_newlines | strip -%}
       {%- if collection_text != blank -%}
         <p class="wine-description">{{ collection_text }}</p>
       {%- endif -%}
@@ -78,8 +117,8 @@
         {%- form 'product', product, id: 'jkl-product-form-{{ variant.id }}' -%}
           <input type="hidden" name="id" value="{{ variant.id }}">
           <input type="hidden" name="quantity" value="{% render 'qty-bulk-size', variant: variant %}" min="1" class="pdp-qty-value">  
-          <button type="submit" class="btn-add-to-basket">
-            {%- if product.available -%}{{ 'actions.add_to_cart' | t }} {%- else -%}{{ 'content.product_badge_sale' | t }}{%- endif -%}
+          <button type="submit" class="btn-add-to-basket"{% unless product.available %} disabled{% endunless %}>
+            {%- if product.available -%}{{ 'actions.add_to_cart' | t }} {%- else -%}{{ 'products.product.sold_out' | t }}{%- endif -%}
           </button>
         {%- endform -%}
       </div>

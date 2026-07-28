@@ -7,6 +7,11 @@
     var form = overlay.querySelector('#filterDrawerForm');
     var countEls = document.querySelectorAll('[data-filter-count]');
     var resultCountEls = overlay.querySelectorAll('[data-result-count]');
+    var sortSelect = document.querySelector('[data-filter-sort]');
+    var sortOverlay = document.getElementById('sortDrawerOverlay');
+    var sortOpenBtn = document.querySelector('[data-sort-drawer-open]');
+    var sortForm = sortOverlay ? sortOverlay.querySelector('#sortDrawerForm') : null;
+    var sortCurrentLabels = document.querySelectorAll('[data-sort-current-label]');
 
     function openDrawer() {
       overlay.classList.add('filter-open');
@@ -83,7 +88,52 @@
         if (input.value === '') return;
         params.append(input.name, input.value);
       });
+      if (sortSelect && sortSelect.value) {
+        params.set('sort_by', sortSelect.value);
+      }
       return params;
+    }
+
+    function selectedSortOption() {
+      if (!sortSelect) return null;
+      return sortSelect.options[sortSelect.selectedIndex] || null;
+    }
+
+    function syncSortUi() {
+      var option = selectedSortOption();
+      var label = option ? option.textContent : '';
+
+      sortCurrentLabels.forEach(function (el) {
+        el.textContent = label;
+      });
+
+      if (!sortForm || !sortSelect) return;
+      sortForm.querySelectorAll('[data-sort-radio]').forEach(function (radio) {
+        radio.checked = radio.value === sortSelect.value;
+      });
+    }
+
+    function openSortDrawer() {
+      if (!sortOverlay) return;
+      syncSortUi();
+      sortOverlay.classList.add('filter-open');
+      sortOverlay.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeSortDrawer() {
+      if (!sortOverlay) return;
+      sortOverlay.classList.remove('filter-open');
+      sortOverlay.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    function applySortValue(value) {
+      if (!sortSelect || !value) return;
+      sortSelect.value = value;
+      syncSortUi();
+      refreshResultCount();
+      closeSortDrawer();
     }
 
     var fetchToken = 0;
@@ -180,13 +230,107 @@
       }, 300);
     }
 
+    // Type-tabs over griddet. De ligger uden for drawer'en, men styrer de
+    // samme checkbokse, så der kun er én kilde til hvad der er valgt.
+    // Tabsene er single-select: et klik erstatter valget i stedet for at
+    // lægge til, i modsætning til drawer'ens checkbokse.
+    var tabWraps = document.querySelectorAll('[data-filter-tabs]');
+
+    function checkedValuesFor(name) {
+      var out = [];
+      if (!form) return out;
+      form.querySelectorAll('input[type="checkbox"]').forEach(function (input) {
+        if (input.name === name && input.checked) out.push(input.value);
+      });
+      return out;
+    }
+
+    // Spejler drawer'ens tilstand over i tabsene, så de to aldrig kan vise
+    // hver sit — også når filteret ændres inde i drawer'en.
+    function syncTabs() {
+      tabWraps.forEach(function (wrap) {
+        var allTab = wrap.querySelector('[data-tab-all]');
+        if (!allTab) return;
+        var active = checkedValuesFor(allTab.dataset.tabName);
+        wrap.querySelectorAll('.filter-tab').forEach(function (tab) {
+          var on = tab.hasAttribute('data-tab-all')
+            ? active.length === 0
+            : active.indexOf(tab.dataset.tabValue) !== -1;
+          tab.classList.toggle('active', on);
+        });
+      });
+    }
+
+    tabWraps.forEach(function (wrap) {
+      wrap.addEventListener('click', function (e) {
+        var tab = e.target.closest('.filter-tab');
+        // Uden form falder vi tilbage på tabbens href (virker uden JS).
+        if (!tab || !form) return;
+        e.preventDefault();
+
+        var name = tab.dataset.tabName;
+        var value = tab.dataset.tabValue;
+        var isAll = tab.hasAttribute('data-tab-all');
+
+        form.querySelectorAll('input[type="checkbox"]').forEach(function (input) {
+          if (input.name !== name) return;
+          var pick = !isAll && input.value === value;
+          input.checked = pick;
+          // En valgt værdi må aldrig være disabled af en tidligere nul-tælling.
+          if (pick) input.disabled = false;
+        });
+
+        syncTabs();
+        updateTotalCount();
+        updateLayerCounts();
+        refreshResultCount();
+      });
+    });
+
+    if (sortSelect) {
+      sortSelect.addEventListener('change', function () {
+        syncSortUi();
+        refreshResultCount();
+      });
+    }
+
+    if (sortOverlay && sortOpenBtn && sortForm) {
+      sortOpenBtn.addEventListener('click', openSortDrawer);
+      sortOverlay.querySelectorAll('[data-sort-drawer-close]').forEach(function (el) {
+        el.addEventListener('click', closeSortDrawer);
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && sortOverlay.classList.contains('filter-open')) closeSortDrawer();
+      });
+      sortForm.addEventListener('reset', function (e) {
+        e.preventDefault();
+        var defaultSort = sortForm.dataset.defaultSortBy;
+        sortForm.querySelectorAll('[data-sort-radio]').forEach(function (radio) {
+          radio.checked = radio.value === defaultSort;
+        });
+        applySortValue(defaultSort);
+      });
+      sortForm.addEventListener('change', function (e) {
+        var radio = e.target.closest('[data-sort-radio]');
+        if (!radio || !radio.checked) return;
+        applySortValue(radio.value);
+      });
+      sortForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var checked = sortForm.querySelector('[data-sort-radio]:checked');
+        if (checked) applySortValue(checked.value);
+      });
+    }
+
     if (form) {
       form.addEventListener('change', function () {
+        syncTabs();
         updateTotalCount();
         updateLayerCounts();
         refreshResultCount();
       });
       form.addEventListener('input', function () {
+        syncTabs();
         updateTotalCount();
         updateLayerCounts();
         refreshResultCount();
@@ -211,6 +355,7 @@
           li.style.display = '';
         });
 
+        syncTabs();
         updateTotalCount();
         updateLayerCounts();
         refreshResultCount();
@@ -223,8 +368,10 @@
       });
     }
 
+    syncTabs();
     updateTotalCount();
     updateLayerCounts();
+    syncSortUi();
   }
 
   if (document.readyState === 'loading') {

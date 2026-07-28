@@ -22,16 +22,31 @@
 
   <!-- Filter Bar -->
   <div class="plp-filter">
-    <div class="filter-left">
-      <a href="#" class="filter-tab active">All</a>
-      <a href="#" class="filter-tab">Red</a>
-      <a href="#" class="filter-tab">White</a>
-      <a href="#" class="filter-tab">Rose</a>
-      <a href="#" class="filter-tab">Sparkling</a>
-    </div>
+    {% render 'jkl-filter-tabs', filters: search.filters %}
     <div class="filter-right">
-      <button class="filter-sort">
-        <span>Sort by Top Rated</span>
+      {%- assign current_sort_by = search.sort_by | default: search.default_sort_by -%}
+      {%- assign current_sort_name = blank -%}
+      {%- for option in search.sort_options -%}
+        {%- if option.value == current_sort_by -%}
+          {%- assign current_sort_name = option.name -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {%- if current_sort_name == blank -%}
+        {%- assign current_sort_name = current_sort_by -%}
+      {%- endif -%}
+      <label class="filter-sort filter-sort-desktop">
+        <span>Sort by</span>
+        <select class="filter-sort-select" name="sort_by" data-filter-sort aria-label="Sort products">
+          {%- for option in search.sort_options -%}
+            <option value="{{ option.value | escape }}"{% if option.value == current_sort_by %} selected{% endif %}>{{ option.name }}</option>
+          {%- endfor -%}
+        </select>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.2"/>
+        </svg>
+      </label>
+      <button class="filter-sort filter-sort-mobile" type="button" data-sort-drawer-open aria-haspopup="dialog" aria-controls="sortDrawerOverlay">
+        <span>Sort by <span data-sort-current-label>{{ current_sort_name }}</span></span>
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.2"/>
         </svg>
@@ -90,6 +105,8 @@
   {%- else -%}
     {% render 'jkl-filter-drawer-expand', facets: search.filters, result_count: search.results_count, search_terms: search.terms %}
 {%- endcase -%}
+
+{% render 'jkl-sort-drawer', results: search %}
 
 <script>
   // Move each card's save badge up next to the wine name (same as PLP).

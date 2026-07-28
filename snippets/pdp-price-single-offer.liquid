@@ -12,9 +12,17 @@
     <div class="{{ scope }}-price-row">
       <span class="{{ scope }}-price">{% render 'format-amount', amount: single_price %}</span>
       <span class="{{ scope }}-currency">{{ currency | downcase }}</span>
-      <span class="save-badge">{{ 'jkl.save' | t }} {% render 'format-amount', amount: single_price_save_amount %}</span>
+      {%- unless scope == 'search' -%}
+        <span class="save-badge">{{ 'jkl.save' | t }} {% render 'format-amount', amount: single_price_save_amount %}</span>
+      {%- endunless -%}
     </div>
-    <span class="{{ scope }}-club-note">{{ 'jkl.price_per_bottle' | t }}</span>
+    {%- assign search_save_amount = single_price_save_amount | plus: 0 -%}
+    {%- if scope == 'search' and search_save_amount > 0 -%}
+      <span class="save-badge">Spar {% render 'format-amount', amount: single_price_save_amount %} {{ currency | downcase }}</span>
+    {%- endif -%}
+    {%- unless scope == 'search' -%}
+      <span class="{{ scope }}-club-note">{{ 'jkl.price_per_bottle' | t }}</span>
+    {%- endunless -%}
   </div>
 
   <div class="{{ scope }}-member-prices">

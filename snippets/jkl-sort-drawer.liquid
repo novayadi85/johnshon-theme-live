@@ -1,0 +1,41 @@
+{%- liquid
+  assign current_sort_by = results.sort_by | default: results.default_sort_by
+  assign default_sort_by = results.default_sort_by
+-%}
+
+<div class="filter-drawer-overlay sort-drawer-overlay" id="sortDrawerOverlay" aria-hidden="true">
+  <button class="filter-backdrop" type="button" data-sort-drawer-close aria-label="Close sort"></button>
+  <aside class="filter-drawer sort-drawer" role="dialog" aria-modal="true" aria-label="Sort products">
+    <form class="filter-drawer-form sort-drawer-form" id="sortDrawerForm" data-default-sort-by="{{ default_sort_by | escape }}">
+      <div class="filter-drawer-header">
+        <h2 class="filter-drawer-title">Sort by</h2>
+        <button class="filter-drawer-close" type="button" data-sort-drawer-close aria-label="Close sort"></button>
+      </div>
+
+      <div class="filter-drawer-body">
+        <ul class="filter-options-list sort-options-list">
+          {%- for option in results.sort_options -%}
+            <li>
+              <label class="filter-option sort-option">
+                <input
+                  type="radio"
+                  name="sort_by"
+                  value="{{ option.value | escape }}"
+                  data-sort-radio
+                  data-sort-label="{{ option.name | escape }}"
+                  {% if option.value == current_sort_by %}checked{% endif %}
+                >
+                <span class="filter-option-label">{{ option.name }}</span>
+              </label>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+
+      <div class="filter-drawer-footer">
+        <button class="filter-btn-clear" type="reset">Clear</button>
+        <button class="filter-btn-apply" type="submit">Apply</button>
+      </div>
+    </form>
+  </aside>
+</div>

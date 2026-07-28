@@ -55,12 +55,6 @@
             </li>
           {%- endif -%}
         </ul>
-        <div class="filter-drawer-footer">
-          <button type="reset" class="filter-btn-clear">Clear all</button>
-          <button type="submit" class="filter-btn-apply">
-            Show <span data-result-count>{{ result_count | default: collection.products_count }}</span> results
-          </button>
-        </div>
       </div>
 
       {%- comment -%} Sub layers: one per filter group {%- endcomment -%}
@@ -161,6 +155,12 @@
           </div>
         </div>
       {%- endif -%}
+      <div class="filter-drawer-footer">
+        <button type="reset" class="filter-btn-clear">Clear all</button>
+        <button type="submit" class="filter-btn-apply">
+          Show <span data-result-count>{{ result_count | default: collection.products_count }}</span> results
+        </button>
+      </div>
     </form>
   </aside>
 </div>

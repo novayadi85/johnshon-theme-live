@@ -131,13 +131,17 @@
 
 /* === Overlay === */
 
-.overlay {
-  background: rgba(49, 9, 18, 0.3);
+.overlay,
+.sp-overlay,
+.pdp-review-drawer__backdrop {
+  background: rgba(49, 9, 18, 0.3) !important;
   backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3px);
 }
 
-.overlay::after {
+.overlay::after,
+.sp-overlay::after,
+.pdp-review-drawer__backdrop::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -1300,6 +1304,15 @@ button {
   transition: opacity var(--transition);
 }
 
+/* Udsolgt: knappen er disabled i markup'en, så klik ikke kan sende
+   varen til kurven. Hover-reglen ovenfor overskrives, så knappen
+   ikke ser aktiv ud når musen er over den. */
+.btn-add-to-basket:disabled,
+.btn-add-to-basket:disabled:hover {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 /* === section: club sign up banner === */
 
 .club-banner {
@@ -2049,7 +2062,7 @@ button {
 /* === section: PLP top === */
 
 .plp-top {
-  padding: 64px 40px;
+  padding: 0 40px 64px;
   display: flex;
   justify-content: center;
 }
@@ -2165,6 +2178,40 @@ button {
   font-weight: 400;
   opacity: 0.5;
   cursor: pointer;
+}
+
+.filter-sort {
+  position: relative;
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
+.filter-sort-mobile {
+  display: none;
+  padding-right: 18px;
+}
+
+.filter-sort-select {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  max-width: 150px;
+  padding: 0 18px 0 0;
+}
+
+.filter-sort-select:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 2px;
+}
+
+.filter-sort svg {
+  position: absolute;
+  right: 0;
+  pointer-events: none;
 }
 
 .filter-sort img,
@@ -2621,6 +2668,12 @@ button {
   text-decoration: underline;
   font-weight: 500
   ;
+}
+
+@media screen and (max-width: 480px) {
+  .breadcrumbs {
+    padding: 16px;
+  }
 }
 
 .pdp-top-left {
@@ -3439,10 +3492,234 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
 }
 
 .pdp-review-link {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: inherit;
   font-size: 14px;
   font-weight: 500;
   text-decoration: underline;
   margin-top: 12px;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.pdp-review-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.pdp-review-drawer.is-open {
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.pdp-review-drawer__backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 180ms ease;
+}
+
+.pdp-review-drawer.is-open .pdp-review-drawer__backdrop {
+  opacity: 1;
+}
+
+.pdp-review-drawer__panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(478px, 100vw);
+  height: 100%;
+  background: #fffcf6;
+  color: var(--color-green-coal);
+  transform: translateX(100%);
+  transition: transform 220ms ease;
+  overflow-y: auto;
+  padding: 0;
+  outline: none;
+  scrollbar-color: rgba(var(--color-green-coal-rgb), 0.32) rgba(var(--color-green-coal-rgb), 0.08);
+  scrollbar-width: thin;
+}
+
+.pdp-review-drawer__panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.pdp-review-drawer__panel::-webkit-scrollbar-track {
+  background: rgba(var(--color-green-coal-rgb), 0.06);
+}
+
+.pdp-review-drawer__panel::-webkit-scrollbar-thumb {
+  background: rgba(var(--color-green-coal-rgb), 0.28);
+  border: 2px solid #fffcf6;
+  border-radius: 999px;
+}
+
+.pdp-review-drawer__panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--color-green-coal-rgb), 0.44);
+}
+
+.pdp-review-drawer.is-open .pdp-review-drawer__panel {
+  transform: translateX(0);
+}
+
+.pdp-review-drawer-open {
+  overflow: hidden;
+}
+
+.pdp-review-drawer__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  border-bottom: 1px solid rgba(var(--color-green-coal-rgb), 0.18);
+  padding: 18px 19px 13px;
+  margin-bottom: 37px;
+}
+
+.pdp-review-drawer__content {
+  padding: 0 19px 96px;
+}
+
+.pdp-review-drawer__title-row {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-width: 0;
+}
+
+.pdp-review-drawer__title {
+  font-family: 'Gascogne', serif !important;
+  font-size: 26px !important;
+  line-height: 1.05 !important;
+  font-weight: 300 !important;
+  margin: 0 !important;
+}
+
+.pdp-review-drawer__average {
+  display: inline-flex;
+  align-items: center;
+  min-height: 25px;
+  background: var(--color-green-coal);
+  color: var(--color-green-gold);
+  border-radius: 2px;
+  padding: 4px 8px 3px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.pdp-review-drawer__close {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: 28px;
+  line-height: 1;
+  padding: 0;
+}
+
+.pdp-review-drawer__bottom-close {
+  appearance: none;
+  position: sticky;
+  bottom: 18px;
+  left: calc(100% - 61px);
+  z-index: 2;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(var(--color-green-coal-rgb), 0.2);
+  border-radius: 50%;
+  background: #fffcf6;
+  color: var(--color-green-coal);
+  box-shadow: 0 10px 26px rgba(var(--color-green-coal-rgb), 0.18);
+  cursor: pointer;
+  font-size: 28px;
+  line-height: 1;
+  margin-top: -62px;
+  margin-bottom: 18px;
+  padding: 0;
+}
+
+.pdp-review-drawer.show-bottom-close .pdp-review-drawer__bottom-close {
+  display: flex;
+}
+
+.pdp-review-drawer__bottom-close.is-nudging-up {
+  animation: pdp-review-bottom-close-nudge 1000ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes pdp-review-bottom-close-nudge {
+  0% {
+    transform: translateY(0);
+  }
+
+  38% {
+    transform: translateY(-50px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.pdp-review-drawer__item {
+  scroll-margin-top: 94px;
+  border-bottom: 1px solid rgba(var(--color-green-coal-rgb), 0.18);
+  padding-bottom: 21px;
+  margin-bottom: 27px;
+}
+
+.pdp-review-drawer__item:last-child {
+  border-bottom: 0;
+  margin-bottom: 0;
+}
+
+.pdp-review-drawer__score {
+  display: block;
+  font-family: 'Gascogne', serif;
+  font-size: 21px;
+  line-height: 1.15;
+  margin-bottom: 3px;
+}
+
+.pdp-review-drawer__critic {
+  display: block;
+  font-size: 14px;
+  line-height: 1.35;
+  margin-bottom: 31px;
+}
+
+.pdp-review-drawer__vintage {
+  display: block;
+  font-size: 12px;
+  line-height: 1.35;
+  margin-bottom: 13px;
+}
+
+.pdp-review-drawer__text {
+  font-size: 16px;
+  line-height: 1.34;
+}
+
+.pdp-review-drawer__text p {
+  margin: 0 0 18px;
+}
+
+.pdp-review-drawer__text p:last-child {
+  margin-bottom: 0;
 }
 
 /* === section: PDP the winery === */
@@ -4534,6 +4811,14 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
   .filter-right .filter-sort span,
   .filter-right .filter-btn span {
     font-size: 14px;
+  }
+
+  .filter-sort-desktop {
+    display: none;
+  }
+
+  .filter-sort-mobile {
+    display: flex;
   }
 
   .view-switcher {

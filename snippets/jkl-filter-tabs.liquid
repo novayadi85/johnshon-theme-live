@@ -1,0 +1,74 @@
+{%- comment -%}
+  Type-tabs til PLP og søgesiden. Bygges af det storefront-filter der dækker
+  vintype, så rækken altid matcher det drawer'en tilbyder.
+
+  Accepterer:
+    filters — collection.filters eller search.filters
+
+  Tabsene er single-select: et klik erstatter det aktive valg i stedet for at
+  lægge til. jkl-filter-drawer.js spejler klikket over i drawer-formens
+  checkbokse og genbruger dens AJAX-opdatering, så tabs, drawer, grid og URL
+  altid viser det samme. href'en peger på den rigtige filtrerede URL, så
+  tabsene også virker uden JS.
+{%- endcomment -%}
+
+{%- liquid
+  assign tab_found = false
+
+  comment
+    Foretræk metafelt-filteret for vintype. Falder tilbage på det første
+    filter med 'type' i param_name, så et product_type-filter også fanges.
+  endcomment
+  for f in filters
+    if f.param_name == 'filter.p.m.custom.type'
+      assign tab_filter = f
+      assign tab_found = true
+    endif
+  endfor
+
+  unless tab_found
+    for f in filters
+      if tab_found == false and f.param_name contains 'type'
+        assign tab_filter = f
+        assign tab_found = true
+      endif
+    endfor
+  endunless
+
+  comment
+    Én type giver ingen valgmulighed — kun "Alle vine" og den ene tab, der
+    fører til samme resultat. Så skjules rækken helt.
+  endcomment
+  assign tab_value_count = 0
+  if tab_found
+    for value in tab_filter.values
+      if value.count > 0 or value.active
+        assign tab_value_count = tab_value_count | plus: 1
+      endif
+    endfor
+    if tab_value_count < 2
+      assign tab_found = false
+    endif
+  endif
+-%}
+
+<div class="filter-left"{% if tab_found %} data-filter-tabs{% endif %}>
+  {%- if tab_found -%}
+    <a
+      href="{{ tab_filter.url_to_remove }}"
+      class="filter-tab{% if tab_filter.active_values.size == 0 %} active{% endif %}"
+      data-tab-name="{{ tab_filter.param_name }}"
+      data-tab-all
+    >{{ 'jkl.all_wines' | t }}</a>
+    {%- for value in tab_filter.values -%}
+      {%- if value.count > 0 or value.active -%}
+        <a
+          href="{% if value.active %}{{ value.url_to_remove }}{% else %}{{ value.url_to_add }}{% endif %}"
+          class="filter-tab{% if value.active %} active{% endif %}"
+          data-tab-name="{{ value.param_name }}"
+          data-tab-value="{{ value.value | escape }}"
+        >{{ value.label }}</a>
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+</div>

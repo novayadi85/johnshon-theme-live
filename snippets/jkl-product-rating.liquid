@@ -1,10 +1,17 @@
-{%- assign rating_score = review.reviewscore | default: variant.metafields.custom.rating_score.value | default: variant.metafields.custom.rating_score | default: product.metafields.custom.rating_score.value | default: product.metafields.custom.rating_score | default: '97' -%}
+{%- assign rating_score = review.reviewscore.value | default: review.reviewscore | default: variant.metafields.custom.rating_score.value | default: variant.metafields.custom.rating_score | default: product.metafields.custom.rating_score.value | default: product.metafields.custom.rating_score -%}
+{%- if rating_score != blank -%}
 {%- assign rating_label = label | default: 'Average score' -%}
-{%- assign reviewer_name = review.reviewer.value.showing_name | default: variant.metafields.custom.reviewer_name.value | default: variant.metafields.custom.reviewer_name | default: product.metafields.custom.reviewer_name.value | default: product.metafields.custom.reviewer_name | default: 'Jasper Morris' -%}
+{%- assign reviewer_name = review.reviewer.value.showing_name | default: review.reviewer.value.name | default: variant.metafields.custom.reviewer_name.value | default: variant.metafields.custom.reviewer_name | default: product.metafields.custom.reviewer_name.value | default: product.metafields.custom.reviewer_name -%}
+
 
 <div class="rating">
-  <div class="points">{{ rating_score }} Points</div>
+  <div class="points">{% render 'jkl-review-display', review: review, part: 'label' %}</div>
   <div class="points-label">{{ rating_label }}</div>
-  <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-  <div class="reviewer">{{ reviewer_name }}</div>
+  <div class="stars" aria-label="{% render 'jkl-review-display', review: review, part: 'star_count' %} out of 6 stars">
+    {% render 'jkl-review-display', review: review, part: 'stars' %}
+  </div>
+  {%- if reviewer_name != blank -%}
+    <div class="reviewer">{{ reviewer_name }}</div>
+  {%- endif -%}
 </div>
+{%- endif -%}

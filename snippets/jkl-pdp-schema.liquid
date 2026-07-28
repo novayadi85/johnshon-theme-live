@@ -7,11 +7,11 @@
 
 {%- assign current_variant = product.selected_or_first_available_variant -%}
 {%- assign vendor = product.metafields.custom.vendor.value.name | default: product.vendor -%}
-{%- assign country = product.metafields.custom.country.value.name -%}
-{%- assign region = product.metafields.custom.region.value.name -%}
-{%- assign subregion = product.metafields.custom.sub_region.value.name -%}
-{%- assign district = product.metafields.custom.district.value.name -%}
-{%- assign wine_type = product.metafields.custom.type.value.type -%}
+{%- assign country = product.metafields.custom.country.value.h1 | default: product.metafields.custom.country.value.name -%}
+{%- assign region = product.metafields.custom.region.value.h1 | default: product.metafields.custom.region.value.name -%}
+{%- assign subregion = product.metafields.custom.sub_region.value.h1 | default: product.metafields.custom.sub_region.value.name -%}
+{%- assign district = product.metafields.custom.district.value.h1 | default: product.metafields.custom.district.value.name -%}
+{%- assign wine_type = product.metafields.custom.type.value.h1 | default: product.metafields.custom.type.value.type -%}
 {%- assign volume = product.metafields.custom.volume -%}
 {%- assign clean_description = product.description | strip_html | strip_newlines | strip -%}
 

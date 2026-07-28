@@ -2,9 +2,7 @@
   Compact horizontal result card for the live search overlay — laid out to the
   Figma spec (node 1:2006, 440×103): image (30px @ left 24), info block @ left 78
   (width 362) with vendor (Helvetica 12) + title (Helvetica Medium 14), and a
-  price column (Gascogne 24).
-  Price is a simple money value for now — the full bundle/save price block
-  (`pdp-price`) is a follow-up.
+  price column (Gascogne 24). Price uses the same pricing logic as the PDP.
 {%- endcomment -%}
 {%- assign variant = product.selected_or_first_available_variant -%}
 {%- assign winery = product.metafields.custom.vendor.value.name | default: product.vendor -%}
@@ -22,6 +20,8 @@
       {%- endif -%}
       <span class="jkl-search-card__title">{{ variant.option1 }} {{ product.title }}</span>
     </span>
-    <span class="jkl-search-card__price">{{ product.price | money }}</span>
+    <span class="jkl-search-card__price">
+      {% render 'pdp-price', product: product, variant: variant, scope: 'search', force_full: true %}
+    </span>
   </span>
 </a>

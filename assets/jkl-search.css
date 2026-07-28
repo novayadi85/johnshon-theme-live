@@ -269,6 +269,108 @@ body.jkl-search-open .search-bar {
   white-space: nowrap;
 }
 
+.jkl-search-card__price .search-pricing {
+  display: grid;
+  grid-template-columns: max-content max-content;
+  grid-template-areas:
+    "old bottle"
+    "price bottle"
+    "save bottle";
+  align-items: center;
+  justify-content: end;
+  gap: 3px;
+  margin: 0;
+  text-align: left;
+}
+
+.jkl-search-card__price .search-price-section {
+  display: contents;
+}
+
+.jkl-search-card__price .search-price-row {
+  grid-area: price;
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: 5px;
+  margin: 0;
+}
+
+.jkl-search-card__price .search-price {
+  font-family: 'Gascogne', serif;
+  font-size: 24px;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.jkl-search-card__price .search-currency {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 300;
+}
+
+.jkl-search-card__price .search-club-note {
+  grid-area: bottle;
+  display: block;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1;
+  opacity: 0.72;
+  text-align: right;
+  margin-left: 8px;
+}
+
+.jkl-search-card__price .save-badge {
+  grid-area: save;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  background: #C6B066;
+  color: var(--color-green-coal);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1;
+  justify-self: start;
+  padding: 3px 6px;
+  white-space: nowrap;
+}
+
+.jkl-search-card__price .search-member-prices {
+  grid-area: old;
+  display: flex;
+  justify-content: flex-end;
+  justify-self: end;
+  margin: 0;
+}
+
+.jkl-search-card__price .search-member-price-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.jkl-search-card__price .search-member-price-row:not(:first-child),
+.jkl-search-card__price .search-member-label {
+  display: none;
+}
+
+.jkl-search-card__price .search-member-value {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 300;
+  line-height: 1;
+  opacity: 0.68;
+  text-decoration: line-through;
+}
+
+.jkl-search-card__price .search-price-label,
+.jkl-search-card__price .search-save-badge {
+  display: none;
+}
+
 /* Collection / page links */
 .jkl-search-links {
   list-style: none;

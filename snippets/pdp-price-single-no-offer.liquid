@@ -10,6 +10,8 @@
       <span class="{{ scope }}-price">{% render 'format-amount', amount: single_price %}</span>
       <span class="{{ scope }}-currency">{{ currency | downcase }}</span>
     </div>
-    <span class="{{ scope }}-club-note">{{ 'jkl.price_per_bottle' | t }}</span>
+    {%- unless scope == 'search' -%}
+      <span class="{{ scope }}-club-note">{{ 'jkl.price_per_bottle' | t }}</span>
+    {%- endunless -%}
   </div>
 </div>

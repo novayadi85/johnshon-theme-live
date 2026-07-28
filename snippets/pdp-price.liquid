@@ -130,6 +130,20 @@
         render 'round-percent', percent: member_price_save_percent_raw
       endcapture
   endcase
+
+  assign fallback_price = variant.price | divided_by: 100.0
+  if currency == blank
+    assign currency = cart.currency.iso_code
+  endif
+  if single_price == blank
+    assign single_price = fallback_price
+  endif
+  if bundle_price == blank
+    assign bundle_price = single_price
+  endif
+  if member_price == blank
+    assign member_price = single_price
+  endif
 -%}
 
 <div class="pdp-price-debug" style="padding:8px;background:#fffbe6;border:1px dashed #b58900;font-family:monospace;font-size:12px;margin-bottom:8px;display:none;grid-template-columns:max-content 1fr;gap:0 16px;">

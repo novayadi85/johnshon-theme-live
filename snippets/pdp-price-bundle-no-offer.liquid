@@ -10,9 +10,26 @@
     <div class="{{ scope }}-price-row">
       <span class="{{ scope }}-price">{% render 'format-amount', amount: bundle_price %}</span>
       <span class="{{ scope }}-currency">{{ currency | downcase }}</span>
-      <span class="save-badge">{{ 'jkl.save' | t }} {% render 'format-amount', amount: bundle_price_save_amount %}</span>
+      {%- unless scope == 'search' -%}
+        {% if bundle_price_save_amount > 0 %}
+          <span class="save-badge">{{ 'jkl.save' | t }} {% render 'format-amount', amount: bundle_price_save_amount %} {{ currency | downcase }}</span>
+        {% endif %}
+      {%- endunless -%}
     </div>
-    <span class="{{ scope }}-club-note">{{ 'jkl.price_per_bottle_bulk' | t: count: qty_bulk_size }}</span>
+    {%- assign search_save_amount = bundle_price_save_amount | plus: 0 -%}
+    {%- if scope == 'search' and search_save_amount > 0 -%}
+      <span class="save-badge">{{ 'jkl.save' | t }} {% render 'format-amount', amount: bundle_price_save_amount %} {{ currency | downcase }}</span>
+    {%- endif -%}
+    {%- assign search_qty_bulk_size = qty_bulk_size | plus: 0 -%}
+    {%- if scope != 'search' or search_qty_bulk_size > 0 -%}
+      <span class="{{ scope }}-club-note">
+        {%- if scope == 'search' -%}
+          {{ qty_bulk_size }}+ bottle
+        {%- else -%}
+          {{ 'jkl.price_per_bottle_bulk' | t: count: qty_bulk_size }}
+        {%- endif -%}
+      </span>
+    {%- endif -%}
   </div>
 
   <div class="{{ scope }}-member-prices">

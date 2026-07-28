@@ -3,19 +3,19 @@
 {%- assign vendor = product.metafields.custom.vendor.value.name -%}
 {%- assign vendor_link = product.metafields.custom.vendor.value.vendor_collection.value.url -%}
 
-{%- assign country = product.metafields.custom.country.value.name -%}
+{%- assign country = product.metafields.custom.country.value.h1 | default: product.metafields.custom.country.value.name -%}
 {%- assign country_link = product.metafields.custom.country.value.collection.value.url -%}
 
-{%- assign region = product.metafields.custom.region.value.name -%}
+{%- assign region = product.metafields.custom.region.value.h1 | default: product.metafields.custom.region.value.name -%}
 {%- assign region_link = product.metafields.custom.region.value.collection.value.url -%}
 
-{%- assign subregion = product.metafields.custom.sub_region.value.name -%}
+{%- assign subregion = product.metafields.custom.sub_region.value.h1 | default: product.metafields.custom.sub_region.value.name -%}
 {%- assign subregion_link = product.metafields.custom.sub_region.value.collection.value.url -%}
 
-{%- assign district = product.metafields.custom.district.value.name -%}
+{%- assign district = product.metafields.custom.district.value.h1 | default: product.metafields.custom.district.value.name -%}
 {%- assign district_link = product.metafields.custom.district.value.collection.value.url -%}
 
-{%- assign wine_type = product.metafields.custom.type.value.type -%}
+{%- assign wine_type = product.metafields.custom.type.value.h1 | default: product.metafields.custom.type.value.type -%}
 {%- assign wine_type_link = product.metafields.custom.type.value.collection.value.url -%}
 {%- assign size = product.metafields.custom.volume -%}
 
@@ -127,8 +127,9 @@
       <div class="pdp-ratings">
         {%- for review in matching_reviews limit: 3 -%}
           <div class="pdp-rating">
-            <span class="pdp-rating-score">{{ review.reviewscore }} Points</span>
-            <span class="pdp-rating-source">{{ review.reviewer.value.showing_name }}</span>
+            <span class="pdp-rating-score">{% render 'jkl-review-display', review: review, part: 'label' %}</span>
+            <span class="pdp-rating-stars" aria-label="{% render 'jkl-review-display', review: review, part: 'star_count' %} out of 6 stars">{% render 'jkl-review-display', review: review, part: 'stars' %}</span>
+            <span class="pdp-rating-source">{{ review.reviewer.value.showing_name | default: review.reviewer.value.name }}</span>
           </div>
         {%- endfor -%}
       </div>
@@ -242,12 +243,14 @@
         {%- endfor -%}
       </div>
     {%- endif -%}
-    <h2 class="pdp-notes-title">{{ 'jkl.reviews' | t }}</h2>
-    <div class="pdp-reviews-tags">
-      {%- for review in matching_reviews -%}
-        <span class="pdp-scent-tag"><span class="pdp-rating-score">{{ review.reviewscore }} points</span><br><span class="pdp-rating-source">{{ review.reviewer.value.showing_name }}</span></span>
-      {%- endfor -%}
-    </div>
+    {%- if matching_reviews.size > 0 -%}
+      <h2 class="pdp-notes-title">{{ 'jkl.reviews' | t }}</h2>
+      <div class="pdp-reviews-tags">
+        {%- for review in matching_reviews -%}
+          <span class="pdp-scent-tag"><span class="pdp-rating-score">{% render 'jkl-review-display', review: review, part: 'label' %}</span><br><span class="pdp-rating-source">{{ review.reviewer.value.showing_name | default: review.reviewer.value.name }}</span></span>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
   </div>
   <div class="pdp-notes-right">
     <h2 class="pdp-notes-title">{{ 'jkl.tasting_notes' | t }}</h2>
@@ -326,7 +329,7 @@
     {%- if vendor != blank -%}
       <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.winery' | t }}</span><span class="pdp-fact-value">{%- if vendor_link != blank -%}<a href="{{ vendor_link }}">{{ vendor }}</a>{%- else -%}{{ vendor }}{%- endif -%}</span></div>
     {%- endif -%}
-    <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.sku' | t }}</span><span class="pdp-fact-value">95676513256</span></div>
+    <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.sku' | t }}</span><span class="pdp-fact-value">{{ variant.sku }}</span></div>
     <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.maturity' | t }}</span><span class="pdp-fact-value">Ready to drink</span></div>
     {%- assign grapes = variant.metafields.custom.grapes.value -%}
     {%- if grapes != blank -%}
@@ -335,9 +338,9 @@
         {%- capture grape_list -%}
           {%- for grape in grapes -%}
             {%- if grape.collection.value != blank -%}
-              <a href="{{ grape.collection.value.url }}">{{ grape.name | strip_newlines | strip }}</a>{%- unless forloop.last %}, {% endunless -%}
+              <a href="{{ grape.collection.value.url }}">{{ grape.h1 | default: grape.name | strip_newlines | strip }}</a>{%- unless forloop.last %}, {% endunless -%}
             {%- else -%}
-              {{ grape.name | strip_newlines | strip }}{%- unless forloop.last %}, {% endunless -%} 
+              {{ grape.h1 | default: grape.name | strip_newlines | strip }}{%- unless forloop.last %}, {% endunless -%} 
             {%- endif -%}
           {%- endfor -%}
         {%- endcapture -%}
@@ -362,19 +365,62 @@
 </section>
 
 <!-- === Reviews === -->
+{{ 'jkl-review-drawer.js' | asset_url | script_tag }}
+
 <section class="pdp-reviews bg-olive color-cream">
   <p class="pdp-section-label">Ratings and reviews</p>
   <h2 class="pdp-section-title title">What Trusted Wine Critics Say About This Wine</h2>
   <div class="pdp-reviews-grid">
     {%- for review in matching_reviews -%}
       <article class="pdp-review-card">
-        <span class="pdp-review-score">{{ review.reviewscore }} Points</span>
-        <span class="pdp-review-critic">{{ review.reviewer.value.showing_name }}</span>
+        <span class="pdp-review-score">{% render 'jkl-review-display', review: review, part: 'label' %}</span>
+        <span class="pdp-review-stars" aria-label="{% render 'jkl-review-display', review: review, part: 'star_count' %} out of 6 stars">{% render 'jkl-review-display', review: review, part: 'stars' %}</span>
+        <span class="pdp-review-critic">{{ review.reviewer.value.showing_name | default: review.reviewer.value.name }}</span>
         <span class="pdp-review-vintage">Vintage {{ review.vintage }}</span>
-        <p class="pdp-review-text">{{ review.reviewtext | metafield_tag }}</p>
-        <a href="#" class="pdp-review-link">Read full review</a>
+        <p class="pdp-review-text">{{ review.reviewtext | metafield_tag | truncate: 200 }}</p>
+        <button type="button" class="pdp-review-link" data-review-drawer-open data-review-index="{{ forloop.index0 }}">Read full review</button>
       </article>
     {%- endfor -%}
+  </div>
+  <div class="pdp-review-drawer" data-review-drawer aria-hidden="true">
+    <button type="button" class="pdp-review-drawer__backdrop" data-review-drawer-close aria-label="Close reviews"></button>
+    <aside class="pdp-review-drawer__panel" role="dialog" aria-modal="true" aria-labelledby="pdp-review-drawer-title" tabindex="-1">
+      <div class="pdp-review-drawer__header">
+        <div class="pdp-review-drawer__title-row">
+          <h2 id="pdp-review-drawer-title" class="pdp-review-drawer__title">Reviews</h2>
+          {%- if matching_reviews.size > 0 -%}
+            {%- assign drawer_total_score = 0 -%}
+            {%- for review in matching_reviews -%}
+              {%- assign review_score = review.reviewscore.value | default: review.reviewscore | plus: 0 -%}
+              {%- assign review_type = review.reviewtype.value | default: review.reviewtype | default: 'Points (value 0 to 100)' -%}
+              {%- assign review_type_handle = review_type | handleize -%}
+              {%- if review_type_handle contains 'star' -%}
+                {%- assign normalized_review_score = review_score | times: 100 | divided_by: 6 -%}
+              {%- elsif review_type_handle contains '20' -%}
+                {%- assign normalized_review_score = review_score | times: 5 -%}
+              {%- else -%}
+                {%- assign normalized_review_score = review_score -%}
+              {%- endif -%}
+              {%- assign drawer_total_score = drawer_total_score | plus: normalized_review_score -%}
+            {%- endfor -%}
+            {%- assign drawer_average_score = drawer_total_score | divided_by: matching_reviews.size | round -%}
+            <span class="pdp-review-drawer__average">Average {{ drawer_average_score }} Points</span>
+          {%- endif -%}
+        </div>
+        <button type="button" class="pdp-review-drawer__close" data-review-drawer-close aria-label="Close reviews">×</button>
+      </div>
+      <div class="pdp-review-drawer__content">
+        {%- for review in matching_reviews -%}
+          <article class="pdp-review-drawer__item" data-review-drawer-item="{{ forloop.index0 }}">
+            <span class="pdp-review-drawer__score">{% render 'jkl-review-display', review: review, part: 'label' %}</span>
+            <span class="pdp-review-drawer__critic">{{ review.reviewer.value.showing_name | default: review.reviewer.value.name }}</span>
+            <span class="pdp-review-drawer__vintage">Vintage {{ review.vintage }}</span>
+            <div class="pdp-review-drawer__text">{{ review.reviewtext | metafield_tag }}</div>
+          </article>
+        {%- endfor -%}
+      </div>
+      <button type="button" class="pdp-review-drawer__bottom-close" data-review-drawer-close aria-label="Close reviews">×</button>
+    </aside>
   </div>
 </section>
 

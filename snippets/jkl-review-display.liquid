@@ -1,0 +1,30 @@
+{%- assign review_score = review.reviewscore.value | default: review.reviewscore -%}
+{%- if review_score != blank -%}
+  {%- assign review_type = review.reviewtype.value | default: review.reviewtype | default: 'Points (value 0 to 100)' -%}
+  {%- assign review_type_handle = review_type | handleize -%}
+  {%- assign review_score_number = review_score | plus: 0 -%}
+  {%- assign star_count = 0 -%}
+  {%- assign review_unit = 'Points' -%}
+  {%- if review_type_handle contains 'star' -%}
+    {%- assign star_count = review_score_number | round -%}
+    {%- assign review_unit = 'Stars' -%}
+  {%- elsif review_type_handle contains '20' -%}
+    {%- assign star_count = review_score_number | times: 6 | divided_by: 20 | round -%}
+  {%- else -%}
+    {%- assign star_count = review_score_number | times: 6 | divided_by: 100 | round -%}
+  {%- endif -%}
+  {%- if star_count > 6 -%}
+    {%- assign star_count = 6 -%}
+  {%- elsif star_count < 0 -%}
+    {%- assign star_count = 0 -%}
+  {%- endif -%}
+  {%- if part == 'label' -%}
+    {{ review_score }} {{ review_unit }}
+  {%- elsif part == 'stars' -%}
+    {%- for star in (1..6) -%}
+      {%- if star <= star_count -%}&#9733;{%- else -%}&#9734;{%- endif -%}
+    {%- endfor -%}
+  {%- elsif part == 'star_count' -%}
+    {{ star_count }}
+  {%- endif -%}
+{%- endif -%}

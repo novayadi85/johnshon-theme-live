@@ -351,3 +351,12 @@
 .mobile-drawer:has(.drawer-menu.open)::before {
   opacity: 1;
 }
+
+
+.sp-overlay {
+
+}
+
+.sp-overlay.active {
+
+}
