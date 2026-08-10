@@ -113,18 +113,57 @@
           "injectMenu": true
         }
       },
-      "2746959839636703261": {
-        "type": "shopify://apps/verifyid-age-verification/blocks/app-embed-bankid/1c1b27f3-8f46-4860-8ae4-5afaf80b84b6",
-        "disabled": false,
-        "settings": {
-          "not_from_sweden": false
-        }
-      },
       "12148275624926300053": {
         "type": "shopify://apps/verifyid-age-verification/blocks/app-embed/1c1b27f3-8f46-4860-8ae4-5afaf80b84b6",
         "disabled": true,
         "settings": {
           "not_from_denmark": false
+        }
+      },
+      "2746959839636703261": {
+        "type": "shopify://apps/verifyid-age-verification/blocks/app-embed-bankid/1c1b27f3-8f46-4860-8ae4-5afaf80b84b6",
+        "disabled": true,
+        "settings": {
+          "not_from_sweden": false
+        }
+      },
+      "1707091546751407166": {
+        "type": "shopify://apps/siteloom-shop-helper/blocks/age-verification-embed/019999e1-0545-733f-9557-52332982c4ff",
+        "disabled": true,
+        "settings": {
+          "idura_domain": "jlk-wines.test.idura.broker",
+          "idura_client_id": "urn:my:application:identifier:842513",
+          "redirect_uri": "https://jklfinewines.se/pages/age-verify",
+          "country": "DK",
+          "ui_language": "da",
+          "min_age": "21",
+          "prompt_text": "For at handle på denne side skal du bekræfte din alder.",
+          "button_text": "Bekræft alder med MitID",
+          "success_text": "Verifikation gennemført. Du opfylder alderskravet.",
+          "fail_text": "Beklager, du opfylder ikke alderskravet for at handle på denne side.",
+          "error_text": "Der opstod en fejl under verifikationen. Prøv venligst igen."
+        }
+      },
+      "12671259355233065462": {
+        "type": "shopify://apps/communication-apps/blocks/age-verification-embed/019fb5fa-c8d9-76f6-a67b-fbe4f85324f7",
+        "disabled": false,
+        "settings": {
+          "idura_domain": "jlk-wines.test.idura.broker",
+          "idura_client_id": "urn:my:application:identifier:842513",
+          "verify_url": "https://communication-tool.on-forge.com/api/idura/age/verify",
+          "country": "SE",
+          "use_market_country": true,
+          "ui_language": "sv",
+          "use_market_language": true,
+          "min_age": "21",
+          "redirect_uri": "https://jklfinewines.se/",
+          "redirect_uri_map": "{\n  \"SE\": \"https://jklfinewines.se/\",\n  \"DK\": \"https://jklfinewines.dk/\",\n  \"NL\": \"https://jklfinewines.nl/\",\n  \"FI\": \"https://jklfinewines.fi/\",\n   \"LT\": \"https://jklfinewines.lt/\"\n}",
+          "prompt_text": "For at handle på denne side skal du bekræfte din alder.",
+          "button_text": "Bekræft alder med MitID",
+          "loading_text": "Verifikation behandles. Vent venligst...",
+          "success_text": "Verifikation gennemført. Du opfylder alderskravet.",
+          "fail_text": "Beklager, du opfylder ikke alderskravet for at handle på denne side.",
+          "error_text": "Der opstod en fejl under verifikationen. Prøv venligst igen."
         }
       }
     },

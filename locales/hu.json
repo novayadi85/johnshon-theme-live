@@ -353,6 +353,24 @@
     "hello": "HU - hej",
     "hello_s": "HU - hej tesret"
   },
+  "customer": {
+    "login_page": {
+      "title": "Bejelentkezés",
+      "email": "E-mail-cím",
+      "password": "Jelszó",
+      "sign_in": "Bejelentkezés",
+      "forgot_password": "Elfelejtette a jelszavát?",
+      "submit": "Beküldés",
+      "cancel": "Mégse",
+      "guest_title": "Folytatás vendégként",
+      "guest_continue": "Folytatás vendégként"
+    },
+    "recover_password": {
+      "title": "Jelszó visszaállítása",
+      "subtext": "E-mailt küldünk Önnek a jelszó visszaállításához.",
+      "success": "E-mailt küldtünk Önnek egy hivatkozással a jelszó frissítéséhez."
+    }
+  },
   "jkl": {
     "grape": "Szőlőfajta",
     "grapes": "Szőlőfajták",
@@ -389,6 +407,7 @@
     "sku": "SKU",
     "maturity": "Érettség",
     "the_wine": "A borról",
+    "the_winery": "A borászat",
     "ratings_and_reviews": "Értékelések",
     "rating_headline": "Mit mondanak a borszakértők erről a borról",
     "read_full_review": "Teljes értékelés elolvasása",

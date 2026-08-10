@@ -353,6 +353,24 @@
     "hello": "ZH-CN - hej",
     "hello_s": "ZH-CN - hej tesret"
   },
+  "customer": {
+    "login_page": {
+      "title": "登录",
+      "email": "电子邮件",
+      "password": "密码",
+      "sign_in": "登录",
+      "forgot_password": "忘记密码?",
+      "submit": "提交",
+      "cancel": "取消",
+      "guest_title": "以访客身份继续",
+      "guest_continue": "以访客身份继续"
+    },
+    "recover_password": {
+      "title": "重置密码",
+      "subtext": "我们将向您发送一封电子邮件以重置密码。",
+      "success": "我们已向您发送一封包含更新密码链接的电子邮件。"
+    }
+  },
   "jkl": {
     "grape": "葡萄品种",
     "grapes": "葡萄品种",
@@ -389,6 +407,7 @@
     "sku": "SKU",
     "maturity": "适饮期",
     "the_wine": "关于此酒",
+    "the_winery": "酒庄",
     "ratings_and_reviews": "评分与评价",
     "rating_headline": "权威酒评家对这款酒的评价",
     "read_full_review": "阅读完整评价",

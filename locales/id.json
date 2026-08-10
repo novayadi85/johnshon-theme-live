@@ -353,6 +353,24 @@
     "hello": "ID - hej",
     "hello_s": "ID - hej tesret"
   },
+  "customer": {
+    "login_page": {
+      "title": "Masuk",
+      "email": "Email",
+      "password": "Sandi",
+      "sign_in": "Masuk",
+      "forgot_password": "Lupa kata sandi?",
+      "submit": "Kirim",
+      "cancel": "Batal",
+      "guest_title": "Lanjutkan sebagai tamu",
+      "guest_continue": "Lanjutkan sebagai tamu"
+    },
+    "recover_password": {
+      "title": "Atur ulang kata sandi Anda",
+      "subtext": "Kami akan mengirimkan email untuk mengatur ulang kata sandi Anda.",
+      "success": "Kami telah mengirimkan email berisi tautan untuk memperbarui kata sandi Anda."
+    }
+  },
   "jkl": {
     "grape": "Varietas anggur",
     "grapes": "Varietas anggur",
@@ -389,6 +407,7 @@
     "sku": "SKU",
     "maturity": "Kematangan",
     "the_wine": "Tentang anggur ini",
+    "the_winery": "Produsen",
     "ratings_and_reviews": "Penilaian dan ulasan",
     "rating_headline": "Pendapat kritikus anggur tepercaya tentang anggur ini",
     "read_full_review": "Baca ulasan lengkap",

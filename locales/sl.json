@@ -367,6 +367,24 @@
     "hello": "SL - hej",
     "hello_s": "SL - hej tesret"
   },
+  "customer": {
+    "login_page": {
+      "title": "Vpis",
+      "email": "E-poštni naslov",
+      "password": "Geslo",
+      "sign_in": "Vpis",
+      "forgot_password": "Ste pozabili geslo?",
+      "submit": "Pošlji",
+      "cancel": "Prekliči",
+      "guest_title": "Nadaljuj kot gost",
+      "guest_continue": "Nadaljuj kot gost"
+    },
+    "recover_password": {
+      "title": "Ponastavitev gesla",
+      "subtext": "Poslali vam bomo e-pošto za ponastavitev gesla.",
+      "success": "Poslali smo vam e-pošto s povezavo za posodobitev gesla."
+    }
+  },
   "jkl": {
     "grape": "Sorta grozdja",
     "grapes": "Sorte grozdja",
@@ -403,6 +421,7 @@
     "sku": "SKU",
     "maturity": "Zrelost",
     "the_wine": "O vinu",
+    "the_winery": "Proizvajalec",
     "ratings_and_reviews": "Ocene",
     "rating_headline": "Kaj o tem vinu pravijo priznani vinski kritiki",
     "read_full_review": "Preberi celotno oceno",

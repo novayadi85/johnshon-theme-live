@@ -360,6 +360,24 @@
     "hello": "FR - hej",
     "hello_s": "FR - hej tesret"
   },
+  "customer": {
+    "login_page": {
+      "title": "Se connecter",
+      "email": "E-mail",
+      "password": "Mot de passe",
+      "sign_in": "Se connecter",
+      "forgot_password": "Mot de passe oublié ?",
+      "submit": "Soumettre",
+      "cancel": "Annuler",
+      "guest_title": "Continuer en tant qu'invité",
+      "guest_continue": "Continuer en tant qu'invité"
+    },
+    "recover_password": {
+      "title": "Réinitialiser votre mot de passe",
+      "subtext": "Nous vous enverrons un e-mail pour réinitialiser votre mot de passe.",
+      "success": "Nous vous avons envoyé un e-mail contenant un lien pour mettre à jour votre mot de passe."
+    }
+  },
   "jkl": {
     "grape": "Cépage",
     "grapes": "Cépages",
@@ -396,6 +414,7 @@
     "sku": "SKU",
     "maturity": "Apogée",
     "the_wine": "À propos du vin",
+    "the_winery": "Le producteur",
     "ratings_and_reviews": "Notes et avis",
     "rating_headline": "Ce que les critiques de vin de référence disent de ce vin",
     "read_full_review": "Lire l'avis complet",

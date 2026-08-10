@@ -353,6 +353,24 @@
     "hello": "JA - hej",
     "hello_s": "JA - hej tesret"
   },
+  "customer": {
+    "login_page": {
+      "title": "ログイン",
+      "email": "メールアドレス",
+      "password": "パスワード",
+      "sign_in": "ログイン",
+      "forgot_password": "パスワードをお忘れですか?",
+      "submit": "送信",
+      "cancel": "キャンセル",
+      "guest_title": "ゲストとして続ける",
+      "guest_continue": "ゲストとして続ける"
+    },
+    "recover_password": {
+      "title": "パスワードをリセットする",
+      "subtext": "パスワードをリセットするためのメールをお送りします。",
+      "success": "パスワードを更新するためのリンクを記載したメールをお送りしました。"
+    }
+  },
   "jkl": {
     "grape": "ブドウ品種",
     "grapes": "ブドウ品種",
@@ -389,6 +407,7 @@
     "sku": "SKU",
     "maturity": "飲み頃",
     "the_wine": "このワインについて",
+    "the_winery": "生産者",
     "ratings_and_reviews": "評価とレビュー",
     "rating_headline": "信頼できるワイン評論家によるこのワインの評価",
     "read_full_review": "レビュー全文を読む",

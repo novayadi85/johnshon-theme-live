@@ -353,6 +353,24 @@
     "hello": "TR - hej",
     "hello_s": "TR - hej tesret"
   },
+  "customer": {
+    "login_page": {
+      "title": "Giriş yapın",
+      "email": "E-posta",
+      "password": "Parola",
+      "sign_in": "Giriş yapın",
+      "forgot_password": "Şifrenizi mi unuttunuz?",
+      "submit": "Gönder",
+      "cancel": "İptal",
+      "guest_title": "Misafir olarak devam edin",
+      "guest_continue": "Misafir olarak devam et"
+    },
+    "recover_password": {
+      "title": "Şifrenizi sıfırlayın",
+      "subtext": "Şifrenizi sıfırlamanız için size bir e-posta göndereceğiz.",
+      "success": "Şifrenizi güncellemeniz için bağlantı içeren bir e-posta gönderdik."
+    }
+  },
   "jkl": {
     "grape": "Üzüm çeşidi",
     "grapes": "Üzüm çeşitleri",
@@ -389,6 +407,7 @@
     "sku": "SKU",
     "maturity": "Olgunluk",
     "the_wine": "Şarap hakkında",
+    "the_winery": "Üretici",
     "ratings_and_reviews": "Puanlar ve değerlendirmeler",
     "rating_headline": "Güvenilir şarap uzmanlarının bu şarap hakkındaki görüşleri",
     "read_full_review": "İncelemenin tamamını oku",

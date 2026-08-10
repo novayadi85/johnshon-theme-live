@@ -367,6 +367,24 @@
     "hello": "CS - hej",
     "hello_s": "CS - hej tesret"
   },
+  "customer": {
+    "login_page": {
+      "title": "Přihlásit se",
+      "email": "E-mail",
+      "password": "Heslo",
+      "sign_in": "Přihlásit se",
+      "forgot_password": "Zapomněli jste heslo?",
+      "submit": "Odeslat",
+      "cancel": "Zrušit",
+      "guest_title": "Pokračovat jako host",
+      "guest_continue": "Pokračovat jako host"
+    },
+    "recover_password": {
+      "title": "Obnovit heslo",
+      "subtext": "Zašleme vám e-mail pro obnovení hesla.",
+      "success": "Poslali jsme vám e-mail s odkazem pro aktualizaci hesla."
+    }
+  },
   "jkl": {
     "grape": "Odrůda",
     "grapes": "Odrůdy",
@@ -403,6 +421,7 @@
     "sku": "SKU",
     "maturity": "Zralost",
     "the_wine": "O víně",
+    "the_winery": "Vinařství",
     "ratings_and_reviews": "Hodnocení a recenze",
     "rating_headline": "Co o tomto víně říkají uznávaní vinní kritici",
     "read_full_review": "Přečíst celou recenzi",

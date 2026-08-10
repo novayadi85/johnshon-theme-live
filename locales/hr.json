@@ -360,6 +360,24 @@
     "hello": "HR - hej",
     "hello_s": "HR - hej tesret"
   },
+  "customer": {
+    "login_page": {
+      "title": "Prijava",
+      "email": "Adresa e-pošte",
+      "password": "Lozinka",
+      "sign_in": "Prijava",
+      "forgot_password": "Zaboravili ste lozinku?",
+      "submit": "Pošalji",
+      "cancel": "Odustani",
+      "guest_title": "Nastavi kao gost",
+      "guest_continue": "Nastavi kao gost"
+    },
+    "recover_password": {
+      "title": "Ponovno postavljanje lozinke",
+      "subtext": "Poslat ćemo vam e-poruku za ponovno postavljanje lozinke.",
+      "success": "Poslali smo vam e-poruku s poveznicom za ažuriranje lozinke."
+    }
+  },
   "jkl": {
     "grape": "Sorta grožđa",
     "grapes": "Sorte grožđa",
@@ -396,6 +414,7 @@
     "sku": "SKU",
     "maturity": "Zrelost",
     "the_wine": "O vinu",
+    "the_winery": "Proizvođač",
     "ratings_and_reviews": "Recenzije",
     "rating_headline": "Što o ovom vinu kažu cijenjeni vinski kritičari",
     "read_full_review": "Pročitaj cijelu recenziju",

@@ -18,6 +18,14 @@
 {%- assign wine_type = product.metafields.custom.type.value.h1 | default: product.metafields.custom.type.value.type -%}
 {%- assign wine_type_link = product.metafields.custom.type.value.collection.value.url -%}
 {%- assign size = product.metafields.custom.volume -%}
+{%- liquid
+  # Storflasker navngives i produkttitlen; standardflasken på 75 CL nævnes ikke.
+  assign size_cl = size | plus: 0
+  assign bottle_size_label = ''
+  if size_cl == 150
+    assign bottle_size_label = 'Magnum'
+  endif
+-%}
 
 {%- assign vintage = variant.metafields.custom.vintage -%}
 {%- assign alcohol_percentage = variant.metafields.custom.alcohol_percentage -%}
@@ -100,6 +108,15 @@
 {% render 'jkl-pdp-schema', product: product %}
 
 {%- assign product_wsi = product.metafields.custom.wsi -%}
+{%- liquid
+  # Årgangsvælgeren grupperes på WSI (samme vendor + vinnavn), ikke på Shopify-varianter:
+  # søskendeårgange og -flaskestørrelser ligger som separate produkter.
+  assign wsi_object = product_wsi.value
+  assign wsi_variants = wsi_object.variants.value | default: wsi_object.variants
+  if wsi_variants == blank
+    assign wsi_variants = product.variants
+  endif
+-%}
 {%- assign matching_reviews = shop.metaobjects.reviews.values | where: 'wsi_object', product_wsi | sort: 'reviewscore' | reverse -%}
 
 <!-- === PDP Top === -->
@@ -116,7 +133,7 @@
     {% if district %}
       <a href="{{ district_link }}">{{ district }}</a> / 
     {% endif %}  
-    {{ variant.option1 }} {{ product.title }}
+    {{ variant.option1 }} {{ product.title }}{% if bottle_size_label != '' %} - {{ bottle_size_label }}{% endif %}
   </div>
   <div class="pdp-top-left">
     <div class="pdp-meta">
@@ -159,34 +176,58 @@
         {%- endif -%}
       </p>
       <h1 class="pdp-product-name">
-        {{ variant.option1 }} {{ product.title }}
+        {{ variant.option1 }} {{ product.title }}{% if bottle_size_label != '' %} - {{ bottle_size_label }}{% endif %}
       </h1>
-      <div class="pdp-vintage-selector" data-section-id="{{ section.id }}">
-        {%- for product_variant in product.variants -%}
-          {%- liquid
-            assign variant_label = product_variant.title | replace: ' / ', ' &middot; '
-            if product_variant.title == 'Default Title'
-              assign variant_label = product_variant.metafields.custom.vintage.value | default: product_variant.metafields.custom.vintage | default: product_variant.option1
-            endif
-          -%}
-          <button
-            type="button"
-            class="pdp-vintage-btn{% if product_variant.id == variant.id %} active{% endif %}"
-            data-variant-id="{{ product_variant.id }}"
-            data-variant-url="{{ product_variant.url }}"
-            data-variant-available="{{ product_variant.available }}"
-            aria-pressed="{% if product_variant.id == variant.id %}true{% else %}false{% endif %}"
-          >
-            {{ variant_label }}
-          </button>
-        {%- endfor -%}
-      </div>
+      {%- if wsi_variants.size > 1 -%}
+        <div class="pdp-vintage-selector" data-section-id="{{ section.id }}">
+          {%- comment -%}
+            To gennemløb: den aktive variant renderes først, resten bagefter i deres
+            oprindelige rækkefølge. Holder knap-markup ét sted i stedet for duplikeret.
+          {%- endcomment -%}
+          {%- for pass in (1..2) -%}
+          {%- for product_variant in wsi_variants -%}
+            {%- if pass == 1 and product_variant.id != variant.id -%}{%- continue -%}{%- endif -%}
+            {%- if pass == 2 and product_variant.id == variant.id -%}{%- continue -%}{%- endif -%}
+            {%- liquid
+              assign variant_label = product_variant.title | replace: ' / ', ' &middot; '
+              if product_variant.title == 'Default Title'
+                assign variant_label = product_variant.metafields.custom.vintage.value | default: product_variant.metafields.custom.vintage | default: product_variant.option1
+              endif
+
+              # Flaskestørrelsen ligger på produktet, ikke varianten — samme WSI kan rumme
+              # flere størrelser af samme årgang, som ellers ville få identiske knapper.
+              assign variant_volume = product_variant.product.metafields.custom.volume.value | default: product_variant.product.metafields.custom.volume
+              assign variant_volume_cl = variant_volume | plus: 0
+              assign volume_label = ''
+              if variant_volume_cl == 150
+                assign volume_label = 'Magnum'
+              elsif variant_volume_cl > 0 and variant_volume_cl != 75
+                assign volume_label = variant_volume | append: ' CL'
+              endif
+              if volume_label != ''
+                assign variant_label = variant_label | append: ' - ' | append: volume_label
+              endif
+            -%}
+            <button
+              type="button"
+              class="pdp-vintage-btn{% if product_variant.id == variant.id %} active{% endif %}"
+              data-variant-id="{{ product_variant.id }}"
+              data-variant-url="{{ product_variant.url }}"
+              data-variant-available="{{ product_variant.available }}"
+              aria-pressed="{% if product_variant.id == variant.id %}true{% else %}false{% endif %}"
+            >
+              {{ variant_label }}
+            </button>
+          {%- endfor -%}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
       
       {%- if short_description != blank -%}
         <div class="pdp-description">
           {{ short_description }}
         </div>
-        <a href="#" class="pdp-read-more">Read more</a>
+        <a href="#pdp-the-wine" class="pdp-read-more">{{ 'jkl.read_more' | t }}</a>
       {%- endif -%}
       
       {% render 'pdp-price', variant: variant %}
@@ -202,7 +243,7 @@
           <button type="submit" class="pdp-add-to-basket"
             data-logged-in="{% if customer %}true{% else %}false{% endif %}"
             {% unless variant.available %}disabled{% endunless %}>
-            {%- if variant.available -%}{{ 'actions.add_to_cart' | t }} {%- else -%}{{ 'content.product_badge_sale' | t }}{%- endif -%}
+            {%- if variant.available -%}{{ 'actions.add_to_cart' | t }} {%- else -%}{{ 'products.product.sold_out' | t }}{%- endif -%}
           </button>
         </div>
       {%- endform -%}
@@ -330,7 +371,6 @@
       <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.winery' | t }}</span><span class="pdp-fact-value">{%- if vendor_link != blank -%}<a href="{{ vendor_link }}">{{ vendor }}</a>{%- else -%}{{ vendor }}{%- endif -%}</span></div>
     {%- endif -%}
     <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.sku' | t }}</span><span class="pdp-fact-value">{{ variant.sku }}</span></div>
-    <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.maturity' | t }}</span><span class="pdp-fact-value">Ready to drink</span></div>
     {%- assign grapes = variant.metafields.custom.grapes.value -%}
     {%- if grapes != blank -%}
       <div class="pdp-fact">
@@ -356,7 +396,7 @@
 </section>
 
 <!-- === The Wine === -->
-<section class="pdp-the-wine color-green-coal">
+<section id="pdp-the-wine" class="pdp-the-wine color-green-coal">
   <p class="pdp-section-label">{{ 'jkl.the_wine' | t }}</p>
   <h2 class="pdp-section-title title">{{ description_headline }}</h2>
   <div class="pdp-section-body">
@@ -365,10 +405,11 @@
 </section>
 
 <!-- === Reviews === -->
+{%- if matching_reviews.size > 0 -%}
 {{ 'jkl-review-drawer.js' | asset_url | script_tag }}
 
 <section class="pdp-reviews bg-olive color-cream">
-  <p class="pdp-section-label">Ratings and reviews</p>
+  <p class="pdp-section-label">{{ 'jkl.ratings_and_reviews' | t }}</p>
   <h2 class="pdp-section-title title">What Trusted Wine Critics Say About This Wine</h2>
   <div class="pdp-reviews-grid">
     {%- for review in matching_reviews -%}
@@ -423,11 +464,13 @@
     </aside>
   </div>
 </section>
+{%- endif -%}
 
 <!-- === The Winery === -->
 <section class="pdp-the-winery color-green-coal">
-  <p class="pdp-section-label">The winery</p>
-  <h2 class="pdp-section-title title">Chateau de Chamirey is one of Mercurey's leading estates.</h2>
+  <p class="pdp-section-label">{{ 'jkl.the_winery' | t }}</p>
+  {%- assign winery_headline = product.metafields.custom.vendor.value.seo_title | default: vendor -%}
+  <h2 class="pdp-section-title title">{{ winery_headline }}</h2>
   <div class="pdp-section-body">
     {{ product.metafields.custom.vendor.value.short_top_text | metafield_tag }}
   </div>
@@ -450,31 +493,41 @@
 </section>
 
 <!-- === Wine Pairing === -->
+{%- comment -%}
+  foodpairing_products rummer over 1.800 poster, og shop.metaobjects…values
+  udleverer kun de første 50 til Liquid — et where-filter dér rammer aldrig
+  de fleste viner. Posternes handle er til gengæld systematisk opbygget som
+  {kategori-handle}-{wsi-handle}, fx "gront-vegetar-anima-negra-an2", så de
+  10 kategorier slås op direkte i stedet. Ingen paginering, ingen grænse.
+{%- endcomment -%}
+{%- assign wsi_handle = wsi_object.system.handle -%}
+{%- capture pairing_items -%}
+  {%- if wsi_handle != blank -%}
+    {%- for pairing_category in shop.metaobjects.foodpairing_categories.values -%}
+      {%- assign pairing_handle = pairing_category.system.handle | append: '-' | append: wsi_handle -%}
+      {%- assign pairing = shop.metaobjects.foodpairing_products[pairing_handle] -%}
+      {%- if pairing.text != blank -%}
+        <div class="pdp-pairing-item">
+          <h3>{{ pairing_category.name }}</h3>
+          <p>{{ pairing.text | newline_to_br }}</p>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+{%- endcapture -%}
+{%- assign has_pairings = pairing_items | strip -%}
+{%- if has_pairings != blank -%}
 <section class="pdp-wine-pairing color-green-coal">
-  <p class="pdp-section-label">Wine pairing</p>
+  <p class="pdp-section-label">{{ 'jkl.wine_pairing' | t }}</p>
   <h2 class="pdp-section-title title">Chateau de Chamirey is one of Mercurey's leading estates.</h2>
   <div class="pdp-section-body">
     <p class="pdp-pairing-intro">2022 Mercurey from Chateau de Chamirey is a classic red Burgundy made from 100% Pinot Noir. The 2022 vintage was generous and ripe, giving the wine a beautiful concentration of raspberry and cherry, balanced by elegant minerality and characteristically silky tannins.</p>
     <div class="pdp-pairing-list">
-      <div class="pdp-pairing-item">
-        <h3>Pork and veal</h3>
-        <p>The wine's soft tannins and red fruit profile pair beautifully with roasted pork tenderloin, veal chops, or a classic blanquette de veau. The subtle oak adds warmth without overpowering lighter meats.</p>
-      </div>
-      <div class="pdp-pairing-item">
-        <h3>Poultry and lighter meats</h3>
-        <p>A roast chicken with herbs, duck confit, or guinea fowl are natural partners. Pinot Noir's acidity cuts through richness, while its earthy undertones complement the savory depth of poultry dishes.</p>
-      </div>
-      <div class="pdp-pairing-item">
-        <h3>Lamb and game</h3>
-        <p>Grilled lamb cutlets, venison, or a slow-cooked rabbit stew match well with the wine's structure and earthy, spice-driven notes. These pairings bring out the wine's depth and finesse.</p>
-      </div>
-      <div class="pdp-pairing-item">
-        <h3>Cheese</h3>
-        <p>Try with Epoisses, Comté, or Brillat-Savarin. Burgundy Pinot Noir and washed-rind or nutty cheeses are a classic pairing — the wine's fruit and acidity balance the richness of the cheese.</p>
-      </div>
+      {{ pairing_items }}
     </div>
   </div>
 </section>
+{%- endif -%}
 
 <!-- === PDP Image Banner === -->
 <section class="pdp-image-banner color-cream">

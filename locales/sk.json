@@ -367,6 +367,24 @@
     "hello": "SK - hej",
     "hello_s": "SK - hej tesret"
   },
+  "customer": {
+    "login_page": {
+      "title": "Prihlásiť sa",
+      "email": "E-mail",
+      "password": "Heslo",
+      "sign_in": "Prihlásiť sa",
+      "forgot_password": "Zabudli ste heslo?",
+      "submit": "Odoslať",
+      "cancel": "Zrušiť",
+      "guest_title": "Pokračovať ako hosť",
+      "guest_continue": "Pokračovať ako hosť"
+    },
+    "recover_password": {
+      "title": "Obnoviť heslo",
+      "subtext": "Pošleme vám e-mail na obnovenie hesla.",
+      "success": "Poslali sme vám e-mail s odkazom na aktualizáciu hesla."
+    }
+  },
   "jkl": {
     "grape": "Odroda",
     "grapes": "Odrody",
@@ -403,6 +421,7 @@
     "sku": "SKU",
     "maturity": "Zrelosť",
     "the_wine": "O víne",
+    "the_winery": "Vinárstvo",
     "ratings_and_reviews": "Hodnotenia a recenzie",
     "rating_headline": "Čo o tomto víne hovoria uznávaní vinní kritici",
     "read_full_review": "Prečítať celú recenziu",

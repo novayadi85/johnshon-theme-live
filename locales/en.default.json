@@ -372,6 +372,24 @@
     "hello": "EN.DEFAULT - hej",
     "hello_s": "EN.DEFAULT - hej tesret"
   },
+  "customer": {
+    "login_page": {
+      "title": "Sign in",
+      "email": "Email",
+      "password": "Password",
+      "sign_in": "Sign in",
+      "forgot_password": "Forgot your password?",
+      "submit": "Submit",
+      "cancel": "Cancel",
+      "guest_title": "Continue as a guest",
+      "guest_continue": "Continue as guest"
+    },
+    "recover_password": {
+      "title": "Reset your password",
+      "subtext": "We'll send you an email to reset your password.",
+      "success": "We've sent you an email with a link to update your password."
+    }
+  },
   "jkl": {
     "grape": "Grape variety",
     "grapes": "Grape varieties",
@@ -410,6 +428,7 @@
     "sku": "SKU",
     "maturity": "Maturity",
     "the_wine": "About the wine",
+    "the_winery": "The winery",
     "ratings_and_reviews": "Ratings and reviews",
     "rating_headline": "What trusted wine critics say about this wine",
     "read_full_review": "Read the full review",

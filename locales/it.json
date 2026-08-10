@@ -360,6 +360,24 @@
     "hello": "IT - hej",
     "hello_s": "IT - hej tesret"
   },
+  "customer": {
+    "login_page": {
+      "title": "Accedi",
+      "email": "Email",
+      "password": "Password",
+      "sign_in": "Accedi",
+      "forgot_password": "Hai dimenticato la password?",
+      "submit": "Invia",
+      "cancel": "Annulla",
+      "guest_title": "Continua come ospite",
+      "guest_continue": "Continua come ospite"
+    },
+    "recover_password": {
+      "title": "Reimposta la tua password",
+      "subtext": "Ti invieremo un'email per reimpostare la tua password.",
+      "success": "Ti abbiamo inviato un'email con un link per aggiornare la tua password."
+    }
+  },
   "jkl": {
     "grape": "Vitigno",
     "grapes": "Vitigni",
@@ -396,6 +414,7 @@
     "sku": "SKU",
     "maturity": "Maturità",
     "the_wine": "Il vino",
+    "the_winery": "Il produttore",
     "ratings_and_reviews": "Valutazioni e recensioni",
     "rating_headline": "Cosa dicono di questo vino i critici enologici più autorevoli",
     "read_full_review": "Leggi la recensione completa",

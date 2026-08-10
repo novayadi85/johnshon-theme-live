@@ -360,6 +360,24 @@
     "hello": "PT-PT - hej",
     "hello_s": "PT-PT - hej tesret"
   },
+  "customer": {
+    "login_page": {
+      "title": "Iniciar sessão",
+      "email": "E-mail",
+      "password": "Palavra-passe",
+      "sign_in": "Iniciar sessão",
+      "forgot_password": "Esqueceu-se da palavra-passe?",
+      "submit": "Submeter",
+      "cancel": "Cancelar",
+      "guest_title": "Continuar como convidado",
+      "guest_continue": "Continuar como convidado"
+    },
+    "recover_password": {
+      "title": "Repor a sua palavra-passe",
+      "subtext": "Enviaremos um e-mail para repor a sua palavra-passe.",
+      "success": "Enviámos-lhe um e-mail com uma ligação para atualizar a sua palavra-passe."
+    }
+  },
   "jkl": {
     "grape": "Casta",
     "grapes": "Castas",
@@ -396,6 +414,7 @@
     "sku": "SKU",
     "maturity": "Maturação",
     "the_wine": "Sobre o vinho",
+    "the_winery": "O produtor",
     "ratings_and_reviews": "Críticas",
     "rating_headline": "O que dizem os críticos de vinho de confiança sobre este vinho",
     "read_full_review": "Ler a crítica completa",

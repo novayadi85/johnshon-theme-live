@@ -353,6 +353,24 @@
     "hello": "NB - hej",
     "hello_s": "NB - hej tesret"
   },
+  "customer": {
+    "login_page": {
+      "title": "Logg inn",
+      "email": "E-post",
+      "password": "Passord",
+      "sign_in": "Logg inn",
+      "forgot_password": "Glemt passordet ditt?",
+      "submit": "Send inn",
+      "cancel": "Avbryt",
+      "guest_title": "Fortsett som gjest",
+      "guest_continue": "Fortsett som gjest"
+    },
+    "recover_password": {
+      "title": "Tilbakestill passordet ditt",
+      "subtext": "Vi sender deg en e-post for å tilbakestille passordet ditt.",
+      "success": "Vi har sendt deg en e-post med en lenke for å oppdatere passordet ditt."
+    }
+  },
   "jkl": {
     "grape": "Druesort",
     "grapes": "Druesorter",
@@ -389,6 +407,7 @@
     "sku": "SKU",
     "maturity": "Drikkemodenhet",
     "the_wine": "Om vinen",
+    "the_winery": "Produsenten",
     "ratings_and_reviews": "Anmeldelser",
     "rating_headline": "Hva anerkjente vinkritikere sier om denne vinen",
     "read_full_review": "Les hele anmeldelsen",

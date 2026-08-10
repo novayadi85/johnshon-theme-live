@@ -1,0 +1,306 @@
+
+{%- comment -%}
+  Cancel order modal — "Fortryd din ordre".
+  Self-contained: includes its own overlay/dialog styling, open/close logic and
+  form submit handler, so it does not depend on the theme's modal framework.
+  Opened by any element with [data-action="open-modal"] pointing at cancel-order-modal.
+{%- endcomment -%}
+
+<div class="cancel-order-modal" aria-hidden="true" tabindex="-1" id="cancel-order-modal">
+  <div class="cancel-order-modal__overlay" data-action="close-modal"></div>
+  <div class="cancel-order-modal__dialog" role="dialog" aria-modal="true" aria-label="Fortryd din ordre">
+    <div class="cancel-order-modal__header">
+      <h2 class="cancel-order-modal__title heading h3">Fortryd din ordre</h2>
+      <button type="button" class="cancel-order-modal__close" data-action="close-modal" aria-label="{{ 'general.accessibility.close' | t }}">{%- render 'icon', icon: 'close' -%}</button>
+    </div>
+
+    <div class="cancel-order-modal__content">
+      <form class="cancel-order-form" novalidate>
+        <div class="cancel-order-form__row">
+          <label for="cancel-order-name" class="cancel-order-form__label">Navn</label>
+          <input id="cancel-order-name" type="text" class="cancel-order-form__field" name="name" autocomplete="name" required>
+        </div>
+
+        <div class="cancel-order-form__row">
+          <label for="cancel-order-email" class="cancel-order-form__label">E-mail</label>
+          <input id="cancel-order-email" type="email" class="cancel-order-form__field" name="email" autocomplete="email" required>
+        </div>
+
+        <div class="cancel-order-form__row">
+          <label for="cancel-order-number" class="cancel-order-form__label">Ordrenummer</label>
+          <input id="cancel-order-number" type="text" class="cancel-order-form__field" name="order_number" required>
+        </div>
+
+        <div class="cancel-order-form__row">
+          <label for="cancel-order-reason" class="cancel-order-form__label">Årsag</label>
+          <select id="cancel-order-reason" class="cancel-order-form__field" name="reason" required>
+            <option value="" disabled selected>Vælg en årsag</option>
+            <option value="customer">Jeg fortrød købet</option>
+            <option value="wrong_item">Jeg bestilte den forkerte vare</option>
+            <option value="delivery">Leveringstiden er for lang</option>
+            <option value="price">Jeg fandt den billigere et andet sted</option>
+            <option value="other">Andet</option>
+          </select>
+        </div>
+
+        <div class="cancel-order-form__row">
+          <label for="cancel-order-note" class="cancel-order-form__label">Uddyb gerne (valgfrit)</label>
+          <textarea id="cancel-order-note" class="cancel-order-form__field cancel-order-form__field--textarea" name="reason_note" rows="3"></textarea>
+        </div>
+
+        <p class="cancel-order-form__message" role="status" aria-live="polite" hidden></p>
+
+        <button type="submit" class="cancel-order-form__submit button button--primary">Send</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{%- style -%}
+  .cancel-order-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .25s ease, visibility .25s ease;
+  }
+  .cancel-order-modal[aria-hidden="false"] {
+    opacity: 1;
+    visibility: visible;
+  }
+  .cancel-order-modal__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, .5);
+  }
+  .cancel-order-modal__dialog {
+    position: relative;
+    background: #fff;
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 6px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, .2);
+    transform: translateY(12px);
+    transition: transform .25s ease;
+  }
+  .cancel-order-modal[aria-hidden="false"] .cancel-order-modal__dialog {
+    transform: translateY(0);
+  }
+  .cancel-order-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e5e5e5;
+  }
+  .cancel-order-modal__title {
+    margin: 0;
+    color: var(--color-text-main, #000000);
+  }
+  .cancel-order-modal__close {
+    background: none;
+    border: 0;
+    padding: 4px;
+    line-height: 0;
+    cursor: pointer;
+    color: inherit;
+  }
+  .cancel-order-modal__content {
+    padding: 24px;
+  }
+  .cancel-order-form__row {
+    margin-bottom: 16px;
+  }
+  .cancel-order-form__label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: .9rem;
+    color: var(--color-text-main, #000000);
+  }
+  .cancel-order-form__field {
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+  .cancel-order-form__field--textarea {
+    resize: vertical;
+    font-family: inherit;
+  }
+  .cancel-order-form__field:focus {
+    outline: none;
+    border-color: #888888;
+  }
+  .cancel-order-form__message {
+    margin: 0 0 16px;
+    padding: 12px 14px;
+    border-radius: 4px;
+    font-size: .9rem;
+  }
+  .cancel-order-form__message--success {
+    background: #e7f5ec;
+    color: #1c6b3c;
+  }
+  .cancel-order-form__message--error {
+    background: #fcebeb;
+    color: #a8261f;
+  }
+  .cancel-order-form__submit {
+    width: 100%;
+    padding: 10px 0px;
+  }
+  body.cancel-order-modal-open {
+    overflow: hidden;
+  }
+{%- endstyle -%}
+
+<script>
+  (function () {
+    var MODAL_ID = 'cancel-order-modal';
+    // Shopify app proxy — forwards to the communication app server-side.
+    var CANCEL_ORDER_ENDPOINT = '/apps/communication';
+
+    var modal = document.getElementById(MODAL_ID);
+    if (!modal) return;
+
+    function openModal() {
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('cancel-order-modal-open');
+      var firstField = modal.querySelector('input, button, [tabindex]');
+      if (firstField) firstField.focus();
+    }
+
+    function closeModal() {
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('cancel-order-modal-open');
+    }
+
+    // Open — any trigger pointing at this modal.
+    document.addEventListener('click', function (event) {
+      var opener = event.target.closest('[data-action="open-modal"]');
+      var openerTarget = opener && (
+        opener.getAttribute('aria-controls') ||
+        opener.getAttribute('data-modal-id') ||
+        opener.getAttribute('href')
+      );
+
+      if (openerTarget === '#' + MODAL_ID) {
+        openerTarget = MODAL_ID;
+      }
+
+      if (opener && openerTarget === MODAL_ID) {
+        event.preventDefault();
+        openModal();
+        return;
+      }
+      // Close — close button or overlay click inside this modal.
+      var closer = event.target.closest('[data-action="close-modal"]');
+      if (closer && modal.contains(closer)) {
+        event.preventDefault();
+        closeModal();
+      }
+    });
+
+    // Close on Escape.
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') {
+        closeModal();
+      }
+    });
+
+    // Form submit.
+    document.addEventListener('submit', function (event) {
+      var form = event.target.closest('.cancel-order-form');
+      if (!form) return;
+
+      event.preventDefault();
+
+      var submitButton = form.querySelector('.cancel-order-form__submit');
+      var messageEl = form.querySelector('.cancel-order-form__message');
+
+      function showMessage(text, isError) {
+        if (!messageEl) return;
+        messageEl.textContent = text;
+        messageEl.hidden = false;
+        messageEl.classList.toggle('cancel-order-form__message--error', !!isError);
+        messageEl.classList.toggle('cancel-order-form__message--success', !isError);
+      }
+
+      function getErrorMessage(error) {
+        var message = error && error.message ? error.message : '';
+
+        if (message === 'No order found for the given order number/email.') {
+          return 'Vi kunne ikke finde en ordre med det angivne ordrenummer og e-mail.';
+        }
+
+        return message || 'Noget gik galt. Prøv venligst igen senere.';
+      }
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      function value(name) {
+        var field = form.querySelector('[name="' + name + '"]');
+        return field ? field.value.trim() : '';
+      }
+
+      var payload = {
+        method: 'cancel_order',
+        // Customers type their order number by hand (e.g. "#1234") — strip the
+        // prefix and let the proxy resolve it against name/email.
+        order_id: value('order_number').replace(/^#/, ''),
+        reason: value('reason'),
+        reason_note: value('reason_note'),
+        name: value('name'),
+        email: value('email')
+      };
+
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.classList.add('button--loading');
+      }
+
+      fetch(CANCEL_ORDER_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+        .then(function (response) {
+          return response.json()
+            .catch(function () { return {}; })
+            .then(function (data) {
+              if (!response.ok || data.success === false || data.error) {
+                throw new Error(data.error || data.message || 'Request failed: ' + response.status);
+              }
+              return data;
+            });
+        })
+        .then(function () {
+          showMessage('Tak! Vi har modtaget din anmodning om at fortryde din ordre.', false);
+          form.reset();
+        })
+        .catch(function (error) {
+          console.error('Cancel order submit failed:', error);
+          showMessage(getErrorMessage(error), true);
+        })
+        .finally(function () {
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.classList.remove('button--loading');
+          }
+        });
+    });
+  })();
+</script>

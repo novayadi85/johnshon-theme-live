@@ -1,29 +1,144 @@
+{%- liquid
+  # Sproghåndtering ligger i sektionen: ét felt pr. sprog pr. tekst, valgt ud fra
+  # det aktive storefront-sprog. Ingen fallback — er feltet tomt, udelades teksten.
+  assign lang = request.locale.iso_code
+
+  assign key = 'label_' | append: lang
+  assign section_label = section.settings[key]
+
+  assign key = 'title_' | append: lang
+  assign section_title = section.settings[key]
+-%}
 <section class="product-carousel color-green-coal">
-  <div class="section-header">
-    <p class="section-label">Todays selection for you</p>
-    <h2 class="title">A curated selection based on what you love, right now.</h2>
-  </div>
+  {%- if section_label != blank or section_title != blank -%}
+    <div class="section-header">
+      {%- if section_label != blank -%}
+        <p class="section-label">{{ section_label }}</p>
+      {%- endif -%}
+      {%- if section_title != blank -%}
+        <h2 class="title">{{ section_title }}</h2>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
   <div class="product-list-wrapper">
   <div class="product-list">
-    {% render 'jkl-product-card' %}
-    {% render 'jkl-product-card' %}
-    {% render 'jkl-product-card' %}
+    {%- liquid
+      assign pool_collection = section.settings.collection | default: collections.all
+      assign wines_to_show = 5
+
+      # Liquid har ingen tilfældighedsfunktion. Dagen på året bruges som frø, så
+      # udvalget ligger fast gennem døgnet og skifter ved midnat — hvilket er
+      # netop det "Todays selection" lover. Ét tal at ændre hvis det skal rotere
+      # oftere: brug fx '%j%H' for i timen.
+      assign seed = 'now' | date: '%j' | plus: 0
+    -%}
+    {%- paginate pool_collection.products by 250 -%}
+      {%- liquid
+        assign pool = pool_collection.products
+        assign pool_size = pool.size
+        if pool_size < wines_to_show
+          assign wines_to_show = pool_size
+        endif
+      -%}
+      {%- if pool_size > 0 -%}
+        {%- assign start = seed | modulo: pool_size -%}
+        {%- for position in (1..wines_to_show) -%}
+          {%- comment -%} modulo får udvalget til at fortsætte fra starten når
+            frøet lander tæt på slutningen af kollektionen {%- endcomment -%}
+          {%- assign index = position | minus: 1 | plus: start | modulo: pool_size -%}
+          {% render 'jkl-product-card', product: pool[index] %}
+        {%- endfor -%}
+      {%- endif -%}
+    {%- endpaginate -%}
   </div>
   </div>
   <button class="nav-button nav-prev" aria-label="Previous">
-    <img src="https://www.figma.com/api/mcp/asset/c0dd75d7-8024-4fa2-a3ac-e05abff544b5" alt="Previous">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M15 4 7 12l8 8" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
   </button>
   <button class="nav-button nav-next" aria-label="Next">
-    <img src="https://www.figma.com/api/mcp/asset/12a3ddb9-029d-4dab-9469-8b946551e896" alt="Next">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M9 4l8 8-8 8" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
   </button>
 </section>
+
+<script src="{{ 'jkl-product-carousel.js' | asset_url }}" defer></script>
 
 {% schema %}
 {
   "name": "JKL Product Carousel",
   "tag": "section",
   "class": "jkl-product-carousel-section",
-  "settings": [],
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection to pick from",
+      "info": "Leave empty to use all products. Five are picked and rotated once a day."
+    },
+    {
+      "type": "header",
+      "content": "Svenska (sv)"
+    },
+    {
+      "type": "text",
+      "id": "label_sv",
+      "label": "Label",
+      "default": "Dagens urval till dig"
+    },
+    {
+      "type": "text",
+      "id": "title_sv",
+      "label": "Title",
+      "default": "Ett utvalt sortiment baserat på det du älskar, just nu."
+    },
+    {
+      "type": "header",
+      "content": "Deutsch (de)"
+    },
+    {
+      "type": "text",
+      "id": "label_de",
+      "label": "Label"
+    },
+    {
+      "type": "text",
+      "id": "title_de",
+      "label": "Title"
+    },
+    {
+      "type": "header",
+      "content": "Polski (pl)"
+    },
+    {
+      "type": "text",
+      "id": "label_pl",
+      "label": "Label"
+    },
+    {
+      "type": "text",
+      "id": "title_pl",
+      "label": "Title"
+    },
+    {
+      "type": "header",
+      "content": "English (en)"
+    },
+    {
+      "type": "text",
+      "id": "label_en",
+      "label": "Label",
+      "default": "Todays selection for you"
+    },
+    {
+      "type": "text",
+      "id": "title_en",
+      "label": "Title",
+      "default": "A curated selection based on what you love, right now."
+    }
+  ],
   "presets": [
     {
       "name": "JKL Product Carousel"

@@ -353,6 +353,24 @@
     "hello": "FI - hej",
     "hello_s": "FI - hej tesret"
   },
+  "customer": {
+    "login_page": {
+      "title": "Kirjaudu sisään",
+      "email": "Sähköpostiosoite",
+      "password": "Salasana",
+      "sign_in": "Kirjaudu sisään",
+      "forgot_password": "Unohditko salasanasi?",
+      "submit": "Lähetä",
+      "cancel": "Peruuta",
+      "guest_title": "Jatka vieraana",
+      "guest_continue": "Jatka vieraana"
+    },
+    "recover_password": {
+      "title": "Nollaa salasanasi",
+      "subtext": "Lähetämme sinulle sähköpostin salasanasi nollaamiseksi.",
+      "success": "Lähetimme sinulle sähköpostin, jossa on linkki salasanasi päivittämiseen."
+    }
+  },
   "jkl": {
     "grape": "Rypälelajike",
     "grapes": "Rypälelajikkeet",
@@ -389,6 +407,7 @@
     "sku": "SKU",
     "maturity": "Juomakypsyys",
     "the_wine": "Tietoa viinistä",
+    "the_winery": "Tuottaja",
     "ratings_and_reviews": "Arvostelut",
     "rating_headline": "Mitä luotetut viinikriitikot sanovat tästä viinistä",
     "read_full_review": "Lue koko arvostelu",

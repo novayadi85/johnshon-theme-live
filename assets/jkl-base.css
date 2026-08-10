@@ -926,8 +926,20 @@ button {
   display: flex;
   gap: 20px;
   align-items: center;
-  justify-content: center;
+  /* Vinduet er præcis tre kort bredt. Med center ville rækken blive centreret
+     og vise halve kort i begge sider; flex-start giver tre hele kort, og
+     resten hentes frem med pilene. Ved ombrydning under 1200px sættes
+     justify-content tilbage til center. */
+  justify-content: flex-start;
   transition: transform 0.5s ease;
+}
+
+/* I karrusellen skal kortene beholde deres fulde bredde og flyde ud over
+   vinduets kant, så pilene har noget at hente frem. Uden dette krymper flex
+   dem alle ind i vinduet. Scopet til .product-list, så PLP-gitteret — der
+   også er flex, men ombryder — ikke påvirkes. */
+.product-list .product-card {
+  flex-shrink: 0;
 }
 
 .product-card {
@@ -1735,7 +1747,13 @@ button {
 .story-list {
   display: flex;
   gap: 20px;
-  align-items: flex-start;
+  /* Kortene er bredere end skærmen tilsammen. justify-content: center gør at
+     rækken beskæres lige meget i begge sider, så det midterste kort — det der
+     ikke er tonet ned — står centreret. */
+  justify-content: center;
+  /* stretch (ikke flex-start) giver kortene samme højde, så knappen nederst
+     flugter på tværs af kort med forskellig tekstlængde. */
+  align-items: stretch;
   transition: transform 0.5s ease;
 }
 
@@ -1760,6 +1778,20 @@ button {
   height: 503px;
   border-radius: 2px;
   object-fit: cover;
+}
+
+/* margin-top: auto skubber knappen til bunden af kortet, så den flugter
+   uanset hvor lang producentteksten er. */
+.story-card .story-button {
+  align-self: flex-start;
+  margin-top: auto;
+}
+
+/* Producenter uden billede får en placeholder i samme højde, så teksten
+   under den flugter på tværs af kortene. */
+.story-card .story-image--placeholder {
+  background-color: rgba(var(--color-green-coal-rgb), 0.08);
+  fill: rgba(var(--color-green-coal-rgb), 0.22);
 }
 
 .story-card .story-info {
@@ -1812,6 +1844,23 @@ button {
   width: 6px;
   height: 12px;
   object-fit: contain;
+}
+
+/* Knappen har mørk baggrund, så chevronen skal være cremet — currentColor
+   ville ellers arve sektionens green-coal og blive usynlig. */
+.story-carousel .nav-button svg {
+  width: 12px;
+  height: 12px;
+  color: var(--color-cream);
+}
+
+.story-carousel .nav-button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.story-carousel .nav-button:disabled:hover {
+  opacity: 0.3;
 }
 
 .story-carousel .nav-prev {
@@ -1956,11 +2005,6 @@ button {
   gap: 40px;
 }
 
-/* Footer-columns skjult midlertidigt — fjern denne regel for at vise dem igen */
-.footer-column {
-  display: none;
-}
-
 .footer-column:nth-child(1) {
   width: 230px;
 }
@@ -2012,11 +2056,6 @@ button {
   font-size: 14px;
   font-weight: 300;
   line-height: 1.3;
-}
-
-/* Footer-kontakt (telefon + åbningstider) skjult midlertidigt — fjern denne regel for at vise igen */
-.footer-contact {
-  display: none;
 }
 
 .footer-bottom {
@@ -2804,7 +2843,7 @@ button {
 .pdp-vintage-selector {
   display: flex;
   gap: 8px;
-  margin-bottom: 0px;
+  margin-bottom: 40px;
 }
 
 .pdp-vintage-btn {
@@ -2829,7 +2868,6 @@ button {
 }
 
 .pdp-description {
-  margin-top: 40px;
   margin-bottom: 8px;
 }
 
@@ -3188,6 +3226,14 @@ button {
   opacity: 0.85;
 }
 
+/* Udsolgt: samme udtryk som .btn-add-to-basket på PLP'en. Hover-reglen
+   ovenfor overskrives, så knappen ikke ser aktiv ud under musen. */
+.pdp-add-to-basket:disabled,
+.pdp-add-to-basket:disabled:hover {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .pdp-points-info {
   font-size: 12px;
   margin-bottom: 24px;
@@ -3402,6 +3448,7 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
   padding: 100px 40px;
   max-width: 1440px;
   margin: 0 auto;
+  scroll-margin-top: var(--header-height, 94px);
 }
 
 .pdp-section-label {
@@ -3780,11 +3827,11 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
 .pdp-pairing-list {
   display: flex;
   flex-direction: column;
-  gap: 48px;
+  gap: 30px;
 }
 
 .pdp-pairing-item h3 {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 500;
   margin-bottom: 8px;
 }
@@ -3797,6 +3844,47 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
 .product-list-wrapper {
   width: 100%;
   overflow: hidden;
+}
+
+/* Pilene i produktkarrusellen. Sektionen er position: relative, og knapperne
+   placeres i dens 40px sidepadding, så de ikke dækker det yderste kort. */
+.product-carousel .nav-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--color-green-coal);
+  border-radius: 2px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.product-carousel .nav-button:hover {
+  opacity: 0.8;
+  transition: opacity var(--transition);
+}
+
+.product-carousel .nav-button svg {
+  width: 12px;
+  height: 12px;
+  color: var(--color-cream);
+}
+
+.product-carousel .nav-button:disabled,
+.product-carousel .nav-button:disabled:hover {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.product-carousel .nav-prev {
+  left: 4px;
+}
+
+.product-carousel .nav-next {
+  right: 4px;
 }
 
 /* === section: PDP image banner === */
@@ -3923,6 +4011,12 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
   .product-list {
     flex-wrap: wrap;
     justify-content: center;
+  }
+
+  /* Under 1200px ombrydes kortene til et gitter, så der er intet at pile
+     igennem. JavaScript rører heller ikke transformen her. */
+  .product-carousel .nav-button {
+    display: none;
   }
 
   .tasting-box-card .box-actions {
@@ -4413,6 +4507,9 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
 
   .story-list {
     gap: 18px;
+    /* På mobil scrolles der vandret. Centrering ville gøre det første kort
+       uopnåeligt i flere browsere, så rækken starter fra venstre her. */
+    justify-content: flex-start;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
@@ -4605,8 +4702,8 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
     width: 100%;
   }
 
-  .pdp-description {
-    margin-top: 24px;
+  .pdp-vintage-selector {
+    margin-bottom: 24px;
   }
 
   .pdp-pricing {
@@ -6433,3 +6530,10 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
     border-radius: 2px;
   }
 }
+
+.open-ordre__customer, .cancel-order-form__submit {
+  background: #ab2341cc;
+  padding: 10px 25px;
+  color: #fff;
+}
+

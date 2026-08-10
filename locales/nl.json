@@ -353,6 +353,24 @@
     "hello": "NL - hej",
     "hello_s": "NL - hej"
   },
+  "customer": {
+    "login_page": {
+      "title": "Inloggen",
+      "email": "E-mail",
+      "password": "Wachtwoord",
+      "sign_in": "Inloggen",
+      "forgot_password": "Wachtwoord vergeten?",
+      "submit": "Indienen",
+      "cancel": "Annuleren",
+      "guest_title": "Doorgaan als gast",
+      "guest_continue": "Doorgaan als gast"
+    },
+    "recover_password": {
+      "title": "Je wachtwoord opnieuw instellen",
+      "subtext": "We sturen je een e-mail om je wachtwoord opnieuw in te stellen.",
+      "success": "We hebben je een e-mail gestuurd met een link om je wachtwoord bij te werken."
+    }
+  },
   "jkl": {
     "grape": "Druivenras",
     "grapes": "Druivenrassen",
@@ -389,6 +407,7 @@
     "sku": "SKU",
     "maturity": "Drinkrijpheid",
     "the_wine": "Over de wijn",
+    "the_winery": "De producent",
     "ratings_and_reviews": "Beoordelingen",
     "rating_headline": "Wat vooraanstaande wijncritici over deze wijn zeggen",
     "read_full_review": "Lees de volledige beoordeling",

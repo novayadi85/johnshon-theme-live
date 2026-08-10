@@ -353,6 +353,24 @@
     "hello": "DE - hej",
     "hello_s": "DE - hej tesret"
   },
+  "customer": {
+    "login_page": {
+      "title": "Anmelden",
+      "email": "E-Mail-Adresse",
+      "password": "Passwort",
+      "sign_in": "Anmelden",
+      "forgot_password": "Passwort vergessen?",
+      "submit": "Senden",
+      "cancel": "Abbrechen",
+      "guest_title": "Als Gast fortfahren",
+      "guest_continue": "Als Gast fortfahren"
+    },
+    "recover_password": {
+      "title": "Passwort zurücksetzen",
+      "subtext": "Wir senden Ihnen eine E-Mail, um Ihr Passwort zurückzusetzen.",
+      "success": "Wir haben Ihnen eine E-Mail mit einem Link zum Aktualisieren Ihres Passworts gesendet."
+    }
+  },
   "jkl": {
     "grape": "Rebsorte",
     "grapes": "Rebsorten",
@@ -389,6 +407,7 @@
     "sku": "SKU",
     "maturity": "Trinkreife",
     "the_wine": "Über den Wein",
+    "the_winery": "Der Erzeuger",
     "ratings_and_reviews": "Bewertungen",
     "rating_headline": "Was renommierte Weinkritiker über diesen Wein sagen",
     "read_full_review": "Vollständige Bewertung lesen",

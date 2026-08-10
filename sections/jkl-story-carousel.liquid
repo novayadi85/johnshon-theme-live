@@ -1,50 +1,231 @@
+{%- liquid
+  # Overskrifterne håndteres i sektionen: ét felt pr. sprog, valgt ud fra det
+  # aktive storefront-sprog. Ingen fallback — er feltet tomt, udelades teksten.
+  # Selve producenterne kommer fra vendor-metaobjektet og oversættes af Shopify.
+  assign lang = request.locale.iso_code
+
+  assign key = 'label_' | append: lang
+  assign section_label = section.settings[key]
+
+  assign key = 'title_' | append: lang
+  assign section_title = section.settings[key]
+
+  assign key = 'button_label_' | append: lang
+  assign button_label = section.settings[key]
+-%}
 <section class="story-carousel bg-cream-color color-green-coal">
-  <div class="section-header">
-    <p class="section-label color-green-coal">Meet the producers</p>
-    <h2 class="title color-green-coal">Where craftsmanship and people shape wine</h2>
-  </div>
+  {%- if section_label != blank or section_title != blank -%}
+    <div class="section-header">
+      {%- if section_label != blank -%}
+        <p class="section-label color-green-coal">{{ section_label }}</p>
+      {%- endif -%}
+      {%- if section_title != blank -%}
+        <h2 class="title color-green-coal">{{ section_title }}</h2>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
   <div class="story-list-wrapper">
-  <div class="story-list">
-    <article class="story-card faded">
-      <img class="story-image" src="https://www.figma.com/api/mcp/asset/9c336407-8420-4e77-a65c-08d65a596512" alt="Champagne Billecart Salmon">
-      <div class="story-info">
-        <p class="story-category color-green-coal">Bourgogne når det er bedst</p>
-        <h3 class="story-name color-green-coal">Champagne Billecart Salmon</h3>
-      </div>
-      <p class="story-description color-burgundy">Lorem ipsum dolor sit amet consectetur. Lobortis vel cursus pulvinar consectetur. Vitae dignissim quam quis sollicitudin ultricies venenatis. Gravida bibendum nulla dui at. Senectus ultrices neque quam accumsan ante sit in. Aliquam venenatis odio amet adipiscing. Eget m...</p>
-    </article>
-    <article class="story-card">
-      <img class="story-image" src="https://www.figma.com/api/mcp/asset/d9d050e8-fb42-4b84-9e4b-44b7d67acb11" alt="Maison Stephane Aviron">
-      <div class="story-info">
-        <p class="story-category color-green-coal">Bourgogne når det er bedst</p>
-        <h3 class="story-name color-green-coal">Maison Stephane Aviron</h3>
-      </div>
-      <p class="story-description color-burgundy">Huset er en førende producent i Beaujolais, grundlagt i 1990'erne.<br>De arbejder bæredygtigt med gamle vinstokke og fokuserer på terroirdrevne vine med klassisk karakter.</p>
-    </article>
-    <article class="story-card faded">
-      <img class="story-image" src="https://www.figma.com/api/mcp/asset/6263919b-01b4-454c-811a-f83570e33bcd" alt="Bodegas An Negra">
-      <div class="story-info">
-        <p class="story-category color-green-coal">Bourgogne når det er bedst</p>
-        <h3 class="story-name color-green-coal">Bodegas An Negra</h3>
-      </div>
-      <p class="story-description color-burgundy">Lorem ipsum dolor sit amet consectetur. Arcu laoreet quis cursus cursus tincidunt suscipit velit ridiculus. Pellentesque risus neque mi orci et eu quisque. Massa mi tristique nisi viverra nisl dolor augue netus tortor. Faucibus a nunc pena...</p>
-    </article>
-  </div>
+    <div class="story-list">
+      {%- comment -%}
+        Der er 180 producenter, og Liquid udleverer kun de første 50 uden paginate.
+        by 250 henter dem alle i ét hug, så feltet 'use_on_frontpage' kan afgøre
+        udvalget uanset hvor i rækken producenten står.
+      {%- endcomment -%}
+      {%- paginate shop.metaobjects.vendor.values by 250 -%}
+        {%- comment -%}
+          Første gennemløb tæller de valgte producenter, så det midterste kort kan
+          markeres som aktivt allerede fra serveren. Ellers ville JavaScript flytte
+          det aktive kort ved indlæsning, og man ville se det hoppe.
+        {%- endcomment -%}
+        {%- assign total = 0 -%}
+        {%- for producer in shop.metaobjects.vendor.values -%}
+          {%- if producer.use_on_frontpage -%}
+            {%- assign total = total | plus: 1 -%}
+          {%- endif -%}
+        {%- endfor -%}
+        {%- assign middle = total | minus: 1 | divided_by: 2 | plus: 1 -%}
+        {%- assign shown = 0 -%}
+        {%- for producer in shop.metaobjects.vendor.values -%}
+          {%- unless producer.use_on_frontpage -%}
+            {%- continue -%}
+          {%- endunless -%}
+          {%- liquid
+            assign shown = shown | plus: 1
+            assign producer_image = producer.images_vertical.value | first
+            if producer_image == blank
+              assign producer_image = producer.images_horizontal.value | first
+            endif
+            # Samme opslag som PDP'en bruger: h1 med name som reserve, og
+            # kollektionen som link. Så hedder regionen det samme overalt.
+            assign region_object = producer.region.value
+            assign region_name = region_object.h1 | default: region_object.name
+            assign region_url = region_object.collection.value.url
+
+            assign country_object = producer.country.value
+            assign country_name = country_object.h1 | default: country_object.name
+            assign country_url = country_object.collection.value.url
+            # Midterste kort står i fuld opacitet, resten tones ned. Herefter
+            # overtager jkl-story-carousel.js styringen når pilene bruges.
+            assign is_active = false
+            if shown == middle
+              assign is_active = true
+            endif
+          -%}
+          <article class="story-card{% unless is_active %} faded{% endunless %}">
+            {%- comment -%}
+              Mangler producenten et billede, renderes en placeholder i samme
+              højde. Ellers rykker teksten op og kortene står ikke på linje.
+            {%- endcomment -%}
+            {%- if producer_image != blank -%}
+              {{ producer_image | image_url: width: 1340 | image_tag: class: 'story-image', alt: producer.name, widths: '670, 1340' }}
+            {%- else -%}
+              {{ 'image' | placeholder_svg_tag: 'story-image story-image--placeholder' }}
+            {%- endif -%}
+            {%- if region_name != blank or country_name != blank or producer.name != blank -%}
+              <div class="story-info">
+                {%- if region_name != blank or country_name != blank -%}
+                  <p class="story-category color-green-coal">
+                    {%- if region_name != blank -%}
+                      {%- if region_url != blank -%}
+                        <a href="{{ region_url }}">{{ region_name }}</a>
+                      {%- else -%}
+                        {{ region_name }}
+                      {%- endif -%}
+                    {%- endif -%}
+                    {%- if region_name != blank and country_name != blank -%}, {% endif -%}
+                    {%- if country_name != blank -%}
+                      {%- if country_url != blank -%}
+                        <a href="{{ country_url }}">{{ country_name }}</a>
+                      {%- else -%}
+                        {{ country_name }}
+                      {%- endif -%}
+                    {%- endif -%}
+                  </p>
+                {%- endif -%}
+                {%- if producer.name != blank -%}
+                  <h3 class="story-name color-green-coal">{{ producer.name }}</h3>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+            {%- if producer.short_top_text != blank -%}
+              <div class="story-description color-burgundy">{{ producer.short_top_text | metafield_tag }}</div>
+            {%- endif -%}
+            {%- assign producer_url = producer.vendor_collection.value.url -%}
+            {%- if button_label != blank and producer_url != blank -%}
+              <a class="btn-outline story-button" href="{{ producer_url }}">{{ button_label }}</a>
+            {%- endif -%}
+          </article>
+        {%- endfor -%}
+      {%- endpaginate -%}
+    </div>
   </div>
   <button class="nav-button nav-prev" aria-label="Previous">
-    <img src="https://www.figma.com/api/mcp/asset/c0dd75d7-8024-4fa2-a3ac-e05abff544b5" alt="Previous">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M15 4 7 12l8 8" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
   </button>
   <button class="nav-button nav-next" aria-label="Next">
-    <img src="https://www.figma.com/api/mcp/asset/12a3ddb9-029d-4dab-9469-8b946551e896" alt="Next">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M9 4l8 8-8 8" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
   </button>
 </section>
+
+<script src="{{ 'jkl-story-carousel.js' | asset_url }}" defer></script>
 
 {% schema %}
 {
   "name": "JKL Story Carousel",
   "tag": "section",
   "class": "jkl-story-carousel-section",
-  "settings": [],
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Producers are pulled from the vendor metaobject. Tick 'Use on frontpage' on a producer to show it here."
+    },
+    {
+      "type": "header",
+      "content": "Svenska (sv)"
+    },
+    {
+      "type": "text",
+      "id": "label_sv",
+      "label": "Label",
+      "default": "Möt producenterna"
+    },
+    {
+      "type": "text",
+      "id": "title_sv",
+      "label": "Title",
+      "default": "Där hantverk och människor formar vinet"
+    },
+    {
+      "type": "text",
+      "id": "button_label_sv",
+      "label": "Button label",
+      "default": "Möt producenten"
+    },
+    {
+      "type": "header",
+      "content": "Deutsch (de)"
+    },
+    {
+      "type": "text",
+      "id": "label_de",
+      "label": "Label"
+    },
+    {
+      "type": "text",
+      "id": "title_de",
+      "label": "Title"
+    },
+    {
+      "type": "text",
+      "id": "button_label_de",
+      "label": "Button label"
+    },
+    {
+      "type": "header",
+      "content": "Polski (pl)"
+    },
+    {
+      "type": "text",
+      "id": "label_pl",
+      "label": "Label"
+    },
+    {
+      "type": "text",
+      "id": "title_pl",
+      "label": "Title"
+    },
+    {
+      "type": "text",
+      "id": "button_label_pl",
+      "label": "Button label"
+    },
+    {
+      "type": "header",
+      "content": "English (en)"
+    },
+    {
+      "type": "text",
+      "id": "label_en",
+      "label": "Label",
+      "default": "Meet the producers"
+    },
+    {
+      "type": "text",
+      "id": "title_en",
+      "label": "Title",
+      "default": "Where craftsmanship and people shape wine"
+    },
+    {
+      "type": "text",
+      "id": "button_label_en",
+      "label": "Button label",
+      "default": "Meet the producer"
+    }
+  ],
   "presets": [
     {
       "name": "JKL Story Carousel"

@@ -1,20 +1,56 @@
+{%- liquid
+  # Sproghåndtering ligger i sektionen: ét felt pr. sprog pr. tekst, valgt ud fra
+  # det aktive storefront-sprog. Der er bevidst ingen fallback — står feltet tomt
+  # på det sprog kunden ser siden på, udelades teksten helt.
+  assign lang = request.locale.iso_code
+
+  assign key = 'subtitle_' | append: lang
+  assign hero_subtitle = section.settings[key]
+
+  assign key = 'title_' | append: lang
+  assign hero_title = section.settings[key]
+
+  assign key = 'button_label_' | append: lang
+  assign hero_button_label = section.settings[key]
+
+  assign key = 'sticker_' | append: lang
+  assign hero_sticker = section.settings[key]
+
+  assign key = 'right_subtitle_' | append: lang
+  assign hero_right_subtitle = section.settings[key]
+
+  assign key = 'right_description_' | append: lang
+  assign hero_right_description = section.settings[key]
+-%}
 <section class="hero color-cream">
   <div class="hero-left">
     <img src="https://cdn.shopify.com/s/files/1/0945/9030/4603/files/vin-i-glas.png?v=1773217500" alt="Wine being poured into glass">
     <div class="hero-left-content">
-      <p class="hero-subtitle">Fine wine, carefully curated.</p>
-      <h1 class="hero-title">30% off selected wines.</h1>
-      <a href="#" class="btn-primary">See offer</a>
+      {%- if hero_subtitle != blank -%}
+        <p class="hero-subtitle">{{ hero_subtitle }}</p>
+      {%- endif -%}
+      {%- if hero_title != blank -%}
+        <h1 class="hero-title">{{ hero_title }}</h1>
+      {%- endif -%}
+      {%- if hero_button_label != blank -%}
+        <a href="{{ section.settings.button_link | default: '#' }}" class="btn-primary">{{ hero_button_label }}</a>
+      {%- endif -%}
     </div>
   </div>
-  <div class="hero-sticker">
-    <span>Opening offer</span>
-  </div>
+  {%- if hero_sticker != blank -%}
+    <div class="hero-sticker">
+      <span>{{ hero_sticker }}</span>
+    </div>
+  {%- endif -%}
   <div class="hero-right">
     <img class="hero-bg" src="https://cdn.shopify.com/s/files/1/0945/9030/4603/files/marker.png?v=1773217359" alt="Vineyard">
     <div class="hero-right-content">
-      <p class="subtitle">Fine wine, carefully curated.</p>
-      <p class="description">We partner with producers we trust, selecting wines of integrity and character.</p>
+      {%- if hero_right_subtitle != blank -%}
+        <p class="subtitle">{{ hero_right_subtitle }}</p>
+      {%- endif -%}
+      {%- if hero_right_description != blank -%}
+        <p class="description">{{ hero_right_description }}</p>
+      {%- endif -%}
     </div>
   </div>
 </section>
@@ -24,7 +60,161 @@
   "name": "JKL Hero",
   "tag": "section",
   "class": "jkl-hero-section",
-  "settings": [],
+  "settings": [
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Svenska (sv)"
+    },
+    {
+      "type": "text",
+      "id": "subtitle_sv",
+      "label": "Subtitle",
+      "default": "Fine wine, carefully curated."
+    },
+    {
+      "type": "text",
+      "id": "title_sv",
+      "label": "Title",
+      "default": "30% off selected wines."
+    },
+    {
+      "type": "text",
+      "id": "button_label_sv",
+      "label": "Button label",
+      "default": "See offer"
+    },
+    {
+      "type": "text",
+      "id": "sticker_sv",
+      "label": "Sticker",
+      "default": "Opening offer"
+    },
+    {
+      "type": "text",
+      "id": "right_subtitle_sv",
+      "label": "Subtitle (right)",
+      "default": "Fine wine, carefully curated."
+    },
+    {
+      "type": "textarea",
+      "id": "right_description_sv",
+      "label": "Description (right)",
+      "default": "We partner with producers we trust, selecting wines of integrity and character."
+    },
+    {
+      "type": "header",
+      "content": "Deutsch (de)"
+    },
+    {
+      "type": "text",
+      "id": "subtitle_de",
+      "label": "Subtitle"
+    },
+    {
+      "type": "text",
+      "id": "title_de",
+      "label": "Title"
+    },
+    {
+      "type": "text",
+      "id": "button_label_de",
+      "label": "Button label"
+    },
+    {
+      "type": "text",
+      "id": "sticker_de",
+      "label": "Sticker"
+    },
+    {
+      "type": "text",
+      "id": "right_subtitle_de",
+      "label": "Subtitle (right)"
+    },
+    {
+      "type": "textarea",
+      "id": "right_description_de",
+      "label": "Description (right)"
+    },
+    {
+      "type": "header",
+      "content": "Polski (pl)"
+    },
+    {
+      "type": "text",
+      "id": "subtitle_pl",
+      "label": "Subtitle"
+    },
+    {
+      "type": "text",
+      "id": "title_pl",
+      "label": "Title"
+    },
+    {
+      "type": "text",
+      "id": "button_label_pl",
+      "label": "Button label"
+    },
+    {
+      "type": "text",
+      "id": "sticker_pl",
+      "label": "Sticker"
+    },
+    {
+      "type": "text",
+      "id": "right_subtitle_pl",
+      "label": "Subtitle (right)"
+    },
+    {
+      "type": "textarea",
+      "id": "right_description_pl",
+      "label": "Description (right)"
+    },
+    {
+      "type": "header",
+      "content": "English (en)"
+    },
+    {
+      "type": "text",
+      "id": "subtitle_en",
+      "label": "Subtitle",
+      "default": "Fine wine, carefully curated."
+    },
+    {
+      "type": "text",
+      "id": "title_en",
+      "label": "Title",
+      "default": "30% off selected wines."
+    },
+    {
+      "type": "text",
+      "id": "button_label_en",
+      "label": "Button label",
+      "default": "See offer"
+    },
+    {
+      "type": "text",
+      "id": "sticker_en",
+      "label": "Sticker",
+      "default": "Opening offer"
+    },
+    {
+      "type": "text",
+      "id": "right_subtitle_en",
+      "label": "Subtitle (right)",
+      "default": "Fine wine, carefully curated."
+    },
+    {
+      "type": "textarea",
+      "id": "right_description_en",
+      "label": "Description (right)",
+      "default": "We partner with producers we trust, selecting wines of integrity and character."
+    }
+  ],
   "presets": [
     {
       "name": "JKL Hero"

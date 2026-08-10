@@ -353,6 +353,24 @@
     "hello": "SV - hej",
     "hello_s": "SV - hej tesret"
   },
+  "customer": {
+    "login_page": {
+      "title": "Logga in",
+      "email": "E-post",
+      "password": "Lösenord",
+      "sign_in": "Logga in",
+      "forgot_password": "Glömt ditt lösenord?",
+      "submit": "Skicka",
+      "cancel": "Avbryt",
+      "guest_title": "Fortsätt som gäst",
+      "guest_continue": "Fortsätt som gäst"
+    },
+    "recover_password": {
+      "title": "Återställ ditt lösenord",
+      "subtext": "Vi skickar ett e-postmeddelande till dig för att återställa ditt lösenord.",
+      "success": "Vi har skickat ett e-postmeddelande med en länk för att uppdatera ditt lösenord."
+    }
+  },
   "jkl": {
     "grape": "Druva",
     "grapes": "Druvor",
@@ -389,6 +407,7 @@
     "sku": "SKU",
     "maturity": "Mognad",
     "the_wine": "Om vinet",
+    "the_winery": "Producenten",
     "ratings_and_reviews": "Recensioner",
     "rating_headline": "Vad betrodda vinkritiker säger om detta vin",
     "read_full_review": "Läs hela recensionen",

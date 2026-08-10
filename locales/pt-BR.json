@@ -360,6 +360,24 @@
     "hello": "PT-BR - hej",
     "hello_s": "PT-BR - hej tesret"
   },
+  "customer": {
+    "login_page": {
+      "title": "Fazer login",
+      "email": "E-mail",
+      "password": "Senha",
+      "sign_in": "Fazer login",
+      "forgot_password": "Esqueceu sua senha?",
+      "submit": "Enviar",
+      "cancel": "Cancelar",
+      "guest_title": "Continuar como convidado",
+      "guest_continue": "Continuar como convidado"
+    },
+    "recover_password": {
+      "title": "Redefinir sua senha",
+      "subtext": "Enviaremos um e-mail para você redefinir sua senha.",
+      "success": "Enviamos um e-mail com um link para atualizar sua senha."
+    }
+  },
   "jkl": {
     "grape": "Uva",
     "grapes": "Uvas",
@@ -396,6 +414,7 @@
     "sku": "SKU",
     "maturity": "Maturação",
     "the_wine": "Sobre o vinho",
+    "the_winery": "O produtor",
     "ratings_and_reviews": "Avaliações",
     "rating_headline": "O que os críticos de vinho de confiança dizem sobre este vinho",
     "read_full_review": "Leia a avaliação completa",

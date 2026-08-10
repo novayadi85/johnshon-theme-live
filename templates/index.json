@@ -11,12 +11,36 @@
   "sections": {
     "hero_jkl": {
       "type": "jkl-hero",
-      "disabled": true,
-      "settings": {}
+      "settings": {
+        "button_link": "",
+        "subtitle_sv": "Fina viner, noggrant utvalda.",
+        "title_sv": "30 % rabatt på utvalda viner.",
+        "button_label_sv": "Se erbjudandet",
+        "sticker_sv": "Öppningserbjudande",
+        "right_subtitle_sv": "Fina viner, noggrant utvalda.",
+        "right_description_sv": "Vi samarbetar med producenter vi litar på och väljer viner med integritet och karaktär.",
+        "subtitle_de": "",
+        "title_de": "",
+        "button_label_de": "",
+        "sticker_de": "",
+        "right_subtitle_de": "",
+        "right_description_de": "",
+        "subtitle_pl": "",
+        "title_pl": "",
+        "button_label_pl": "",
+        "sticker_pl": "",
+        "right_subtitle_pl": "",
+        "right_description_pl": "",
+        "subtitle_en": "Fine wine, carefully curated.",
+        "title_en": "30% off selected wines.",
+        "button_label_en": "See offer",
+        "sticker_en": "Opening offer",
+        "right_subtitle_en": "Fine wine, carefully curated.",
+        "right_description_en": "We partner with producers we trust, selecting wines of integrity and character."
+      }
     },
     "product_carousel_jkl": {
       "type": "jkl-product-carousel",
-      "disabled": true,
       "settings": {}
     },
     "club_banner_jkl": {
@@ -30,8 +54,20 @@
     },
     "story_carousel_jkl": {
       "type": "jkl-story-carousel",
-      "disabled": true,
-      "settings": {}
+      "settings": {
+        "label_sv": "producenterna",
+        "title_sv": "Where craftsmanship and people shape wine",
+        "button_label_sv": "Meet the producer",
+        "label_de": "",
+        "title_de": "",
+        "button_label_de": "",
+        "label_pl": "",
+        "title_pl": "",
+        "button_label_pl": "",
+        "label_en": "Meet the producers",
+        "title_en": "Where craftsmanship and people shape wine",
+        "button_label_en": "Meet the producer"
+      }
     },
     "image_banner_jkl": {
       "type": "jkl-image-banner",

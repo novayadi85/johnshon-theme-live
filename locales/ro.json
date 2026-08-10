@@ -360,6 +360,24 @@
     "hello": "RO - hej",
     "hello_s": "RO - hej tesret"
   },
+  "customer": {
+    "login_page": {
+      "title": "Conectează-te",
+      "email": "Adresă de e-mail",
+      "password": "Parolă",
+      "sign_in": "Conectează-te",
+      "forgot_password": "Ți-ai uitat parola?",
+      "submit": "Trimite",
+      "cancel": "Anulează",
+      "guest_title": "Continuă ca invitat",
+      "guest_continue": "Continuă ca invitat"
+    },
+    "recover_password": {
+      "title": "Resetează-ți parola",
+      "subtext": "Îți vom trimite un e-mail pentru a-ți reseta parola.",
+      "success": "Ți-am trimis un e-mail cu un link pentru actualizarea parolei."
+    }
+  },
   "jkl": {
     "grape": "Soi de struguri",
     "grapes": "Soiuri de struguri",
@@ -396,6 +414,7 @@
     "sku": "SKU",
     "maturity": "Maturitate",
     "the_wine": "Despre vin",
+    "the_winery": "Producătorul",
     "ratings_and_reviews": "Recenzii",
     "rating_headline": "Ce spun criticii de vin de încredere despre acest vin",
     "read_full_review": "Citește recenzia completă",

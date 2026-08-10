@@ -1,33 +1,85 @@
+{%- liquid
+  # Sproghåndtering ligger i sektionen: ét felt pr. sprog pr. tekst, valgt ud fra
+  # det aktive storefront-sprog. Ingen fallback — er feltet tomt, udelades teksten.
+  assign lang = request.locale.iso_code
+
+  assign key = 'info_text_' | append: lang
+  assign info_text = section.settings[key]
+
+  assign key = 'link_label_' | append: lang
+  assign link_label = section.settings[key]
+
+  assign key = 'tag_' | append: lang
+  assign tag_text = section.settings[key]
+
+  assign key = 'title_' | append: lang
+  assign section_title = section.settings[key]
+
+  assign key = 'benefit_1_' | append: lang
+  assign benefit_1 = section.settings[key]
+
+  assign key = 'benefit_2_' | append: lang
+  assign benefit_2 = section.settings[key]
+
+  assign key = 'benefit_3_' | append: lang
+  assign benefit_3 = section.settings[key]
+-%}
+{%- comment -%}
+  Ét ord i sætningen er et link. I stedet for at lade redaktøren skrive HTML
+  bruges samme pladsholder-konvention som temaets sprogfiler (jkl.accept_terms
+  bruger samme idé): teksten skriver "Join the [link] for free", og selve
+  linkteksten står i sit eget felt.
+{%- endcomment -%}
+{%- capture club_anchor -%}
+  {%- if link_label != blank -%}
+    <a href="{{ section.settings.club_link | default: '#' }}">{{ link_label }}</a>
+  {%- endif -%}
+{%- endcapture -%}
+{%- assign info_html = info_text | replace: '[link]', club_anchor | strip -%}
 <section class="club-banner bg-green-coal color-green-gold">
   <div class="bg-logo">
     <img src="{{ 'jkl-logo-background.png' | asset_url }}" alt="">
   </div>
   <div class="divider-border">
-    
+
   </div>
   <div class="content">
     <div class="section-info">
-      <div class="info-row">
-        <span class="info-text">Join the <a href="#">JKL Club</a> for free</span>
-        <span class="tag">Save 20% on your first order</span>
-      </div>
-      <h2 class="title">Get member pricing, early access, and curated selections.</h2>
+      {%- if info_html != blank or tag_text != blank -%}
+        <div class="info-row">
+          {%- if info_html != blank -%}
+            <span class="info-text">{{ info_html }}</span>
+          {%- endif -%}
+          {%- if tag_text != blank -%}
+            <span class="tag">{{ tag_text }}</span>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+      {%- if section_title != blank -%}
+        <h2 class="title">{{ section_title }}</h2>
+      {%- endif -%}
     </div>
     <div class="benefits">
-      <div class="benefit-item">
-        <img src="{{ 'check_jkl.svg' | asset_url }}" alt="✓">
-        <span>Member pricing on selected wines</span>
-      </div>
-      <div class="benefit-item">
-        <img src="{{ 'check_jkl.svg' | asset_url }}" alt="✓">
-        <span>Early access to limited bottles and small allocations</span>
-      </div>
-      <div class="benefit-item">
-        <img src="{{ 'check_jkl.svg' | asset_url }}" alt="✓">
-        <span>Curated tasting selections tailored to the season</span>
-      </div>
+      {%- if benefit_1 != blank -%}
+        <div class="benefit-item">
+          <img src="{{ 'check_jkl.svg' | asset_url }}" alt="✓">
+          <span>{{ benefit_1 }}</span>
+        </div>
+      {%- endif -%}
+      {%- if benefit_2 != blank -%}
+        <div class="benefit-item">
+          <img src="{{ 'check_jkl.svg' | asset_url }}" alt="✓">
+          <span>{{ benefit_2 }}</span>
+        </div>
+      {%- endif -%}
+      {%- if benefit_3 != blank -%}
+        <div class="benefit-item">
+          <img src="{{ 'check_jkl.svg' | asset_url }}" alt="✓">
+          <span>{{ benefit_3 }}</span>
+        </div>
+      {%- endif -%}
     </div>
-    
+
     {% if customer.tags contains 'bronze' %}
       <!-- Besked til eksisterende medlemmer -->
       <div class="jkl-member-message">
@@ -41,7 +93,7 @@
         customer_tags_action: 'add'
       %}
     {% endif %}
-    
+
   </div>
 </section>
 
@@ -50,7 +102,187 @@
   "name": "JKL Club Banner",
   "tag": "section",
   "class": "jkl-club-banner-section",
-  "settings": [],
+  "settings": [
+    {
+      "type": "url",
+      "id": "club_link",
+      "label": "JKL Club link"
+    },
+    {
+      "type": "paragraph",
+      "content": "Write [link] in the intro text where the linked words should appear. The words themselves go in 'Link label'."
+    },
+    {
+      "type": "header",
+      "content": "Svenska (sv)"
+    },
+    {
+      "type": "text",
+      "id": "info_text_sv",
+      "label": "Intro text",
+      "default": "Bli medlem i [link] gratis"
+    },
+    {
+      "type": "text",
+      "id": "link_label_sv",
+      "label": "Link label",
+      "default": "JKL Club"
+    },
+    {
+      "type": "text",
+      "id": "tag_sv",
+      "label": "Tag",
+      "default": "Fri frakt på alla beställningar"
+    },
+    {
+      "type": "text",
+      "id": "title_sv",
+      "label": "Title",
+      "default": "Få medlemspriser, förtur och utvalda sortiment."
+    },
+    {
+      "type": "text",
+      "id": "benefit_1_sv",
+      "label": "Benefit 1",
+      "default": "Medlemspriser på utvalda viner"
+    },
+    {
+      "type": "text",
+      "id": "benefit_2_sv",
+      "label": "Benefit 2",
+      "default": "Förtur till begränsade flaskor och små allokeringar"
+    },
+    {
+      "type": "text",
+      "id": "benefit_3_sv",
+      "label": "Benefit 3",
+      "default": "Utvalda provningspaket anpassade efter säsongen"
+    },
+    {
+      "type": "header",
+      "content": "Deutsch (de)"
+    },
+    {
+      "type": "text",
+      "id": "info_text_de",
+      "label": "Intro text"
+    },
+    {
+      "type": "text",
+      "id": "link_label_de",
+      "label": "Link label"
+    },
+    {
+      "type": "text",
+      "id": "tag_de",
+      "label": "Tag"
+    },
+    {
+      "type": "text",
+      "id": "title_de",
+      "label": "Title"
+    },
+    {
+      "type": "text",
+      "id": "benefit_1_de",
+      "label": "Benefit 1"
+    },
+    {
+      "type": "text",
+      "id": "benefit_2_de",
+      "label": "Benefit 2"
+    },
+    {
+      "type": "text",
+      "id": "benefit_3_de",
+      "label": "Benefit 3"
+    },
+    {
+      "type": "header",
+      "content": "Polski (pl)"
+    },
+    {
+      "type": "text",
+      "id": "info_text_pl",
+      "label": "Intro text"
+    },
+    {
+      "type": "text",
+      "id": "link_label_pl",
+      "label": "Link label"
+    },
+    {
+      "type": "text",
+      "id": "tag_pl",
+      "label": "Tag"
+    },
+    {
+      "type": "text",
+      "id": "title_pl",
+      "label": "Title"
+    },
+    {
+      "type": "text",
+      "id": "benefit_1_pl",
+      "label": "Benefit 1"
+    },
+    {
+      "type": "text",
+      "id": "benefit_2_pl",
+      "label": "Benefit 2"
+    },
+    {
+      "type": "text",
+      "id": "benefit_3_pl",
+      "label": "Benefit 3"
+    },
+    {
+      "type": "header",
+      "content": "English (en)"
+    },
+    {
+      "type": "text",
+      "id": "info_text_en",
+      "label": "Intro text",
+      "default": "Join the [link] for free"
+    },
+    {
+      "type": "text",
+      "id": "link_label_en",
+      "label": "Link label",
+      "default": "JKL Club"
+    },
+    {
+      "type": "text",
+      "id": "tag_en",
+      "label": "Tag",
+      "default": "Free shipping on all orders"
+    },
+    {
+      "type": "text",
+      "id": "title_en",
+      "label": "Title",
+      "default": "Get member pricing, early access, and curated selections."
+    },
+    {
+      "type": "text",
+      "id": "benefit_1_en",
+      "label": "Benefit 1",
+      "default": "Member pricing on selected wines"
+    },
+    {
+      "type": "text",
+      "id": "benefit_2_en",
+      "label": "Benefit 2",
+      "default": "Early access to limited bottles and small allocations"
+    },
+    {
+      "type": "text",
+      "id": "benefit_3_en",
+      "label": "Benefit 3",
+      "default": "Curated tasting selections tailored to the season"
+    }
+  ],
   "presets": [
     {
       "name": "JKL Club Banner"

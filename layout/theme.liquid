@@ -43,9 +43,12 @@
   </head>
 
   <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">
-    <div style="background:#000;color:#fff;padding:6px 12px;font-size:12px;text-align:center;">
-      Aktivt sprog: {{ request.locale.iso_code }} ({{ request.locale.endonym_name }})
-    </div>
+    {% comment %}
+      Debug: viser aktivt sprog øverst på siden. Fjern kommentaren for at slå til igen.
+      <div style="background:#000;color:#fff;padding:6px 12px;font-size:12px;text-align:center;">
+        Aktivt sprog: {{ request.locale.iso_code }} ({{ request.locale.endonym_name }})
+      </div>
+    {% endcomment %}
     <div id="header-group">
       {% sections 'header-group' %}
     </div>

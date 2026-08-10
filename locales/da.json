@@ -353,6 +353,24 @@
     "hello": "hej",
     "hello_s": "hej tesret"
   },
+  "customer": {
+    "login_page": {
+      "title": "Log ind",
+      "email": "Mailadresse",
+      "password": "Adgangskode",
+      "sign_in": "Log ind",
+      "forgot_password": "Glemt din adgangskode?",
+      "submit": "Send",
+      "cancel": "Annuller",
+      "guest_title": "Fortsæt som gæst",
+      "guest_continue": "Fortsæt som gæst"
+    },
+    "recover_password": {
+      "title": "Nulstil din adgangskode",
+      "subtext": "Vi sender dig en e-mail, så du kan nulstille din adgangskode.",
+      "success": "Vi har sendt dig en e-mail med et link til at opdatere din adgangskode."
+    }
+  },
   "jkl":{
     "grape": "Drue",
     "grapes": "Druer",
@@ -394,10 +412,11 @@
     "sku": "SKU",
     "maturity": "Modenhed",
     "the_wine": "Om vinen",
+    "the_winery": "Producenten",
     "ratings_and_reviews": "Anmeldelser",
     "rating_headline": "What Trusted Wine Critics Say About This Wine",
     "read_full_review": "Læs hele anmeldelsen",
-    "wine_pairing": "Madparrring",
+    "wine_pairing": "Madparring",
     "all_wines": "Alle vine",
     "wine_producers": "Vinproducenter",
     "accept_terms": "Jeg har læst og accepterer {{ link }}",

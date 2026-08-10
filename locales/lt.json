@@ -367,6 +367,24 @@
     "hello": "LT - hej",
     "hello_s": "LT - hej tesret"
   },
+  "customer": {
+    "login_page": {
+      "title": "Prisijungti",
+      "email": "El. pašto adresas",
+      "password": "Slaptažodis",
+      "sign_in": "Prisijungti",
+      "forgot_password": "Pamiršote slaptažodį?",
+      "submit": "Pateikti",
+      "cancel": "Atšaukti",
+      "guest_title": "Tęsti kaip svečias",
+      "guest_continue": "Tęsti kaip svečias"
+    },
+    "recover_password": {
+      "title": "Iš naujo nustatyti slaptažodį",
+      "subtext": "Išsiųsime jums el. laišką slaptažodžiui iš naujo nustatyti.",
+      "success": "Išsiuntėme jums el. laišką su nuoroda slaptažodžiui atnaujinti."
+    }
+  },
   "jkl": {
     "grape": "Vynuogių veislė",
     "grapes": "Vynuogių veislės",
@@ -403,6 +421,7 @@
     "sku": "SKU",
     "maturity": "Branda",
     "the_wine": "Apie vyną",
+    "the_winery": "Gamintojas",
     "ratings_and_reviews": "Atsiliepimai",
     "rating_headline": "Ką apie šį vyną sako pripažinti vyno kritikai",
     "read_full_review": "Skaityti visą apžvalgą",

@@ -367,6 +367,24 @@
     "hello": "PL - hej",
     "hello_s": "PL - hej tesret"
   },
+  "customer": {
+    "login_page": {
+      "title": "Zaloguj się",
+      "email": "E-mail",
+      "password": "Hasło",
+      "sign_in": "Zaloguj się",
+      "forgot_password": "Nie pamiętasz hasła?",
+      "submit": "Prześlij",
+      "cancel": "Anuluj",
+      "guest_title": "Kontynuuj jako gość",
+      "guest_continue": "Kontynuuj jako gość"
+    },
+    "recover_password": {
+      "title": "Zresetuj hasło",
+      "subtext": "Wyślemy Ci e-mail, aby zresetować hasło.",
+      "success": "Wysłaliśmy Ci e-mail z linkiem do zaktualizowania hasła."
+    }
+  },
   "jkl": {
     "grape": "Szczep",
     "grapes": "Szczepy",
@@ -403,6 +421,7 @@
     "sku": "SKU",
     "maturity": "Dojrzałość",
     "the_wine": "O winie",
+    "the_winery": "Producent",
     "ratings_and_reviews": "Oceny i recenzje",
     "rating_headline": "Co cenieni krytycy winiarscy mówią o tym winie",
     "read_full_review": "Przeczytaj całą recenzję",

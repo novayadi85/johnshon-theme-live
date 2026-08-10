@@ -353,6 +353,24 @@
     "hello": "VI - hej",
     "hello_s": "VI - hej tesret"
   },
+  "customer": {
+    "login_page": {
+      "title": "Đăng nhập",
+      "email": "Email",
+      "password": "Mật khẩu",
+      "sign_in": "Đăng nhập",
+      "forgot_password": "Quên mật khẩu?",
+      "submit": "Gửi",
+      "cancel": "Hủy",
+      "guest_title": "Tiếp tục với tư cách khách",
+      "guest_continue": "Tiếp tục với tư cách khách"
+    },
+    "recover_password": {
+      "title": "Đặt lại mật khẩu",
+      "subtext": "Chúng tôi sẽ gửi email để bạn đặt lại mật khẩu.",
+      "success": "Chúng tôi đã gửi cho bạn email kèm liên kết để cập nhật mật khẩu."
+    }
+  },
   "jkl": {
     "grape": "Giống nho",
     "grapes": "Giống nho",
@@ -389,6 +407,7 @@
     "sku": "SKU",
     "maturity": "Độ chín",
     "the_wine": "Về loại rượu vang này",
+    "the_winery": "Nhà sản xuất",
     "ratings_and_reviews": "Xếp hạng và đánh giá",
     "rating_headline": "Nhận xét của các chuyên gia rượu vang uy tín về loại rượu này",
     "read_full_review": "Đọc toàn bộ đánh giá",

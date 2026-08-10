@@ -353,6 +353,24 @@
     "hello": "ZH-TW - hej",
     "hello_s": "ZH-TW - hej tesret"
   },
+  "customer": {
+    "login_page": {
+      "title": "登入",
+      "email": "電子郵件",
+      "password": "密碼",
+      "sign_in": "登入",
+      "forgot_password": "忘記密碼?",
+      "submit": "提交",
+      "cancel": "取消",
+      "guest_title": "以訪客身分繼續",
+      "guest_continue": "以訪客身分繼續"
+    },
+    "recover_password": {
+      "title": "重設密碼",
+      "subtext": "我們將寄送電子郵件給您以重設密碼。",
+      "success": "我們已寄送一封含有更新密碼連結的電子郵件給您。"
+    }
+  },
   "jkl": {
     "grape": "葡萄品種",
     "grapes": "葡萄品種",
@@ -389,6 +407,7 @@
     "sku": "SKU",
     "maturity": "適飲期",
     "the_wine": "關於此酒",
+    "the_winery": "酒莊",
     "ratings_and_reviews": "評分與評價",
     "rating_headline": "權威酒評家對這款酒的評價",
     "read_full_review": "閱讀完整評價",

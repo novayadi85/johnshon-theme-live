@@ -1,4 +1,12 @@
+{%- assign show_cancel_order = true -%}
+{%- if section.settings.show_cancel_order == false -%}
+  {%- assign show_cancel_order = false -%}
+{%- endif -%}
+
 <footer class="site-footer bg-burgundy color-cream">
+   {% if show_cancel_order %}
+        {%- render 'cancel-order-modal' -%}
+      {% endif %}
   <div class="footer-logo">
     <p class="footer-address">JKL II ApS<br>Strandvejen 60<br>2900 Hellerup</p>
     <p class="footer-address">+45 4011 9760<br>db@jklfinewines.com</p>
@@ -14,6 +22,9 @@
         <li><a href="#">Returns and refunds</a></li>
         <li><a href="#">Help and FAQ</a></li>
         <li><a href="#">Track your order</a></li>
+        {% if show_cancel_order %}
+          <li><a href="#cancel-order-modal" class="js-open-modal open-ordre__customer" data-action="open-modal" data-modal-id="cancel-order-modal" aria-controls="cancel-order-modal">Cancel order</a></li>
+        {% endif %}
       </ul>
     </div>
     <div class="footer-column">
@@ -71,7 +82,14 @@
   "name": "JKL Footer",
   "tag": "section",
   "class": "section-wrapper",
-  "settings": [],
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_cancel_order",
+      "label": "Show cancel order link",
+      "default": true
+    }
+  ],
   "presets": []
 }
 {% endschema %}
