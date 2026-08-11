@@ -45,11 +45,25 @@
     {%- assign top_review_score = normalized_review_score -%}
   {%- endif -%}
 {%- endfor -%}
-<article class="product-card">
+<article
+  class="product-card"
+  data-wishlist-card
+  data-product-id="{{ product.id }}"
+  data-variant-id="{{ variant.id }}"
+>
   {%- if variant.metafields.custom.show_member_price.value -%}
     <div class="member-banner-bar"></div>
   {%- endif -%}
-  <a href="#" class="wishlist-icon" aria-label="Wishlist">
+  <a
+    href="#"
+    class="wishlist-icon"
+    aria-label="Wishlist"
+    aria-pressed="false"
+    role="button"
+    data-wishlist-toggle
+    data-product-id="{{ product.id }}"
+    data-variant-id="{{ variant.id }}"
+  >
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M12 21s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 11c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.5" fill="none"></path>
     </svg>

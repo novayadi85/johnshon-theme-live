@@ -1,0 +1,115 @@
+{{ 'jkl-filter-drawer.css' | asset_url | stylesheet_tag }}
+
+{% render 'breadcrumbs' %}
+
+<div class="plp-top">
+  <div class="plp-top-container">
+    <h1 class="plp-title">{{ collection.title | default: 'Mine favoritter' }}</h1>
+    {%- if collection.metafields.custom.short_text != blank -%}
+      <div class="plp-description">{{ collection.metafields.custom.short_text | metafield_tag }}</div>
+    {%- endif -%}
+  </div>
+</div>
+
+<div class="plp-container wishlist-template">
+  {%- assign wishlist_source_collection = collection -%}
+  {%- if wishlist_source_collection.products.size == 0 -%}
+    {%- assign wishlist_source_collection = collections.all -%}
+  {%- endif -%}
+
+  {%- if wishlist_source_collection.products.size > 0 -%}
+    <div class="plp-filter">
+      <div></div>
+      <div class="filter-right">
+        <div class="view-switcher">
+          <button class="view-btn active" data-view="grid" type="button" aria-label="Grid view">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="0.5" y="0.5" width="5" height="5" stroke="currentColor"/><rect x="8.5" y="0.5" width="5" height="5" stroke="currentColor"/><rect x="0.5" y="8.5" width="5" height="5" stroke="currentColor"/><rect x="8.5" y="8.5" width="5" height="5" stroke="currentColor"/>
+            </svg>
+          </button>
+          <button class="view-btn" data-view="list" type="button" aria-label="List view">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <line x1="0" y1="2" x2="14" y2="2" stroke="currentColor"/><line x1="0" y1="7" x2="14" y2="7" stroke="currentColor"/><line x1="0" y1="12" x2="14" y2="12" stroke="currentColor"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    {% paginate wishlist_source_collection.products by 250 %}
+      <div
+        class="plp-product-list plp-grid active wishlist-loading"
+        data-wishlist-list
+        data-no-results="{{ 'content.no_products_found' | t }}"
+        data-section-id="{{ section.id }}"
+      >
+        {%- for product in wishlist_source_collection.products -%}
+          {%- for variant in product.variants -%}
+            {% render 'jkl-product-card', product: product, variant: variant, collection_card: true %}
+          {%- endfor -%}
+        {%- endfor -%}
+      </div>
+    {% endpaginate %}
+
+    <div class="plp-empty-signup" data-wishlist-empty hidden>
+      <h3>Du har ikke gemt nogen favoritter endnu.</h3>
+      <p>Tryk på hjertet på et produkt for at gemme det her.</p>
+    </div>
+  {%- else -%}
+    <div class="plp-empty-signup">
+      <h3>Der er ingen produkter at vise endnu.</h3>
+      <p>Tilføj produkter til shoppen, så de kan gemmes som favoritter.</p>
+    </div>
+  {%- endif -%}
+</div>
+
+<div class="plp-bottom-container">
+  <div class="plp-big-description">{{ collection.description }}</div>
+</div>
+
+<script>
+  (function () {
+    function moveSaveBadges() {
+      document.querySelectorAll('.product-card').forEach(function (card) {
+        var badge = card.querySelector('.plp-save-badge');
+        var nameEl = card.querySelector('.wine-name');
+        if (badge && nameEl && badge.dataset.moved !== '1') {
+          badge.dataset.moved = '1';
+          nameEl.appendChild(badge);
+        }
+      });
+    }
+
+    moveSaveBadges();
+    document.addEventListener('DOMContentLoaded', moveSaveBadges);
+
+    var gridBtn = document.querySelector('[data-view="grid"]');
+    var listBtn = document.querySelector('[data-view="list"]');
+    var productList = document.querySelector('.plp-product-list');
+    if (!gridBtn || !listBtn || !productList) return;
+
+    gridBtn.addEventListener('click', function () {
+      productList.classList.add('plp-grid');
+      productList.classList.remove('plp-list');
+      gridBtn.classList.add('active');
+      listBtn.classList.remove('active');
+    });
+
+    listBtn.addEventListener('click', function () {
+      productList.classList.add('plp-list');
+      productList.classList.remove('plp-grid');
+      listBtn.classList.add('active');
+      gridBtn.classList.remove('active');
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "JKL Wishlist",
+  "tag": "section",
+  "class": "jkl-wishlist-section",
+  "settings": [],
+  "presets": []
+}
+{% endschema %}

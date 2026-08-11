@@ -656,10 +656,11 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 32px;
   padding: 16px 0;
 }
 
-.category-nav ul {
+.category-nav__list {
   display: flex;
   gap: 32px;
   list-style: none;
@@ -669,12 +670,23 @@ button {
   padding: 0;
 }
 
+.category-nav__list--member {
+  gap: 12px;
+}
+
 .category-nav a {
   color: inherit;
   text-decoration: none;
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.category-nav__member-link {
+  background: var(--member-menu-background);
+  color: var(--member-menu-color) !important;
+  padding: 6px 12px;
+  border-radius: 2px;
 }
 
 .category-nav a:hover {
@@ -991,6 +1003,21 @@ button {
   width: 24px;
   height: 24px;
   z-index: 2;
+  color: currentColor;
+  cursor: pointer;
+}
+
+.product-card .wishlist-icon.is-active svg path,
+.product-card .wishlist-icon[aria-pressed="true"] svg path {
+  fill: currentColor;
+}
+
+.wishlist-loading .product-card {
+  visibility: hidden;
+}
+
+.plp-product-list .product-card[hidden] {
+  display: none;
 }
 
 .product-card .product-sticker {
@@ -6537,3 +6564,228 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
   color: #fff;
 }
 
+/* === section: Consultation page === */
+
+.jkl-consultation {
+  background: var(--jkl-consultation-bg);
+  color: var(--jkl-consultation-text);
+  padding: var(--jkl-consultation-padding-top) 22px var(--jkl-consultation-padding-bottom);
+}
+
+.jkl-consultation__inner {
+  max-width: var(--jkl-consultation-max-width);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(360px, 1fr);
+  gap: 48px;
+  align-items: start;
+}
+
+.jkl-consultation__content {
+  max-width: 520px;
+}
+
+.jkl-consultation__eyebrow {
+  margin: 0 0 10px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.jkl-consultation__heading {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 25px;
+  font-weight: 400;
+  line-height: 1.18;
+  color: inherit;
+  max-width: 500px;
+}
+
+.jkl-consultation__divider {
+  margin: 26px 0 8px;
+  line-height: 1;
+}
+
+.jkl-consultation__rte,
+.jkl-consultation__list,
+.jkl-consultation__subheading {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.jkl-consultation__rte p {
+  margin: 0 0 12px;
+}
+
+.jkl-consultation__subheading {
+  margin: 12px 0 8px;
+  font-weight: 700;
+  color: inherit;
+}
+
+.jkl-consultation__list {
+  margin: 0 0 8px 17px;
+  padding: 0;
+}
+
+.jkl-consultation__list li {
+  padding-left: 2px;
+  margin: 0 0 7px;
+}
+
+.jkl-consultation__form-column {
+  width: 100%;
+}
+
+.jkl-consultation__contact-card {
+  min-height: 104px;
+  margin-bottom: 15px;
+  padding: 15px 28px 15px 14px;
+  display: grid;
+  grid-template-columns: 86px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  background: var(--jkl-consultation-accent);
+  color: var(--jkl-consultation-accent-text);
+}
+
+.jkl-consultation__portrait {
+  width: 86px;
+  height: 86px;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.26);
+  font-weight: 700;
+}
+
+.jkl-consultation__portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.jkl-consultation__contact-copy h2 {
+  margin: 0 0 14px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: inherit;
+}
+
+.jkl-consultation__card-rte,
+.jkl-consultation__card-rte p {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.jkl-consultation__form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.jkl-consultation__field-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.jkl-consultation__form input,
+.jkl-consultation__form textarea {
+  width: 100%;
+  min-height: 33px;
+  padding: 8px 10px;
+  border: 1px solid #cfd4d7;
+  border-radius: 0;
+  background: #fbfbfb;
+  color: #46515b;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14px;
+  line-height: 1.3;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.jkl-consultation__form input::placeholder,
+.jkl-consultation__form textarea::placeholder {
+  color: #66717b;
+  opacity: 0.9;
+}
+
+.jkl-consultation__form textarea {
+  min-height: 184px;
+  resize: vertical;
+}
+
+.jkl-consultation__form button {
+  width: 140px;
+  min-height: 36px;
+  margin-top: 5px;
+  border: 0;
+  border-radius: 0;
+  background: var(--jkl-consultation-button-bg);
+  color: var(--jkl-consultation-button-text);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.jkl-consultation__success,
+.jkl-consultation__errors {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid currentColor;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.jkl-consultation__errors ul {
+  margin: 0 0 0 18px;
+}
+
+@media (max-width: 899px) {
+  .jkl-consultation__inner {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .jkl-consultation__content {
+    max-width: none;
+  }
+}
+
+@media (max-width: 549px) {
+  .jkl-consultation {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .jkl-consultation__heading {
+    font-size: 23px;
+  }
+
+  .jkl-consultation__contact-card,
+  .jkl-consultation__field-row {
+    grid-template-columns: 1fr;
+  }
+
+  .jkl-consultation__contact-card {
+    justify-items: start;
+    padding: 18px;
+  }
+
+  .jkl-consultation__form button {
+    width: 100%;
+  }
+}

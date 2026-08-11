@@ -1,0 +1,424 @@
+{% liquid
+  assign section_id = 'jkl-consultation-' | append: section.id
+%}
+
+<section
+  id="{{ section_id }}"
+  class="jkl-consultation"
+  style="
+    --jkl-consultation-bg: {{ section.settings.background_color }};
+    --jkl-consultation-text: {{ section.settings.text_color }};
+    --jkl-consultation-accent: {{ section.settings.accent_color }};
+    --jkl-consultation-accent-text: {{ section.settings.accent_text_color }};
+    --jkl-consultation-button-bg: {{ section.settings.button_background }};
+    --jkl-consultation-button-text: {{ section.settings.button_text_color }};
+    --jkl-consultation-max-width: {{ section.settings.max_width }}px;
+    --jkl-consultation-padding-top: {{ section.settings.padding_top }}px;
+    --jkl-consultation-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="jkl-consultation__inner">
+    <div class="jkl-consultation__content">
+      {% if section.settings.eyebrow != blank %}
+        <p class="jkl-consultation__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {% endif %}
+
+      {% if section.settings.heading != blank %}
+        <h1 class="jkl-consultation__heading">{{ section.settings.heading | escape }}</h1>
+      {% endif %}
+
+      {% if section.settings.divider_text != blank %}
+        <div class="jkl-consultation__divider">{{ section.settings.divider_text | escape }}</div>
+      {% endif %}
+
+      {% if section.settings.intro != blank %}
+        <div class="jkl-consultation__rte rte">{{ section.settings.intro }}</div>
+      {% endif %}
+
+      {% if section.settings.list_heading != blank %}
+        <h2 class="jkl-consultation__subheading">{{ section.settings.list_heading | escape }}</h2>
+      {% endif %}
+
+      {% if section.blocks.size > 0 %}
+        <ul class="jkl-consultation__list">
+          {% for block in section.blocks %}
+            <li {{ block.shopify_attributes }}>{{ block.settings.text | escape }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      {% if section.settings.closing_heading != blank %}
+        <h2 class="jkl-consultation__subheading">{{ section.settings.closing_heading | escape }}</h2>
+      {% endif %}
+
+      {% if section.settings.closing_text != blank %}
+        <div class="jkl-consultation__rte rte">{{ section.settings.closing_text }}</div>
+      {% endif %}
+    </div>
+
+    <div class="jkl-consultation__form-column">
+      <div class="jkl-consultation__contact-card">
+        <div class="jkl-consultation__portrait">
+          {% if section.settings.portrait != blank %}
+            {{
+              section.settings.portrait
+              | image_url: width: 180
+              | image_tag:
+                loading: 'lazy',
+                widths: '90, 140, 180',
+                sizes: '(max-width: 749px) 76px, 86px',
+                alt: section.settings.portrait_alt
+            }}
+          {% else %}
+            <span>{{ section.settings.portrait_fallback | escape }}</span>
+          {% endif %}
+        </div>
+        <div class="jkl-consultation__contact-copy">
+          {% if section.settings.card_heading != blank %}
+            <h2>{{ section.settings.card_heading | escape }}</h2>
+          {% endif %}
+          {% if section.settings.card_text != blank %}
+            <div class="jkl-consultation__card-rte rte">{{ section.settings.card_text }}</div>
+          {% endif %}
+        </div>
+      </div>
+
+      {% form 'contact', class: 'jkl-consultation__form' %}
+        {% if form.posted_successfully? %}
+          <p class="jkl-consultation__success" tabindex="-1">{{ section.settings.success_message | escape }}</p>
+        {% endif %}
+
+        {% if form.errors %}
+          <div class="jkl-consultation__errors" tabindex="-1">
+            {{ form.errors | default_errors }}
+          </div>
+        {% endif %}
+
+        <div class="jkl-consultation__field-row">
+          <input
+            type="text"
+            name="contact[name]"
+            value="{% if form.name %}{{ form.name | escape }}{% elsif customer %}{{ customer.name | escape }}{% endif %}"
+            placeholder="{{ section.settings.name_placeholder | escape }}"
+            autocomplete="name"
+          >
+          <input
+            type="email"
+            name="contact[email]"
+            value="{% if form.email %}{{ form.email | escape }}{% elsif customer %}{{ customer.email | escape }}{% endif %}"
+            placeholder="{{ section.settings.email_placeholder | escape }}"
+            autocorrect="off"
+            autocapitalize="off"
+            autocomplete="email"
+            required
+          >
+        </div>
+
+        {% if section.settings.show_company %}
+          <input
+            type="text"
+            name="contact[company]"
+            value="{{ form.company | escape }}"
+            placeholder="{{ section.settings.company_placeholder | escape }}"
+            autocomplete="organization"
+          >
+        {% endif %}
+
+        {% if section.settings.show_phone %}
+          <input
+            type="tel"
+            name="contact[phone]"
+            value="{% if form.phone %}{{ form.phone | escape }}{% elsif customer %}{{ customer.phone | escape }}{% endif %}"
+            placeholder="{{ section.settings.phone_placeholder | escape }}"
+            autocomplete="tel"
+          >
+        {% endif %}
+
+        <textarea
+          name="contact[body]"
+          placeholder="{{ section.settings.message_placeholder | escape }}"
+          rows="{{ section.settings.message_rows }}"
+        >{{ form.body | escape }}</textarea>
+
+        <button type="submit">{{ section.settings.submit_label | escape }}</button>
+      {% endform %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "JKL Consultation page",
+  "tag": "section",
+  "class": "jkl-consultation-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Content width",
+      "min": 900,
+      "max": 1400,
+      "step": 20,
+      "unit": "px",
+      "default": 1180
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 140,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 140,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#f1f2f2"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#4d5964"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Contact card background",
+      "default": "#ffc21a"
+    },
+    {
+      "type": "color",
+      "id": "accent_text_color",
+      "label": "Contact card text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Button background",
+      "default": "#ffc21a"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Left content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Book et mode og fa styr pa lageret med Dansk Niels Bo"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Skal dit lager eller vaerksted udnyttes bedre? Vi tilbyder gratis konsulentbesog"
+    },
+    {
+      "type": "text",
+      "id": "divider_text",
+      "label": "Small divider text",
+      "default": "."
+    },
+    {
+      "type": "richtext",
+      "id": "intro",
+      "label": "Intro text",
+      "default": "<p>Vi kommer gerne ud til dig og gennemgar lageret eller vaerkstedet, sa vi sammen kan finde den bedste losning.</p><p>Som en ekstra service far du mulighed for at teste og afprove vores store udvalg af saekkevogne og el-trappesaekkevogne - en effektiv og praktisk hjaelp i det daglige arbejde.</p><p>Malet er enkelt: at effektivisere dine arbejdsgange og hjaelpe dig med at spare tid, kraefter og penge.</p>"
+    },
+    {
+      "type": "text",
+      "id": "list_heading",
+      "label": "List heading",
+      "default": "Hvad far du ud af modet?"
+    },
+    {
+      "type": "text",
+      "id": "closing_heading",
+      "label": "Closing heading",
+      "default": "Skal vi tage en snak?"
+    },
+    {
+      "type": "richtext",
+      "id": "closing_text",
+      "label": "Closing text",
+      "default": "<p>Udfyld formularen herunder, sa kontakter vi dig hurtigst muligt og aftaler naermere om modeform og tidspunkt. Du vaelger selv, om det skal vaere online, telefonisk eller et fysisk besog.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Contact card"
+    },
+    {
+      "type": "image_picker",
+      "id": "portrait",
+      "label": "Portrait"
+    },
+    {
+      "type": "text",
+      "id": "portrait_alt",
+      "label": "Portrait alt text",
+      "default": "Consultant portrait"
+    },
+    {
+      "type": "text",
+      "id": "portrait_fallback",
+      "label": "Portrait fallback initials",
+      "default": "NB"
+    },
+    {
+      "type": "text",
+      "id": "card_heading",
+      "label": "Card heading",
+      "default": "Book et mode med os"
+    },
+    {
+      "type": "richtext",
+      "id": "card_text",
+      "label": "Card text",
+      "default": "<p>Onsker du at se eller prove nogle af vores produkter?<br>Book et mode - sa kommer vi til dig!</p>"
+    },
+    {
+      "type": "header",
+      "content": "Form"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_company",
+      "label": "Show company field",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_phone",
+      "label": "Show phone field",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "name_placeholder",
+      "label": "Name placeholder",
+      "default": "Dit navn"
+    },
+    {
+      "type": "text",
+      "id": "email_placeholder",
+      "label": "Email placeholder",
+      "default": "Din email"
+    },
+    {
+      "type": "text",
+      "id": "company_placeholder",
+      "label": "Company placeholder",
+      "default": "Firmanavn"
+    },
+    {
+      "type": "text",
+      "id": "phone_placeholder",
+      "label": "Phone placeholder",
+      "default": "Dit telefonnummer"
+    },
+    {
+      "type": "text",
+      "id": "message_placeholder",
+      "label": "Message placeholder",
+      "default": "Din besked"
+    },
+    {
+      "type": "range",
+      "id": "message_rows",
+      "label": "Message rows",
+      "min": 4,
+      "max": 12,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "text",
+      "id": "submit_label",
+      "label": "Submit label",
+      "default": "Send besked"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Success message",
+      "default": "Tak for din besked. Vi vender tilbage hurtigst muligt."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "bullet",
+      "name": "Bullet",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Professionel gennemgang af dit lager, vaerksted eller arbejdsomrade"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "JKL Consultation page",
+      "blocks": [
+        {
+          "type": "bullet",
+          "settings": {
+            "text": "Professionel gennemgang af dit lager, vaerksted eller arbejdsomrade"
+          }
+        },
+        {
+          "type": "bullet",
+          "settings": {
+            "text": "Skraeddersyet radgivning om optimering, pladsudnyttelse og arbejdsmiljo"
+          }
+        },
+        {
+          "type": "bullet",
+          "settings": {
+            "text": "Konkrete forslag til udstyr og losninger, der matcher dine behov og budget"
+          }
+        },
+        {
+          "type": "bullet",
+          "settings": {
+            "text": "Mulighed for at afprove udvalgte produkter - f.eks. el-trappesaekkevogne"
+          }
+        },
+        {
+          "type": "bullet",
+          "settings": {
+            "text": "Et uforpligtende oplaeg, du kan tage stilling til i ro og mag"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

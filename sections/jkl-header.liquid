@@ -188,11 +188,31 @@
   </div>
   <div class="header-divider"></div>
   <nav class="category-nav">
-    <ul>
+    <ul class="category-nav__list category-nav__list--main">
       {%- for link in section.settings.top_menu.links -%}
         <li><a href="{{ link.url }}"{% if link.links.size > 0 %} data-category="{{ link.title | handleize }}"{% endif %}>{{ link.title }}</a></li>
       {%- endfor -%}
     </ul>
+    {%- if customer -%}
+      <ul class="category-nav__list category-nav__list--member">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'logged_in_menu_item' and block.settings.title != blank -%}
+            <li {{ block.shopify_attributes }}>
+              <a
+                href="{{ block.settings.link | default: '#' }}"
+                class="category-nav__member-link"
+                style="
+                  --member-menu-background: {{ block.settings.background_color }};
+                  --member-menu-color: {{ block.settings.text_color }};
+                "
+              >
+                {{ block.settings.title }}
+              </a>
+            </li>
+          {%- endif -%}
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
   </nav>
 </div>
 
@@ -986,6 +1006,37 @@
       "id": "search_categories",
       "label": "Search Categories",
       "info": "Categories shown under 'Most searched' in the mobile search panel."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "logged_in_menu_item",
+      "name": "Logged-in menu item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Tilbud"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "color",
+          "id": "background_color",
+          "label": "Background",
+          "default": "#ab2341"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Text color",
+          "default": "#ffffff"
+        }
+      ]
     }
   ],
   "presets": []

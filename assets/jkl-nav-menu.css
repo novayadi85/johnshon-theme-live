@@ -282,7 +282,7 @@
 @media (max-width: 768px) {
   /* Sit the overlay below the store header (announcement bar + site-header) */
   .nav-overlay {
-    top: calc(var(--store-header-h, 0px) + 20px);
+    top: calc(var(--store-header-h, 0px) + 0px);
   }
 
   .is-scrolled .nav-overlay {

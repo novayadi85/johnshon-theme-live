@@ -152,6 +152,22 @@
   type="module"
   fetchpriority="low"
 ></script>
+<script>
+  window.JKLWishlist = {
+    endpoint: '/apps/communication',
+    customerId: {% if customer %}{{ customer.id | json }}{% else %}null{% endif %},
+    remoteVariantIds: {% if customer and customer.metafields.custom.wishlist_variant_ids != blank %}{{ customer.metafields.custom.wishlist_variant_ids.value | json }}{% else %}[]{% endif %},
+    metafield: {
+      namespace: 'custom',
+      key: 'wishlist_variant_ids'
+    }
+  };
+</script>
+<script
+  src="{{ 'jkl-wishlist.js' | asset_url }}"
+  defer="defer"
+  fetchpriority="low"
+></script>
 <script
   src="{{ 'fly-to-cart.js' | asset_url }}"
   type="module"

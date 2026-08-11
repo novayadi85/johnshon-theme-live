@@ -13,6 +13,40 @@
   "sections": {
     "header_section": {
       "type": "jkl-header",
+      "blocks": {
+        "logged_in_menu_tilbud": {
+          "type": "logged_in_menu_item",
+          "settings": {
+            "title": "Tilbud",
+            "link": "",
+            "background_color": "#AB8723",
+            "text_color": "#ffffff"
+          }
+        },
+        "logged_in_menu_medlemstilbud": {
+          "type": "logged_in_menu_item",
+          "settings": {
+            "title": "Medlemstilbud",
+            "link": "",
+            "background_color": "#ab2341",
+            "text_color": "#ffffff"
+          }
+        },
+        "logged_in_menu_bliv_medlem": {
+          "type": "logged_in_menu_item",
+          "settings": {
+            "title": "Bliv medlem",
+            "link": "",
+            "background_color": "#000000",
+            "text_color": "#ffffff"
+          }
+        }
+      },
+      "block_order": [
+        "logged_in_menu_tilbud",
+        "logged_in_menu_medlemstilbud",
+        "logged_in_menu_bliv_medlem"
+      ],
       "settings": {
         "top_menu": "main-menu",
         "menu": "main-menu",
