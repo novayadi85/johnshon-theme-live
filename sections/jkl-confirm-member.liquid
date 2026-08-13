@@ -1,0 +1,606 @@
+{% liquid
+  assign section_id = 'jkl-confirm-member-' | append: section.id
+%}
+
+<section
+  id="{{ section_id }}"
+  class="jkl-confirm-member" 
+  data-confirm-member
+  data-loading-text="{{ section.settings.loading_text | escape }}"
+  data-success-title="{{ section.settings.success_title | escape }}"
+  data-success-message="{{ section.settings.success_message | escape }}"
+  data-error-title="{{ section.settings.error_title | escape }}"
+  data-error-message="{{ section.settings.error_message | escape }}"
+  data-missing-token-title="{{ section.settings.missing_token_title | escape }}"
+  data-missing-token-message="{{ section.settings.missing_token_message | escape }}"
+  data-tags-label="{{ section.settings.tags_label | escape }}"
+  data-customer-created-label="{{ section.settings.customer_created_label | escape }}"
+  data-customer-not-created-label="{{ section.settings.customer_not_created_label | escape }}"
+  data-locale="{{ request.locale.iso_code | escape }}"
+  style="
+    --jkl-confirm-member-bg: {{ section.settings.background_color }};
+    --jkl-confirm-member-card-bg: {{ section.settings.card_background_color }};
+    --jkl-confirm-member-text: {{ section.settings.text_color }};
+    --jkl-confirm-member-muted: {{ section.settings.muted_color }};
+    --jkl-confirm-member-accent: {{ section.settings.accent_color }};
+    --jkl-confirm-member-accent-text: {{ section.settings.accent_text_color }};
+    --jkl-confirm-member-border: {{ section.settings.border_color }};
+    --jkl-confirm-member-max-width: {{ section.settings.max_width }}px;
+    --jkl-confirm-member-padding-top: {{ section.settings.padding_top }}px;
+    --jkl-confirm-member-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="jkl-confirm-member__inner">
+    <div class="jkl-confirm-member__panel">
+      {% if section.settings.eyebrow != blank %}
+        <p class="jkl-confirm-member__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {% endif %}
+
+      <h1 class="jkl-confirm-member__heading" data-confirm-member-title>
+        {{ section.settings.heading | escape }}
+      </h1>
+
+      {% if section.settings.message != blank %}
+        <div class="jkl-confirm-member__message rte" data-confirm-member-message>
+          {{ section.settings.message }}
+        </div>
+      {% endif %}
+
+      <button class="jkl-confirm-member__button" type="button" data-confirm-member-button>
+        {{ section.settings.button_label | escape }}
+      </button>
+
+      <div class="jkl-confirm-member__status" data-confirm-member-status aria-live="polite" hidden></div>
+
+      {% if section.settings.show_response_details %}
+        <dl class="jkl-confirm-member__details" data-confirm-member-details hidden></dl>
+      {% endif %}
+
+      <div class="jkl-confirm-member__actions" data-confirm-member-actions hidden>
+        <a class="jkl-confirm-member__link-button jkl-confirm-member__link-button--primary" href="{{ section.settings.home_button_url | default: routes.root_url }}">
+          {{ section.settings.home_button_label | escape }}
+        </a>
+        <a class="jkl-confirm-member__link-button jkl-confirm-member__link-button--secondary" href="{{ section.settings.member_button_url | default: '/pages/medlemmer' }}">
+          {{ section.settings.member_button_label | escape }}
+        </a>
+      </div>
+
+      {% if page.content != blank %}
+        <div class="jkl-confirm-member__content rte">
+          {{ page.content }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<script>
+  (() => {
+    const section = document.currentScript?.previousElementSibling;
+    if (!(section instanceof HTMLElement)) return;
+
+    const button = section.querySelector('[data-confirm-member-button]');
+    const title = section.querySelector('[data-confirm-member-title]');
+    const message = section.querySelector('[data-confirm-member-message]');
+    const status = section.querySelector('[data-confirm-member-status]');
+    const details = section.querySelector('[data-confirm-member-details]');
+    const actions = section.querySelector('[data-confirm-member-actions]');
+    const token = new URLSearchParams(window.location.search).get('token');
+    const locale =
+      section.getAttribute('data-locale') ||
+      window.Shopify?.locale ||
+      document.documentElement.lang ||
+      '';
+    const initialButtonText = button?.textContent?.trim() || '';
+
+    const setting = (name, fallback = '') => section.getAttribute(`data-${name}`) || fallback;
+
+    const setStatus = (text, type = '') => {
+      if (!status) return;
+      status.textContent = text;
+      status.hidden = !text;
+      status.dataset.type = type;
+    };
+
+    const htmlToText = (html) => {
+      const template = document.createElement('template');
+      template.innerHTML = html || '';
+      return template.content.textContent.trim();
+    };
+
+    const setCopy = (titleText, messageText, isHtml = true) => {
+      if (title && titleText) title.textContent = titleText;
+      if (!message || !messageText) return;
+
+      if (isHtml) {
+        message.innerHTML = messageText;
+      } else {
+        message.textContent = messageText;
+      }
+    };
+
+    const renderDetails = (data) => {
+      if (!details || !data) return;
+
+      const rows = [];
+
+      if (data.tags && Array.isArray(data.tags) && data.tags.length > 0) {
+        rows.push([setting('tags-label', 'Tags'), data.tags.join(', ')]);
+      }
+
+      if (typeof data.customer_created === 'boolean') {
+        rows.push([
+          data.customer_created
+            ? setting('customer-created-label', 'Customer created')
+            : setting('customer-not-created-label', 'Customer already existed'),
+          data.customer_created ? 'Yes' : 'No',
+        ]);
+      }
+
+      details.replaceChildren(
+        ...rows.map(([label, value]) => {
+          const row = document.createElement('div');
+          const term = document.createElement('dt');
+          const description = document.createElement('dd');
+
+          term.textContent = label;
+          description.textContent = value;
+          row.append(term, description);
+
+          return row;
+        })
+      );
+      details.hidden = rows.length === 0;
+    };
+
+    if (!button) return;
+
+    button.addEventListener('click', async () => {
+      if (!token) {
+        setCopy(setting('missing-token-title'), setting('missing-token-message'));
+        setStatus(htmlToText(setting('missing-token-message')), 'error');
+        button.disabled = true;
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = setting('loading-text', 'Confirming...');
+      setStatus(setting('loading-text', 'Confirming...'), 'loading');
+      if (details) details.hidden = true;
+
+      try {
+        const res = await fetch('/apps/communication', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ method: 'confirm_customer_action', token, locale }),
+        });
+
+        const data = await res.json();
+
+        const isConfirmed = data.success || data.code === 'already_confirmed';
+
+        if (isConfirmed) {
+          if (data.message) {
+            setCopy(setting('success-title'), data.message, false);
+            setStatus(data.message, 'success');
+          } else {
+            setCopy(setting('success-title'), setting('success-message'));
+            setStatus(htmlToText(setting('success-message')), 'success');
+          }
+
+          renderDetails(data);
+          if (actions) actions.hidden = false;
+          button.disabled = false;
+          button.hidden = true;
+          return;
+        }
+
+        if (data.message) {
+          setCopy(setting('error-title'), data.message, false);
+          setStatus(data.message, 'error');
+        } else {
+          setCopy(setting('error-title'), setting('error-message'));
+          setStatus(htmlToText(setting('error-message')), 'error');
+        }
+      } catch (error) {
+        setCopy(setting('error-title'), setting('error-message'));
+        setStatus(htmlToText(setting('error-message')), 'error');
+      } finally {
+        if (!button.hidden) {
+          button.disabled = false;
+          button.textContent = initialButtonText;
+        }
+      }
+    });
+  })();
+</script>
+
+{% stylesheet %}
+  .jkl-confirm-member {
+    background: var(--jkl-confirm-member-bg);
+    color: var(--jkl-confirm-member-text);
+    padding: var(--jkl-confirm-member-padding-top) 20px var(--jkl-confirm-member-padding-bottom);
+  }
+
+  .jkl-confirm-member__inner {
+    max-width: var(--jkl-confirm-member-max-width);
+    margin: 0 auto;
+  }
+
+  .jkl-confirm-member__panel {
+    display: grid;
+    gap: 18px;
+    padding: clamp(32px, 6vw, 64px);
+    border: 1px solid var(--jkl-confirm-member-border);
+    background: var(--jkl-confirm-member-card-bg);
+    text-align: center;
+  }
+
+  .jkl-confirm-member__eyebrow {
+    margin: 0;
+    color: var(--jkl-confirm-member-muted);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+
+  .jkl-confirm-member__heading {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(34px, 5vw, 64px);
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1;
+  }
+
+  .jkl-confirm-member__message,
+  .jkl-confirm-member__status {
+    max-width: 62ch;
+    margin: 0 auto;
+    color: var(--jkl-confirm-member-muted);
+    font-size: 17px;
+    line-height: 1.5;
+  }
+
+  .jkl-confirm-member__button {
+    justify-self: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 180px;
+    min-height: 46px;
+    padding: 0 28px;
+    border: 1px solid var(--jkl-confirm-member-accent);
+    background: var(--jkl-confirm-member-accent);
+    color: var(--jkl-confirm-member-accent-text);
+    cursor: pointer;
+    font: inherit;
+    text-decoration: none;
+    transition: opacity var(--transition);
+  }
+
+  .jkl-confirm-member__button[hidden] {
+    display: none;
+  }
+
+  .jkl-confirm-member__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 2px;
+  }
+
+  .jkl-confirm-member__actions[hidden] {
+    display: none;
+  }
+
+  .jkl-confirm-member__link-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 160px;
+    min-height: 44px;
+    padding: 0 22px;
+    border: 1px solid var(--jkl-confirm-member-accent);
+    color: var(--jkl-confirm-member-accent);
+    text-decoration: none;
+    transition: opacity var(--transition), background-color var(--transition), color var(--transition);
+  }
+
+  .jkl-confirm-member__link-button--primary {
+    background: var(--jkl-confirm-member-accent);
+    color: var(--jkl-confirm-member-accent-text);
+  }
+
+  .jkl-confirm-member__link-button:hover {
+    opacity: 0.86;
+  }
+
+  .jkl-confirm-member__button:hover {
+    opacity: 0.86;
+  }
+
+  .jkl-confirm-member__button:disabled {
+    cursor: wait;
+    opacity: 0.64;
+  }
+
+  .jkl-confirm-member__status[data-type='success'] {
+    color: var(--jkl-confirm-member-text);
+  }
+
+  .jkl-confirm-member__status[data-type='error'] {
+    color: #9f2f25;
+  }
+
+  .jkl-confirm-member__details {
+    display: grid;
+    gap: 10px;
+    max-width: 440px;
+    width: 100%;
+    margin: 4px auto 0;
+    text-align: left;
+  }
+
+  .jkl-confirm-member__details div {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 0;
+    border-top: 1px solid var(--jkl-confirm-member-border);
+  }
+
+  .jkl-confirm-member__details dt,
+  .jkl-confirm-member__details dd {
+    margin: 0;
+  }
+
+  .jkl-confirm-member__details dt {
+    color: var(--jkl-confirm-member-muted);
+  }
+
+  .jkl-confirm-member__content {
+    max-width: 68ch;
+    margin: 12px auto 0;
+    text-align: left;
+  }
+
+  @media screen and (max-width: 749px) {
+    .jkl-confirm-member {
+      padding-right: 16px;
+      padding-left: 16px;
+    }
+
+    .jkl-confirm-member__panel {
+      padding: 28px 20px;
+    }
+
+    .jkl-confirm-member__details div {
+      display: grid;
+      gap: 4px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "JKL Confirm member",
+  "tag": "section",
+  "class": "jkl-confirm-member-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Member confirmation"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Confirm your membership"
+    },
+    {
+      "type": "richtext",
+      "id": "message",
+      "label": "Message",
+      "default": "<p>Click the button below to confirm your JKL membership.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Confirm"
+    },
+    {
+      "type": "text",
+      "id": "loading_text",
+      "label": "Loading text",
+      "default": "Confirming..."
+    },
+    {
+      "type": "header",
+      "content": "Result messages"
+    },
+    {
+      "type": "text",
+      "id": "success_title",
+      "label": "Success title",
+      "default": "Membership confirmed"
+    },
+    {
+      "type": "richtext",
+      "id": "success_message",
+      "label": "Success message",
+      "default": "<p>Your membership has been confirmed.</p>"
+    },
+    {
+      "type": "text",
+      "id": "error_title",
+      "label": "Error title",
+      "default": "Confirmation failed"
+    },
+    {
+      "type": "richtext",
+      "id": "error_message",
+      "label": "Error message",
+      "default": "<p>We could not confirm your membership. Please try again.</p>"
+    },
+    {
+      "type": "text",
+      "id": "missing_token_title",
+      "label": "Missing token title",
+      "default": "Confirmation link is invalid"
+    },
+    {
+      "type": "richtext",
+      "id": "missing_token_message",
+      "label": "Missing token message",
+      "default": "<p>This page is missing a confirmation token. Please open the link from your email again.</p>"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_response_details",
+      "label": "Show response details",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "tags_label",
+      "label": "Tags label",
+      "default": "Tags"
+    },
+    {
+      "type": "text",
+      "id": "customer_created_label",
+      "label": "Customer created label",
+      "default": "Customer created"
+    },
+    {
+      "type": "text",
+      "id": "customer_not_created_label",
+      "label": "Customer not created label",
+      "default": "Existing customer"
+    },
+    {
+      "type": "header",
+      "content": "Success buttons"
+    },
+    {
+      "type": "text",
+      "id": "home_button_label",
+      "label": "Home button label",
+      "default": "Back to front page"
+    },
+    {
+      "type": "text",
+      "id": "home_button_url",
+      "label": "Home button link",
+      "default": "/"
+    },
+    {
+      "type": "text",
+      "id": "member_button_label",
+      "label": "Member page button label",
+      "default": "Go to member page"
+    },
+    {
+      "type": "text",
+      "id": "member_button_url",
+      "label": "Member page button link",
+      "default": "/pages/medlemmer"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Content width",
+      "min": 480,
+      "max": 1200,
+      "step": 40,
+      "unit": "px",
+      "default": 760
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 88
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#f7f4ee"
+    },
+    {
+      "type": "color",
+      "id": "card_background_color",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#17352f"
+    },
+    {
+      "type": "color",
+      "id": "muted_color",
+      "label": "Muted text",
+      "default": "#6f7d73"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#17352f"
+    },
+    {
+      "type": "color",
+      "id": "accent_text_color",
+      "label": "Accent text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "default": "#d8d0c4"
+    }
+  ],
+  "presets": [
+    {
+      "name": "JKL Confirm member"
+    }
+  ]
+}
+{% endschema %}

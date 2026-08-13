@@ -49,6 +49,10 @@
     });
 
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(uniqueIds));
+    document.dispatchEvent(new CustomEvent('jkl:wishlist:changed', {
+      detail: { variantIds: uniqueIds }
+    }));
+
     return uniqueIds;
   }
 
@@ -120,6 +124,12 @@
     document.querySelectorAll('[data-wishlist-toggle][data-variant-id]').forEach(function (button) {
       setButtonState(button, isSaved(ids, button.dataset.variantId));
     });
+
+    document.querySelectorAll('[data-wishlist-header-link]').forEach(function (link) {
+      var active = ids.length > 0;
+      link.classList.toggle('is-active', active);
+      link.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
   }
 
   function updateWishlistPage() {
@@ -168,6 +178,18 @@
 
     event.preventDefault();
     toggleWishlist(button);
+  });
+
+  document.addEventListener('jkl:wishlist:changed', function () {
+    syncButtons();
+    updateWishlistPage();
+  });
+
+  window.addEventListener('storage', function (event) {
+    if (event.key !== STORAGE_KEY && event.key !== null) return;
+
+    syncButtons();
+    updateWishlistPage();
   });
 
   document.addEventListener('DOMContentLoaded', function () {

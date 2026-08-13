@@ -144,6 +144,22 @@
       <img class="logo-mark" src="//jklfinewines.se/cdn/shop/t/10/assets/jkl-logo-full.png?v=163956150214678753371773179936" alt="JKL Fine Wines">
     </a>
     <div class="header-right">
+      {%- assign header_wishlist_has_items = false -%}
+      {%- if customer and customer.metafields.custom.wishlist_variant_ids != blank -%}
+        {%- assign header_wishlist_has_items = true -%}
+      {%- endif -%}
+      {%- assign header_wishlist_url = section.settings.wishlist_link | default: collections.wishlist.url | default: '/collections/wishlist' -%}
+      <a
+        href="{{ header_wishlist_url }}"
+        class="icon-button header-wishlist-link{% if header_wishlist_has_items %} is-active{% endif %}"
+        aria-label="Wishlist"
+        aria-pressed="{% if header_wishlist_has_items %}true{% else %}false{% endif %}"
+        data-wishlist-header-link
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 21s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 11c0 5.5-7 10-7 10z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        </svg>
+      </a>
       {%- if shop.customer_accounts_enabled -%}
         <a href="{{ routes.account_url }}" class="icon-button" aria-label="Account">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -996,6 +1012,15 @@
       "label": "Use first child as header",
       "default": false,
       "info": "When enabled, the first child of each item is promoted to the panel heading and the \"All …\" link in Layer 2 and Layer 3, and is removed from the displayed children list."
+    },
+    {
+      "type": "header",
+      "content": "Header links"
+    },
+    {
+      "type": "url",
+      "id": "wishlist_link",
+      "label": "Wishlist link"
     },
     {
       "type": "header",

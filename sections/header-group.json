@@ -52,6 +52,7 @@
         "menu": "main-menu",
         "secondary_menu": "secondary",
         "use_first_child_as_header": true,
+        "wishlist_link": "/collections/wishlist",
         "search_categories": "main-menu"
       }
     },

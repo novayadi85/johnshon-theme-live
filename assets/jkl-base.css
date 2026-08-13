@@ -603,6 +603,15 @@ button {
   height: 24px;
 }
 
+.header-right .header-wishlist-link {
+  color: #c55e31;
+}
+
+.header-right .header-wishlist-link.is-active svg path,
+.header-right .header-wishlist-link[aria-pressed="true"] svg path {
+  fill: currentColor;
+}
+
 .cart-button {
   display: flex;
   align-items: center;
@@ -1003,7 +1012,7 @@ button {
   width: 24px;
   height: 24px;
   z-index: 2;
-  color: currentColor;
+  color: #c55e31;
   cursor: pointer;
 }
 
@@ -2860,6 +2869,7 @@ button {
   top: 20px;
   right: 20px;
   z-index: 2;
+  color: #c55e31;
 }
 
 .pdp-wishlist img {
@@ -4214,6 +4224,12 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
   }
 
   .header-right .icon-button[aria-label="Account"] {
+    display: flex;
+    padding: 0;
+    height: 24px;
+  }
+
+  .header-right .header-wishlist-link {
     display: flex;
     padding: 0;
     height: 24px;
