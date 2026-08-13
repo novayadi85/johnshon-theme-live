@@ -15,6 +15,7 @@
 
 <!-- === PLP Container === -->
 <div class="plp-container">
+  {%- paginate collection.products by 24 -%}
 
   {%- if collection.products.size > 0 -%}
 
@@ -73,12 +74,29 @@
   </div>
 
   <!-- === Product Grid === -->
-  <div class="plp-product-list plp-grid active" data-no-results="{{ 'content.no_products_found' | t }}" data-section-id="{{ section.id }}">
+  <div
+    class="plp-product-list plp-grid active"
+    data-no-results="{{ 'content.no_products_found' | t }}"
+    data-section-id="{{ section.id }}"
+    data-current-page="{{ paginate.current_page }}"
+    data-total-pages="{{ paginate.pages }}"
+    data-next-url="{% if paginate.next %}{{ paginate.next.url }}{% endif %}"
+  >
     {%- for product in collection.products -%}
       {%- for variant in product.variants -%}
         {% render 'jkl-product-card', product: product, variant: variant, collection_card: true %}
       {%- endfor -%}
     {%- endfor -%}
+  </div>
+  <div
+    class="plp-infinite-scroll"
+    data-plp-infinite-scroll-sentinel
+    aria-live="polite"
+    {% unless paginate.next %}
+      hidden
+    {% endunless %}
+  >
+    <span class="plp-infinite-scroll__loader"></span>
   </div>
 
   {%- else -%}
@@ -87,10 +105,29 @@
   <div class="plp-empty-signup">
     <h3>Ups - her er ingen varer fra {{ collection.title }}.</h3>
     <p>Skriv dig op herunder - så får du besked så snart lageret har fået varer igen.</p>
-    {% render 'jkl-signup-form' %}
+    {%- assign customer_membership = customer.metafields.custom.membership.value -%}
+    {%- assign customer_has_tickets = customer.metafields.custom.has_tickets.value | default: customer.metafields.custom.has_tickets -%}
+    {%- assign is_club_member = false -%}
+    {%- if customer.tags contains 'bronze' -%}
+      {%- assign is_club_member = true -%}
+    {%- endif -%}
+    {% if is_club_member %}
+      <!-- Besked til eksisterende medlemmer -->
+      <div class="jkl-member-message">
+        <p>🎉 <strong>Tak!</strong> Du er allerede tilmeldt JKL Club som Bronze-medlem. Nyd dine eksklusive fordele!</p>
+      </div>
+    {% else %}
+      {% render 'jkl-signup-form',
+        customer_tags_endpoint: '/apps/communication',
+        customer_tags_tag: 'bronze',
+        customer_tags_action: 'add'
+      %}
+
+    {% endif %}
   </div>
 
   {%- endif -%}
+  {%- endpaginate -%}
 
 </div>
 
@@ -156,6 +193,7 @@
 </script>
 
 <script src="{{ 'jkl-filter-drawer.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'jkl-plp-infinite-scroll.js' | asset_url }}" defer="defer"></script>
 
 {% schema %}
 {

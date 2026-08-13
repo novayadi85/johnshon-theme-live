@@ -5,31 +5,43 @@
 {%- assign winery_link = product.metafields.custom.vendor.value.vendor_collection.value.url -%}
 {%- assign vintage = variant.metafields.custom.vintage.value | default: variant.metafields.custom.vintage -%}
 
-{%- comment -%} Reviews — same source as the PDP (shop.metaobjects.reviews by wsi) {%- endcomment -%}
-{%- assign product_wsi = product.metafields.custom.wsi -%}
-{%- assign product_wsi_gid = product_wsi | append: '' -%}
-{%- assign matching_reviews = shop.metaobjects.reviews.values | where: 'wsi_object', product_wsi -%}
-{%- if matching_reviews.size == 0 -%}
-  {%- assign product_wsi_id = product_wsi.value.system.id | default: product_wsi.system.id | default: product_wsi -%}
-  {%- assign matching_reviews = shop.metaobjects.reviews.values | where: 'wsi_object.value.system.id', product_wsi_id -%}
-{%- endif -%}
-{%- assign reviews_to_check = matching_reviews -%}
-{%- assign manual_review_match = false -%}
-{%- if reviews_to_check.size == 0 and product_wsi_gid != blank -%}
-  {%- assign reviews_to_check = shop.metaobjects.reviews.values -%}
-  {%- assign manual_review_match = true -%}
-{%- endif -%}
-{%- assign final_matching_reviews_count = matching_reviews.size -%}
+{%- comment -%} Uden prisdata for det aktive land vises hverken pris eller købsknap. {%- endcomment -%}
+{%- capture price_available %}{% render 'jkl-price-available', variant: variant %}{% endcapture -%}
+{%- assign price_available = price_available | strip -%}
+
+{%- comment -%}
+  Reviews — samme kilde og samme matchning som PDP'en, se sections/jkl-pdp.liquid:
+  et where-filter mod produktets egen metafelt-drop matcher aldrig, og med en tom
+  værdi returnerer `where` samtlige reviews. Derfor findes først ét review for denne
+  WSI, og dets egen drop bruges så som sammenligningsværdi.
+{%- endcomment -%}
+{%- liquid
+  assign reviews_all = shop.metaobjects.reviews.values
+  assign card_wsi_handle = product.metafields.custom.wsi.value.system.handle
+  assign review_seed = blank
+  if card_wsi_handle != blank
+    for review in reviews_all
+      if review.wsi_object.value.system.handle == card_wsi_handle
+        assign review_seed = review
+        break
+      endif
+    endfor
+  endif
+  if review_seed == blank
+    assign matching_reviews = '' | split: ','
+  else
+    assign matching_reviews = reviews_all | where: 'wsi_object', review_seed.wsi_object
+  endif
+-%}
+{%- comment -%}
+  Kortet viser de to højeste bedømmelser. Scoren normaliseres til en 100-skala først,
+  så stjerne- og 20-punktsanmeldelser kan sammenlignes med point-anmeldelser.
+{%- endcomment -%}
 {%- assign top_review = blank -%}
 {%- assign top_review_score = 0 -%}
-{%- for review in reviews_to_check -%}
-  {%- if manual_review_match -%}
-    {%- assign review_wsi_gid = review.wsi_object | append: '' -%}
-    {%- unless review_wsi_gid == product_wsi_gid -%}
-      {%- continue -%}
-    {%- endunless -%}
-    {%- assign final_matching_reviews_count = final_matching_reviews_count | plus: 1 -%}
-  {%- endif -%}
+{%- assign second_review = blank -%}
+{%- assign second_review_score = 0 -%}
+{%- for review in matching_reviews -%}
   {%- assign review_score = review.reviewscore.value | default: review.reviewscore | plus: 0 -%}
   {%- assign review_type = review.reviewtype.value | default: review.reviewtype | default: 'Points (value 0 to 100)' -%}
   {%- assign review_type_handle = review_type | handleize -%}
@@ -41,8 +53,13 @@
     {%- assign normalized_review_score = review_score -%}
   {%- endif -%}
   {%- if top_review == blank or normalized_review_score > top_review_score -%}
+    {%- assign second_review = top_review -%}
+    {%- assign second_review_score = top_review_score -%}
     {%- assign top_review = review -%}
     {%- assign top_review_score = normalized_review_score -%}
+  {%- elsif second_review == blank or normalized_review_score > second_review_score -%}
+    {%- assign second_review = review -%}
+    {%- assign second_review_score = normalized_review_score -%}
   {%- endif -%}
 {%- endfor -%}
 <article
@@ -96,6 +113,13 @@
   </div>
   <div class="ratings">
     {% render 'jkl-product-rating', review: top_review, product: product, variant: variant %}
+    {%- comment -%}
+      Uden vagt ville snippet'en falde tilbage på produktets egne rating-metafelter
+      og gentage den første bedømmelse, når vinen kun har én anmeldelse.
+    {%- endcomment -%}
+    {%- if second_review != blank -%}
+      {% render 'jkl-product-rating', review: second_review %}
+    {%- endif -%}
   </div>
   </div>
   {%- if variant.metafields.custom.show_member_price.value -%}
@@ -125,17 +149,20 @@
       {%- comment -%} Same price block as the PDP, always the full (non-simple)
         version. scope: 'plp' renders clean plp-* classes (no pdp traces). {%- endcomment -%}
       {% render 'pdp-price', product: product, variant: variant, scope: 'plp', force_full: true %}
-      <div class="actions">
-        
-        <div class="quantity-selector"><span>-</span><span>6</span><span>+</span></div>
-        {%- form 'product', product, id: 'jkl-product-form-{{ variant.id }}' -%}
-          <input type="hidden" name="id" value="{{ variant.id }}">
-          <input type="hidden" name="quantity" value="{% render 'qty-bulk-size', variant: variant %}" min="1" class="pdp-qty-value">  
-          <button type="submit" class="btn-add-to-basket"{% unless product.available %} disabled{% endunless %}>
-            {%- if product.available -%}{{ 'actions.add_to_cart' | t }} {%- else -%}{{ 'products.product.sold_out' | t }}{%- endif -%}
-          </button>
-        {%- endform -%}
-      </div>
+      {%- comment -%} Uden prisdata for det aktive land udelades hele købsblokken. {%- endcomment -%}
+      {%- if price_available != blank -%}
+        <div class="actions">
+
+          <div class="quantity-selector"><span>-</span><span>6</span><span>+</span></div>
+          {%- form 'product', product, id: 'jkl-product-form-{{ variant.id }}' -%}
+            <input type="hidden" name="id" value="{{ variant.id }}">
+            <input type="hidden" name="quantity" value="{% render 'qty-bulk-size', variant: variant %}" min="1" class="pdp-qty-value">
+            <button type="submit" class="btn-add-to-basket"{% unless product.available %} disabled{% endunless %}>
+              {%- if product.available -%}{{ 'actions.add_to_cart' | t }} {%- else -%}{{ 'products.product.sold_out' | t }}{%- endif -%}
+            </button>
+          {%- endform -%}
+        </div>
+      {%- endif -%}
     </div>
   </div>
 </article>

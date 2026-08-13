@@ -1,0 +1,261 @@
+{% liquid
+  assign section_id = 'jkl-member-page-' | append: section.id
+%}
+
+<section
+  id="{{ section_id }}"
+  class="jkl-member-page"
+  data-member-page
+  data-customer-logged-in="{% if customer %}true{% else %}false{% endif %}"
+  data-member-message="{{ section.settings.member_message | escape }}"
+  data-member-eyebrow="{{ section.settings.member_eyebrow | escape }}"
+  data-guest-message="{{ section.settings.guest_message | escape }}"
+  data-success-status="{{ section.settings.success_status | escape }}"
+  data-success-code="{{ section.settings.success_code | escape }}"
+  style="
+    --jkl-member-page-bg: {{ section.settings.background_color }};
+    --jkl-member-page-text: {{ section.settings.text_color }};
+    --jkl-member-page-muted: {{ section.settings.muted_color }};
+    --jkl-member-page-accent: {{ section.settings.accent_color }};
+    --jkl-member-page-max-width: {{ section.settings.max_width }}px;
+    --jkl-member-page-padding-top: {{ section.settings.padding_top }}px;
+    --jkl-member-page-padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="jkl-member-page__inner">
+    {% if customer %}
+      <p class="jkl-member-page__eyebrow" data-member-page-eyebrow>{{ section.settings.member_eyebrow | escape }}</p>
+      <h1 class="jkl-member-page__heading" data-member-page-message>{{ section.settings.member_message | escape }}</h1>
+    {% else %}
+      <p class="jkl-member-page__eyebrow" data-member-page-eyebrow>{{ section.settings.guest_eyebrow | escape }}</p>
+      <h1 class="jkl-member-page__heading" data-member-page-message>{{ section.settings.guest_message | escape }}</h1>
+      <p class="jkl-member-page__submessage" data-member-page-submessage hidden>
+        {{ section.settings.guest_message | escape }}
+      </p>
+      {% if shop.customer_accounts_enabled %}
+        <a class="jkl-member-page__button" href="{{ routes.account_login_url }}" data-member-page-login>
+          {{ section.settings.login_label | escape }}
+        </a>
+      {% endif %}
+    {% endif %}
+
+    {% if page.content != blank %}
+      <div class="jkl-member-page__content rte">
+        {{ page.content }}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<script>
+  (() => {
+    const section = document.currentScript?.previousElementSibling;
+    if (!(section instanceof HTMLElement)) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const successStatus = section.getAttribute('data-success-status') || 'success';
+    const successCode = section.getAttribute('data-success-code') || 'confirmed';
+
+    if (params.get('status') !== successStatus || params.get('code') !== successCode) return;
+
+    const eyebrow = section.querySelector('[data-member-page-eyebrow]');
+    const message = section.querySelector('[data-member-page-message]');
+    const submessage = section.querySelector('[data-member-page-submessage]');
+    const isLoggedIn = section.getAttribute('data-customer-logged-in') === 'true';
+
+    if (eyebrow) eyebrow.textContent = section.getAttribute('data-member-eyebrow') || '';
+    if (message) message.textContent = section.getAttribute('data-member-message') || '';
+    if (submessage && !isLoggedIn) {
+      submessage.textContent = section.getAttribute('data-guest-message') || '';
+      submessage.hidden = false;
+    }
+  })();
+</script>
+
+{% stylesheet %}
+  .jkl-member-page {
+    background: var(--jkl-member-page-bg);
+    color: var(--jkl-member-page-text);
+    padding: var(--jkl-member-page-padding-top) 24px var(--jkl-member-page-padding-bottom);
+  }
+
+  .jkl-member-page__inner {
+    display: grid;
+    gap: 18px;
+    max-width: var(--jkl-member-page-max-width);
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .jkl-member-page__eyebrow {
+    margin: 0;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    line-height: 1.4;
+    text-transform: uppercase;
+    color: var(--jkl-member-page-muted);
+  }
+
+  .jkl-member-page__heading {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(36px, 5vw, 72px);
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 0.98;
+  }
+
+  .jkl-member-page__submessage {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.4;
+    color: var(--jkl-member-page-muted);
+  }
+
+  .jkl-member-page__button {
+    justify-self: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 24px;
+    border: 1px solid var(--jkl-member-page-accent);
+    background: var(--jkl-member-page-accent);
+    color: var(--jkl-member-page-bg);
+    text-decoration: none;
+    transition: opacity var(--transition);
+  }
+
+  .jkl-member-page__button:hover {
+    opacity: 0.82;
+  }
+
+  .jkl-member-page__content {
+    max-width: 68ch;
+    margin: 12px auto 0;
+    text-align: left;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "JKL Member page",
+  "tag": "section",
+  "class": "jkl-member-page-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Messages"
+    },
+    {
+      "type": "text",
+      "id": "member_eyebrow",
+      "label": "Member eyebrow",
+      "default": "Member status"
+    },
+    {
+      "type": "text",
+      "id": "member_message",
+      "label": "Member message",
+      "default": "You are a member now"
+    },
+    {
+      "type": "text",
+      "id": "guest_eyebrow",
+      "label": "Guest eyebrow",
+      "default": "Member prices"
+    },
+    {
+      "type": "text",
+      "id": "guest_message",
+      "label": "Guest message",
+      "default": "Please login to get your discount prices"
+    },
+    {
+      "type": "text",
+      "id": "login_label",
+      "label": "Login button label",
+      "default": "Login"
+    },
+    {
+      "type": "text",
+      "id": "success_status",
+      "label": "Success status parameter",
+      "default": "success"
+    },
+    {
+      "type": "text",
+      "id": "success_code",
+      "label": "Success code parameter",
+      "default": "confirmed"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Content width",
+      "min": 480,
+      "max": 1200,
+      "step": 40,
+      "unit": "px",
+      "default": 760
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 88
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background", 
+      "default": "#f7f4ee"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#17352f"
+    },
+    {
+      "type": "color",
+      "id": "muted_color",
+      "label": "Muted text",
+      "default": "#6f7d73"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#17352f"
+    }
+  ],
+  "presets": [
+    {
+      "name": "JKL Member page"
+    }
+  ]
+}
+{% endschema %}

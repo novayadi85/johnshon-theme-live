@@ -18,13 +18,17 @@
   {%- elsif star_count < 0 -%}
     {%- assign star_count = 0 -%}
   {%- endif -%}
+  {%- comment -%}
+    Stjerner vises kun for anmeldelser med Review type = stars. Point-skalaerne
+    beholder star_count til internt brug, men gengives udelukkende som tal.
+  {%- endcomment -%}
   {%- if part == 'label' -%}
     {{ review_score }} {{ review_unit }}
-  {%- elsif part == 'stars' -%}
+  {%- elsif part == 'stars' and review_unit == 'Stars' -%}
     {%- for star in (1..6) -%}
       {%- if star <= star_count -%}&#9733;{%- else -%}&#9734;{%- endif -%}
     {%- endfor -%}
-  {%- elsif part == 'star_count' -%}
+  {%- elsif part == 'star_count' and review_unit == 'Stars' -%}
     {{ star_count }}
   {%- endif -%}
 {%- endif -%}

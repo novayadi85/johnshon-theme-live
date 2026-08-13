@@ -180,7 +180,14 @@
   }
 </script>
 
-{%- if force_full != true and product.metafields.custom.show_simple_price.value -%}
+{%- comment -%}
+  Uden prisdata for det aktive land vises ingen pris overhovedet. Fallbacken til
+  variant.price længere oppe giver 0 på netop de varer, og en 0-pris må ikke ud.
+{%- endcomment -%}
+{%- capture price_available %}{% render 'jkl-price-available', variant: variant %}{% endcapture -%}
+{%- assign price_available = price_available | strip -%}
+{%- if price_available == blank -%}
+{%- elsif force_full != true and product.metafields.custom.show_simple_price.value -%}
   {%- render 'pdp-price-simple', variant: variant -%}
 {%- else -%}
 {%- case show_price_type -%}

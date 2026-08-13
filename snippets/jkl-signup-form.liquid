@@ -207,12 +207,24 @@
     });
     function submitForm(f) {
       var customerTagsEndpoint = f.querySelector('[data-customer-tags-endpoint]');
-      if (customerTagsEndpoint) {
+      if (customerTagsEndpoint) { 
         var payload = {
-          shopId: f.querySelector('[data-customer-tags-shop-id]').value,
-          customerId: f.querySelector('[data-customer-tags-customer-id]').value,
+          method: 'update_customer_tags',
+          email: f.querySelector('input[type="email"]').value.trim(),
+          action: f.querySelector('[data-customer-tags-action]').value,
           tags: [f.querySelector('[data-customer-tags-tag]').value],
-          action: f.querySelector('[data-customer-tags-action]').value
+          metafields: [
+            {
+              key: 'membership',
+              type: 'json',
+              value: [f.querySelector('[data-customer-tags-tag]').value]
+            },
+            {
+              key: 'has_tickets',
+              type: 'number_integer',
+              value: "1"
+            }
+          ]
         };
 
         f.querySelector('.signup-form-btn').disabled = true;
@@ -226,16 +238,40 @@
           body: JSON.stringify(payload)
         })
           .then(function(response) {
-            if (!response.ok) throw new Error('Customer tag request failed');
+            return response.json().catch(function() {
+              return {};
+            }).then(function(data) {
+              if (!response.ok || data.success === false) {
+                var requestError = new Error(data.error || data.message || 'Unable to join right now. Please try again.');
+                requestError.code = data.code;
+                throw requestError;
+              }
+
+              return data;
+            });
+          })
+          .then(function() {
             f.querySelector('.signup-form-row').style.display = 'none';
             f.querySelector('.signup-form-consent').style.display = 'none';
             f.querySelector('.signup-form-errors').classList.remove('is-visible');
             f.querySelector('.signup-form-success').style.display = 'block';
+
+            window.setTimeout(function() {
+              // window.location.href = '/collections/medlemmer';
+            }, 2000);
           })
-          .catch(function() {
+          .catch(function(error) {
             var box = f.querySelector('.signup-form-errors');
-            box.innerHTML = '<strong>Unable to join right now. Please try again.</strong>';
+            var strong = document.createElement('strong');
+            strong.textContent = error.message || 'Unable to join right now. Please try again.';
+            box.replaceChildren(strong);
             box.classList.add('is-visible');
+
+            if (error.code === 'customer_not_signed_in') { 
+              window.setTimeout(function() {
+                 window.location.href = '/account/login?return_url=' + encodeURIComponent(location.pathname);
+              }, 2000);
+            }
           })
           .finally(function() {
             f.querySelector('.signup-form-btn').disabled = false;

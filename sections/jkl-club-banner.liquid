@@ -80,7 +80,14 @@
       {%- endif -%}
     </div>
 
-    {% if customer.tags contains 'bronze' %}
+    {%- assign customer_membership = customer.metafields.custom.membership.value -%}
+    {%- assign customer_has_tickets = customer.metafields.custom.has_tickets.value | default: customer.metafields.custom.has_tickets -%}
+    {%- assign is_club_member = false -%}
+    {%- if customer.tags contains 'bronze' -%}
+      {%- assign is_club_member = true -%}
+    {%- endif -%}
+ 
+    {% if is_club_member %}
       <!-- Besked til eksisterende medlemmer -->
       <div class="jkl-member-message">
         <p>🎉 <strong>Tak!</strong> Du er allerede tilmeldt JKL Club som Bronze-medlem. Nyd dine eksklusive fordele!</p>
@@ -88,9 +95,9 @@
     {% else %}
       <!-- Tilmeldingsformular for ikke-medlemmer -->
       {% render 'jkl-signup-form',
-        customer_tags_endpoint: 'https://shop-helper.dev.shopadjust-apps.com/apps/customer/tags',
+        customer_tags_endpoint: '/apps/communication',
         customer_tags_tag: 'bronze',
-        customer_tags_action: 'add'
+        customer_tags_action: 'add' 
       %}
     {% endif %}
 

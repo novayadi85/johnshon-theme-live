@@ -1,0 +1,30 @@
+{%- comment -%}
+  Udskriver 'true' når varianten har en brugbar pris for det aktive land, ellers intet.
+
+  Priserne ligger i variant-metafeltet custom.prices som JSON med et blok pr. land.
+  Mangler metafeltet helt, mangler landets blok, eller er der ingen tier med en pris
+  over 0, må hverken pris eller købsknap vises — pdp-price.liquid ville ellers falde
+  tilbage på variant.price, som på de varer er 0.
+
+  Brug:
+    {%- capture price_available %}{% render 'jkl-price-available', variant: variant %}{% endcapture -%}
+    {%- assign price_available = price_available | strip -%}
+{%- endcomment -%}
+{%- liquid
+  unless variant
+    assign variant = product.selected_or_first_available_variant
+  endunless
+
+  assign price_country_data = variant.metafields.custom.prices.value[localization.country.iso_code]
+  assign price_available = false
+  for tier in price_country_data.none_member
+    assign tier_price = tier.price | plus: 0
+    if tier_price > 0
+      assign price_available = true
+      break
+    endif
+  endfor
+  if price_available
+    echo 'true'
+  endif
+-%}

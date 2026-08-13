@@ -117,7 +117,28 @@
     assign wsi_variants = product.variants
   endif
 -%}
-{%- assign matching_reviews = shop.metaobjects.reviews.values | where: 'wsi_object', product_wsi | sort: 'reviewscore' | reverse -%}
+{%- liquid
+  # Reviews peger på deres vin via metaobject-referencen `wsi_object`. Et where-filter
+  # mod produktets egen metafelt-drop matcher aldrig, og med en tom værdi falder `where`
+  # tilbage til truthy-formen og returnerer samtlige reviews. Derfor findes først ét
+  # review for denne WSI, og dets egen drop bruges så som sammenligningsværdi.
+  assign reviews_all = shop.metaobjects.reviews.values
+  assign review_wsi_handle = wsi_object.system.handle
+  assign review_seed = blank
+  if review_wsi_handle != blank
+    for review in reviews_all
+      if review.wsi_object.value.system.handle == review_wsi_handle
+        assign review_seed = review
+        break
+      endif
+    endfor
+  endif
+  if review_seed == blank
+    assign matching_reviews = '' | split: ','
+  else
+    assign matching_reviews = reviews_all | where: 'wsi_object', review_seed.wsi_object | sort: 'reviewscore' | reverse
+  endif
+-%}
 
 <!-- === PDP Top === -->
 <section class="pdp-top">
@@ -145,7 +166,10 @@
         {%- for review in matching_reviews limit: 3 -%}
           <div class="pdp-rating">
             <span class="pdp-rating-score">{% render 'jkl-review-display', review: review, part: 'label' %}</span>
-            <span class="pdp-rating-stars" aria-label="{% render 'jkl-review-display', review: review, part: 'star_count' %} out of 6 stars">{% render 'jkl-review-display', review: review, part: 'stars' %}</span>
+            {%- capture rating_stars %}{% render 'jkl-review-display', review: review, part: 'stars' %}{% endcapture -%}
+            {%- if rating_stars != blank -%}
+              <span class="pdp-rating-stars" aria-label="{% render 'jkl-review-display', review: review, part: 'star_count' %} out of 6 stars">{{ rating_stars }}</span>
+            {%- endif -%}
             <span class="pdp-rating-source">{{ review.reviewer.value.showing_name | default: review.reviewer.value.name }}</span>
           </div>
         {%- endfor -%}
@@ -232,21 +256,29 @@
       
       {% render 'pdp-price', variant: variant %}
 
-      {%- form 'product', product, id: 'jkl-product-form' -%}
-        <input type="hidden" name="id" value="{{ variant.id }}">
-        <div class="pdp-actions">
-          <div class="pdp-quantity-selector">
-            <button type="button" class="pdp-qty-btn" onclick="var v=this.nextElementSibling;v.value=Math.max(1,parseInt(v.value)-1)">-</button>
-            <input type="number" name="quantity" value="{% render 'qty-bulk-size', variant: variant %}" min="1" class="pdp-qty-value">
-            <button type="button" class="pdp-qty-btn" onclick="var v=this.previousElementSibling;v.value=parseInt(v.value)+1">+</button>
+      {%- comment -%}
+        Uden prisdata for det aktive land udelades hele købsblokken — både antalsvælger
+        og knap. Årgangsvælgerens JS tåler at formularen mangler, den tjekker for null.
+      {%- endcomment -%}
+      {%- capture price_available %}{% render 'jkl-price-available', variant: variant %}{% endcapture -%}
+      {%- assign price_available = price_available | strip -%}
+      {%- if price_available != blank -%}
+        {%- form 'product', product, id: 'jkl-product-form' -%}
+          <input type="hidden" name="id" value="{{ variant.id }}">
+          <div class="pdp-actions">
+            <div class="pdp-quantity-selector">
+              <button type="button" class="pdp-qty-btn" onclick="var v=this.nextElementSibling;v.value=Math.max(1,parseInt(v.value)-1)">-</button>
+              <input type="number" name="quantity" value="{% render 'qty-bulk-size', variant: variant %}" min="1" class="pdp-qty-value">
+              <button type="button" class="pdp-qty-btn" onclick="var v=this.previousElementSibling;v.value=parseInt(v.value)+1">+</button>
+            </div>
+            <button type="submit" class="pdp-add-to-basket"
+              data-logged-in="{% if customer %}true{% else %}false{% endif %}"
+              {% unless variant.available %}disabled{% endunless %}>
+              {%- if variant.available -%}{{ 'actions.add_to_cart' | t }} {%- else -%}{{ 'products.product.sold_out' | t }}{%- endif -%}
+            </button>
           </div>
-          <button type="submit" class="pdp-add-to-basket"
-            data-logged-in="{% if customer %}true{% else %}false{% endif %}"
-            {% unless variant.available %}disabled{% endunless %}>
-            {%- if variant.available -%}{{ 'actions.add_to_cart' | t }} {%- else -%}{{ 'products.product.sold_out' | t }}{%- endif -%}
-          </button>
-        </div>
-      {%- endform -%}
+        {%- endform -%}
+      {%- endif -%}
 
       {%- comment -%}
         Add-to-cart is handled globally by snippets/jkl-cart-drawer.liquid:
@@ -415,7 +447,10 @@
     {%- for review in matching_reviews -%}
       <article class="pdp-review-card">
         <span class="pdp-review-score">{% render 'jkl-review-display', review: review, part: 'label' %}</span>
-        <span class="pdp-review-stars" aria-label="{% render 'jkl-review-display', review: review, part: 'star_count' %} out of 6 stars">{% render 'jkl-review-display', review: review, part: 'stars' %}</span>
+        {%- capture card_stars %}{% render 'jkl-review-display', review: review, part: 'stars' %}{% endcapture -%}
+        {%- if card_stars != blank -%}
+          <span class="pdp-review-stars" aria-label="{% render 'jkl-review-display', review: review, part: 'star_count' %} out of 6 stars">{{ card_stars }}</span>
+        {%- endif -%}
         <span class="pdp-review-critic">{{ review.reviewer.value.showing_name | default: review.reviewer.value.name }}</span>
         <span class="pdp-review-vintage">Vintage {{ review.vintage }}</span>
         <p class="pdp-review-text">{{ review.reviewtext | metafield_tag | truncate: 200 }}</p>

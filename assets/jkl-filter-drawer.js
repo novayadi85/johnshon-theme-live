@@ -209,13 +209,22 @@
             if (curGrid) {
               if (newGrid) {
                 curGrid.innerHTML = newGrid.innerHTML;
+                ['currentPage', 'totalPages', 'nextUrl'].forEach(function (key) {
+                  if (newGrid.dataset[key]) {
+                    curGrid.dataset[key] = newGrid.dataset[key];
+                  } else {
+                    delete curGrid.dataset[key];
+                  }
+                });
                 setResultCount(newGrid.querySelectorAll('.product-card').length);
               } else {
                 // No results (collection.products.size == 0 → grid not rendered)
                 var msg = curGrid.getAttribute('data-no-results') || '';
                 curGrid.innerHTML = msg ? '<p class="plp-empty">' + msg + '</p>' : '';
+                delete curGrid.dataset.nextUrl;
                 setResultCount(0);
               }
+              document.dispatchEvent(new CustomEvent('jkl:plp-updated'));
             } else {
               var count = doc.querySelectorAll('.plp-product-list .product-card').length;
               setResultCount(count);
