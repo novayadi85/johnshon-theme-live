@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "main": {
@@ -18,10 +27,6 @@
         "tags_label": "Tags",
         "customer_created_label": "Customer created",
         "customer_not_created_label": "Existing customer",
-        "home_button_label": "Back to front page",
-        "home_button_url": "/",
-        "member_button_label": "Go to member page",
-        "member_button_url": "/pages/medlemmer",
         "max_width": 760,
         "padding_top": 72,
         "padding_bottom": 88,

@@ -19,7 +19,7 @@
           "settings": {
             "title": "Tilbud",
             "link": "",
-            "background_color": "#AB8723",
+            "background_color": "#ab8723",
             "text_color": "#ffffff"
           }
         },
@@ -52,7 +52,7 @@
         "menu": "main-menu",
         "secondary_menu": "secondary",
         "use_first_child_as_header": true,
-        "wishlist_link": "/collections/wishlist",
+        "wishlist_link": "/collections/mine-farvoritter",
         "search_categories": "main-menu"
       }
     },
