@@ -209,10 +209,44 @@
         <li><a href="{{ link.url }}"{% if link.links.size > 0 %} data-category="{{ link.title | handleize }}"{% endif %}>{{ link.title }}</a></li>
       {%- endfor -%}
     </ul>
-    {%- if customer -%}
-      <ul class="category-nav__list category-nav__list--member">
-        {%- for block in section.blocks -%}
-          {%- if block.type == 'logged_in_menu_item' and block.settings.title != blank -%}
+    {%- capture member_menu_items -%} 
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'logged_in_menu_item' and block.settings.title != blank -%}
+          {%- liquid
+            assign show_member_item = true
+
+            if block.settings.show_for_logged_in and customer == blank
+              assign show_member_item = false
+            endif
+
+            if block.settings.customer_tag != blank
+              assign customer_tag = block.settings.customer_tag | strip
+              unless customer and customer.tags contains customer_tag
+                assign show_member_item = false
+              endunless
+            endif
+
+            if block.settings.customer_metafield_key != blank
+              assign metafield_namespace = block.settings.customer_metafield_namespace | default: 'custom' | strip
+              assign metafield_key = block.settings.customer_metafield_key | strip
+              assign customer_metafield = customer.metafields[metafield_namespace][metafield_key]
+              assign customer_metafield_value = customer_metafield.value | default: customer_metafield
+
+              if customer == blank
+                assign show_member_item = false
+              elsif block.settings.customer_metafield_value != blank
+                assign expected_metafield_value = block.settings.customer_metafield_value | strip
+                assign actual_metafield_value = customer_metafield_value | append: '' | strip
+                unless actual_metafield_value == expected_metafield_value
+                  assign show_member_item = false
+                endunless
+              elsif customer_metafield_value == blank
+                assign show_member_item = false
+              endif
+            endif
+          -%}
+
+          {%- if show_member_item -%}
             <li {{ block.shopify_attributes }}>
               <a
                 href="{{ block.settings.link | default: '#' }}"
@@ -226,7 +260,12 @@
               </a>
             </li>
           {%- endif -%}
-        {%- endfor -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endcapture -%}
+    {%- if member_menu_items != blank -%}
+      <ul class="category-nav__list category-nav__list--member">
+        {{ member_menu_items }}
       </ul>
     {%- endif -%}
   </nav>
@@ -1048,6 +1087,37 @@
           "type": "url",
           "id": "link",
           "label": "Link"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_for_logged_in",
+          "label": "Show for logged-in customers",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "customer_tag",
+          "label": "Only show for customer tag",
+          "info": "Optional. Example: bronze. Leave empty to ignore tags."
+        },
+        {
+          "type": "text",
+          "id": "customer_metafield_namespace",
+          "label": "Only show for customer metafield namespace",
+          "default": "custom",
+          "info": "Optional. Used with the metafield key below."
+        },
+        {
+          "type": "text",
+          "id": "customer_metafield_key",
+          "label": "Only show for customer metafield key",
+          "info": "Optional. Example: membership. Leave empty to ignore metafields."
+        },
+        {
+          "type": "text",
+          "id": "customer_metafield_value",
+          "label": "Only show when metafield value equals",
+          "info": "Optional. Leave empty to show when the metafield exists and is not blank."
         },
         {
           "type": "color",

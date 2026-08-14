@@ -256,11 +256,12 @@
       
       {% render 'pdp-price', variant: variant %}
 
-      {%- comment -%}
+      {%- comment -%} 
         Uden prisdata for det aktive land udelades hele købsblokken — både antalsvælger
-        og knap. Årgangsvælgerens JS tåler at formularen mangler, den tjekker for null.
+        og knap. Shopify bundle-produkter må dog bruge native variant.price som fallback.
+        Årgangsvælgerens JS tåler at formularen mangler, den tjekker for null.
       {%- endcomment -%}
-      {%- capture price_available %}{% render 'jkl-price-available', variant: variant %}{% endcapture -%}
+      {%- capture price_available %}{% render 'jkl-price-available', variant: variant, allow_native_bundle: true %}{% endcapture -%}
       {%- assign price_available = price_available | strip -%}
       {%- if price_available != blank -%}
         {%- form 'product', product, id: 'jkl-product-form' -%}

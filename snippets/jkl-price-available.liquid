@@ -9,14 +9,23 @@
   Brug:
     {%- capture price_available %}{% render 'jkl-price-available', variant: variant %}{% endcapture -%}
     {%- assign price_available = price_available | strip -%}
+
+  Sæt allow_native_bundle: true på PDP når Shopify bundle-produkter må bruge
+  variant.price som fallback, selv om custom.prices ikke findes.
 {%- endcomment -%}
 {%- liquid
   unless variant
     assign variant = product.selected_or_first_available_variant
   endunless
 
+  assign native_bundle_price_available = false
+  assign product_type = product.type | strip | downcase
+  if allow_native_bundle and product_type == 'bundle' and variant.price > 0
+    assign native_bundle_price_available = true
+  endif
+
   assign price_country_data = variant.metafields.custom.prices.value[localization.country.iso_code]
-  assign price_available = false
+  assign price_available = native_bundle_price_available
   for tier in price_country_data.none_member
     assign tier_price = tier.price | plus: 0
     if tier_price > 0

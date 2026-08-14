@@ -20,7 +20,11 @@
       endif
     endfor
 
-    echo bundle_tier.qty
+    if bundle_tier.qty != blank
+      echo bundle_tier.qty
+    else
+      echo 1
+    endif
   else
     echo 1
   endif
