@@ -5,6 +5,7 @@
 
 {%- liquid
   assign products = predictive_search.resources.products
+  assign search_terms = predictive_search.terms | default: predictive_search.query | default: '' | strip | downcase
 -%}
  
 <div data-drawer-results>
@@ -13,6 +14,15 @@
       {%- for product in products -%}
         {%- assign winery = product.metafields.custom.vendor.value.name | default: product.vendor -%}
         {%- assign variant = product.selected_or_first_available_variant -%}
+        {%- if search_terms != blank -%}
+          {%- for product_variant in product.variants -%}
+            {%- assign variant_sku = product_variant.sku | default: '' | downcase -%}
+            {%- if variant_sku != blank and variant_sku contains search_terms -%}
+              {%- assign variant = product_variant -%}
+              {%- break -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
         {%- assign vintage = variant.metafields.custom.vintage.value | default: variant.metafields.custom.vintage -%}
 
         {%- comment -%} Mirrors the headline price + save badge of pdp-price.liquid so
@@ -82,7 +92,7 @@
         -%}
 
         <li>
-          <a href="{{ product.url }}" class="jkl-search-drawer__product">
+          <a href="{{ variant.url | default: product.url }}" class="jkl-search-drawer__product">
             <div class="jkl-search-drawer__product-image">
               {%- if product.featured_image -%}
                 <img

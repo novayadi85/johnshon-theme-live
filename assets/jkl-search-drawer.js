@@ -74,7 +74,8 @@
       '/search/suggest?q=' + encodeURIComponent(term) +
       '&section_id=' + SECTION_ID +
       '&resources[type]=product' +
-      '&resources[limit]=12';
+      '&resources[limit]=12' +
+      '&resources[options][fields]=title,product_type,variants.title,vendor,variants.sku';
 
     renderLoading();
 

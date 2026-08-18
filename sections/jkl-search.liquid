@@ -76,10 +76,24 @@
 
   <!-- === Product Grid === -->
   <div class="plp-product-list plp-grid active" data-no-results="{{ 'content.no_products_found' | t }}" data-section-id="{{ section.id }}">
+    {%- assign search_terms_downcase = search.terms | strip | downcase -%}
     {%- for item in search.results -%}
       {%- if item.object_type == 'product' -%}
+        {%- assign matching_sku_variant_count = 0 -%}
+        {%- if search_terms_downcase != blank -%}
+          {%- for variant in item.variants -%}
+            {%- assign variant_sku = variant.sku | default: '' | downcase -%}
+            {%- if variant_sku != blank and variant_sku contains search_terms_downcase -%}
+              {%- assign matching_sku_variant_count = matching_sku_variant_count | plus: 1 -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+
         {%- for variant in item.variants -%}
-          {% render 'jkl-product-card', product: item, variant: variant %}
+          {%- assign variant_sku = variant.sku | default: '' | downcase -%}
+          {%- if matching_sku_variant_count == 0 or variant_sku contains search_terms_downcase -%}
+            {% render 'jkl-product-card', product: item, variant: variant %}
+          {%- endif -%}
         {%- endfor -%}
       {%- endif -%}
     {%- endfor -%}
