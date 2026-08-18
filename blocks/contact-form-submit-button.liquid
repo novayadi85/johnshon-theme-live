@@ -13,6 +13,30 @@
   .submit-button {
     min-width: max-content;
   }
+
+  /* JKL: knappen foelger temaets eget knap-idiom frem for Horizons skema-
+     styling — samme maal og typografi som .signup-form-btn, der er den anden
+     formular-submit i temaet. Scopet til .contact-form, saa andre
+     submit-knapper er upaavirkede. */
+  .contact-form .submit-button {
+    height: 45px;
+    padding: 0 40px;
+    font-family: var(--font-serif);
+    font-weight: 300;
+    font-size: 20px;
+    line-height: 1;
+    border-radius: 2px;
+    background-color: var(--color-green-coal);
+    border: 1px solid var(--color-green-coal);
+    color: var(--color-cream);
+    text-transform: none;
+    cursor: pointer;
+    transition: opacity var(--transition);
+  }
+
+  .contact-form .submit-button:hover {
+    opacity: 0.9;
+  }
 {% endstylesheet %}
 
 {% schema %}

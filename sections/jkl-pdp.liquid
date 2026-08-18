@@ -138,6 +138,29 @@
   else
     assign matching_reviews = reviews_all | where: 'wsi_object', review_seed.wsi_object | sort: 'reviewscore' | reverse
   endif
+
+  comment
+    Højeste bedømmelse normaliseret til en 100-skala — samme udregning som
+    snippets/jkl-product-card.liquid, så Topanmeldt-badget udløses ens de to
+    steder. Sorteringen ovenfor kan ikke bruges, da den sammenligner rå scores
+    på tværs af stjerne-, 20-punkts- og point-skalaer.
+  endcomment
+  assign top_review_score = 0
+  for review in matching_reviews
+    assign review_score = review.reviewscore.value | default: review.reviewscore | plus: 0
+    assign review_type = review.reviewtype.value | default: review.reviewtype | default: 'Points (value 0 to 100)'
+    assign review_type_handle = review_type | handleize
+    if review_type_handle contains 'star'
+      assign normalized_review_score = review_score | times: 100 | divided_by: 6
+    elsif review_type_handle contains '20'
+      assign normalized_review_score = review_score | times: 5
+    else
+      assign normalized_review_score = review_score
+    endif
+    if normalized_review_score > top_review_score
+      assign top_review_score = normalized_review_score
+    endif
+  endfor
 -%}
 
 <!-- === PDP Top === -->
@@ -159,8 +182,22 @@
   <div class="pdp-top-left">
     <div class="pdp-meta">
       <div class="pdp-badges">
-        <span class="badge">Trusted winery</span>
-        <span class="badge">Critics pick</span>
+        {%- comment -%}
+          Samme metafelter som .member-banner nedenfor og pdp-price.liquid.
+          Modsat prisblokken, hvor medlemspris slår tilbud, kan begge badges vises her.
+        {%- endcomment -%}
+        {%- if variant.metafields.custom.show_member_price.value -%}
+          <span class="badge member">{{ 'jkl.badge_member_price' | t }}</span>
+        {%- endif -%}
+        {%- if variant.metafields.custom.on_sale_for_all.value -%}
+          <span class="badge on-sale">{{ 'content.product_badge_sale' | t }}</span>
+        {%- endif -%}
+        {%- if top_review_score >= 94 -%}
+          <span class="badge">{{ 'jkl.badge_top_rated' | t }}</span>
+        {%- endif -%}
+        {%- if region != blank -%}
+          <span class="badge">{{ region }}</span>
+        {%- endif -%}
       </div>
       <div class="pdp-ratings">
         {%- for review in matching_reviews limit: 3 -%}
@@ -308,14 +345,24 @@
 <!-- === Notes Section === -->
 <section class="pdp-notes bg-cream-color color-green-coal">
   <div class="pdp-notes-left">
-    {%- assign aromas = variant.metafields.custom.aromas.value -%}
-    {%- if aromas != blank -%}
+    {%- comment -%}
+      Duftnoter vises nu som løbende tekst fra variantmetafeltet custom.aromas_summery.
+      Det tidligere tag-loop over custom.aromas er bevaret herunder, hvis vi skal tilbage til det.
+
+      {%- assign aromas = variant.metafields.custom.aromas.value -%}
+      {%- if aromas != blank -%}
+        <h2 class="pdp-notes-title">{{ 'jkl.scent_notes' | t }}</h2>
+        <div class="pdp-scent-tags">
+          {%- for aroma in aromas -%}
+            <span class="pdp-scent-tag">{{ aroma.type | strip_newlines | strip }}</span>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    {%- endcomment -%}
+    {%- assign aromas_summery = variant.metafields.custom.aromas_summery.value | default: variant.metafields.custom.aromas_summery -%}
+    {%- if aromas_summery != blank -%}
       <h2 class="pdp-notes-title">{{ 'jkl.scent_notes' | t }}</h2>
-      <div class="pdp-scent-tags">
-        {%- for aroma in aromas -%}
-          <span class="pdp-scent-tag">{{ aroma.type | strip_newlines | strip }}</span>
-        {%- endfor -%}
-      </div>
+      <div class="pdp-scent-summary">{{ aromas_summery }}</div>
     {%- endif -%}
     {%- if matching_reviews.size > 0 -%}
       <h2 class="pdp-notes-title">{{ 'jkl.reviews' | t }}</h2>
@@ -399,7 +446,14 @@
     {%- if serving_temperature != blank -%}
       <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.serve_temp' | t }}</span><span class="pdp-fact-value">{{ serving_temperature }}</span></div>
     {%- endif -%}
-    <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.production_method' | t }}</span><span class="pdp-fact-value">Biodynamic</span></div>
+    {%- comment -%}
+      Produktionsmetode skjult. Værdien var hardkodet til "Biodynamic" og blev
+      derfor vist på samtlige produkter, uanset om det passede. Skal den ind
+      igen, bør den læses fra et metafelt og pakkes i en != blank-test som de
+      øvrige fakta herover.
+
+      <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.production_method' | t }}</span><span class="pdp-fact-value">Biodynamic</span></div>
+    {%- endcomment -%}
     {%- if vendor != blank -%}
       <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.winery' | t }}</span><span class="pdp-fact-value">{%- if vendor_link != blank -%}<a href="{{ vendor_link }}">{{ vendor }}</a>{%- else -%}{{ vendor }}{%- endif -%}</span></div>
     {%- endif -%}

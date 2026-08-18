@@ -8,50 +8,44 @@
         {%- render 'cancel-order-modal' -%}
       {% endif %}
   <div class="footer-logo">
+    <img src="{{ 'jkl-logo-footer.png' | asset_url }}" alt="JKL">
     <p class="footer-address">JKL II ApS<br>Strandvejen 60<br>2900 Hellerup</p>
     <p class="footer-address">+45 4011 9760<br>db@jklfinewines.com</p>
     <p class="footer-address">CVR-nr.: 45966380</p>
-    <img src="{{ 'jkl-logo-footer.png' | asset_url }}" alt="JKL">
   </div>
   <div class="footer-columns">
     <div class="footer-column">
-      <h3 class="column-title">Customer service</h3>
+      <h3 class="column-title">{{ 'jkl.footer_customer_service' | t }}</h3>
       <ul class="column-links">
-        <li><a href="#">Contact</a></li>
-        <li><a href="#">Shipping and delivery</a></li>
-        <li><a href="#">Returns and refunds</a></li>
-        <li><a href="#">Help and FAQ</a></li>
-        <li><a href="#">Track your order</a></li>
+        <li><a href="/pages/contact">{{ 'jkl.footer_contact' | t }}</a></li>
+        <li><a href="/policies/shipping-policy">{{ 'jkl.footer_shipping_delivery' | t }}</a></li>
+        <li><a href="/pages/faq">{{ 'jkl.footer_help_faq' | t }}</a></li>
         {% if show_cancel_order %}
-          <li><a href="#cancel-order-modal" class="js-open-modal open-ordre__customer" data-action="open-modal" data-modal-id="cancel-order-modal" aria-controls="cancel-order-modal">Cancel order</a></li>
+          <li><a href="#cancel-order-modal" class="js-open-modal open-ordre__customer" data-action="open-modal" data-modal-id="cancel-order-modal" aria-controls="cancel-order-modal">{{ 'jkl.footer_cancel_order' | t }}</a></li>
         {% endif %}
       </ul>
     </div>
     <div class="footer-column">
-      <h3 class="column-title">Membership</h3>
+      <h3 class="column-title">JKL Club</h3>
       <ul class="column-links">
-        <li><a href="#">Join JKL Club</a></li>
-        <li><a href="#">Member benefits</a></li>
-        <li><a href="#">Log in</a></li>
+        <li><a href="/pages/bliv-medlem">{{ 'jkl.footer_join_club' | t }}</a></li>
+        <li><a href="/pages/bliv-medlem">{{ 'jkl.footer_member_benefits' | t }}</a></li>
+        <li><a href="/account">{{ 'jkl.footer_login' | t }}</a></li>
       </ul>
     </div>
     <div class="footer-column">
       <h3 class="column-title">JKL Fine Wines</h3>
       <ul class="column-links">
-        <li><a href="#">Our story</a></li>
-        <li><a href="#">Our producers</a></li>
-        <li><a href="#">Sourcing and curation</a></li>
-        <li><a href="#">Sustainability</a></li>
-        <li><a href="#">Press and partnerships</a></li>
+        <li><a href="/pages/bygget-pa-30-ars-erfaring-med-fine-wine">{{ 'jkl.footer_our_story' | t }}</a></li>
+        <li><a href="/collections/vinproducenter">{{ 'jkl.footer_our_producers' | t }}</a></li>
       </ul>
     </div>
     <div class="footer-column">
-      <h3 class="column-title">Follow us</h3>
+      <h3 class="column-title">{{ 'jkl.footer_follow_us' | t }}</h3>
       <ul class="column-links">
-        <li><a href="#">Instagram</a></li>
-        <li><a href="#">Newsletter</a></li>
-        <li><a href="#">LinkedIn</a></li>
-        <li><a href="#">YouTube</a></li>
+        <li><a href="https://www.instagram.com/jklfinewines.se" target="_blank" rel="noopener">Instagram</a></li>
+        <li><a href="https://www.facebook.com/people/JKLfinewinesse/61584163708688/" target="_blank" rel="noopener">Facebook</a></li>
+        <li><a href="#">{{ 'jkl.footer_newsletter' | t }}</a></li>
       </ul>
     </div>
   </div>

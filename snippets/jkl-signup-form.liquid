@@ -111,6 +111,15 @@
 
 {% endif %}
 
+{%- comment -%}
+  Valgfri overstyring af knapteksten. Sendes den ikke med, beholder
+  formularen sin egen sprogtekst — så de øvrige steder den bruges
+  (forside, PLP, søgning, klubbanner) er upåvirkede.
+{%- endcomment -%}
+{%- if cta_override != blank -%}
+  {%- assign cta = cta_override -%}
+{%- endif -%}
+
 <style>
   .signup-form .h-captcha { position: absolute !important; width: 0 !important; height: 0 !important; overflow: hidden !important; }
   .signup-form-errors { display: none; color: red; margin-bottom: -8px; font-size: 14px; }

@@ -1,0 +1,116 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "blocks": {
+        "heading": {
+          "type": "text",
+          "name": "Title",
+          "settings": {
+            "text": "<h1>{{ closest.page.title }}</h1>",
+            "width": "100%",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "h2",
+            "font": "var(--font-primary--family)",
+            "font_size": "",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "page-content": {
+          "type": "page-content",
+          "settings": {},
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "heading",
+        "page-content"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "gap": 32,
+        "color_scheme": "",
+        "padding-block-start": 40,
+        "padding-block-end": 0
+      }
+    },
+    "member_benefits": {
+      "type": "jkl-member-benefits",
+      "blocks": {
+        "heading": {
+          "type": "heading",
+          "settings": {
+            "text_da": "Dine fordele som medlem",
+            "text_sv": "Dina förmåner som medlem",
+            "text_lt": "Jūsų, kaip nario, privalumai",
+            "text_en": "Your benefits as a member"
+          }
+        },
+        "text": {
+          "type": "text",
+          "settings": {
+            "text_da": "<p>Som medlem får du tidlig adgang til nye lanceringer, eksklusive tilbud og omhyggeligt udvalgte vine i begrænsede oplag.</p>",
+            "text_sv": "<p>Som medlem får du tidig tillgång till nya lanseringar, exklusiva erbjudanden och omsorgsfullt utvalda viner i begränsade upplagor.</p>",
+            "text_lt": "<p>Kaip narys gausite ankstyvą prieigą prie naujų vynų, išskirtinių pasiūlymų ir kruopščiai atrinktų riboto kiekio vynų.</p>",
+            "text_en": "<p>As a member you get early access to new releases, exclusive offers and carefully selected wines in limited quantities.</p>"
+          }
+        },
+        "benefits": {
+          "type": "benefits",
+          "settings": {
+            "items_da": "Altid fri fragt\nSpecielle medlemstilbud\nAdgang til vine som kun medlemmer får adgang til\nInvitationer til events",
+            "items_sv": "Alltid fri frakt\nSpeciella medlemserbjudanden\nTillgång till viner endast för medlemmar\nInbjudningar till event",
+            "items_lt": "Visada nemokamas pristatymas\nSpecialūs pasiūlymai nariams\nPrieiga prie vynų, skirtų tik nariams\nKvietimai į renginius",
+            "items_en": "Always free shipping\nSpecial member offers\nAccess to wines available only to members\nInvitations to events"
+          }
+        },
+        "signup": {
+          "type": "signup",
+          "settings": {
+            "title_da": "Skriv din mail herunder og bliv medlem",
+            "title_sv": "Skriv din e-postadress nedan och bli medlem",
+            "title_lt": "Įrašykite savo el. paštą žemiau ir tapkite nariu",
+            "title_en": "Enter your email below and become a member",
+            "button_da": "Bliv medlem",
+            "button_sv": "Bli medlem",
+            "button_lt": "Tapti nariu",
+            "button_en": "Become a member"
+          }
+        }
+      },
+      "block_order": [
+        "heading",
+        "text",
+        "benefits",
+        "signup"
+      ],
+      "settings": {}
+    }
+  },
+  "order": [
+    "main",
+    "member_benefits"
+  ]
+}

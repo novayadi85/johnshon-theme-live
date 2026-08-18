@@ -5,7 +5,17 @@
   assign subregion_obj = collection.metafields.custom.subregion.value
 -%}
 
-{%- if collection_type == 'vendor' -%}
+{%- if page != blank -%}
+  {%- comment -%}
+    Sider har ingen kollektions-metafelter, så de får deres egen sti:
+    Forside / sidens titel. page-objektet findes kun på page-templates,
+    så kollektionerne nedenfor er upåvirkede.
+  {%- endcomment -%}
+  <div class="breadcrumbs">
+    <a href="{{ routes.root_url }}">{{ 'jkl.home' | t }}</a> /
+    {{ page.title }}
+  </div>
+{%- elsif collection_type == 'vendor' -%}
   <div class="breadcrumbs">
     <a href="/collections/all">{{ 'jkl.all_wines' | t }}</a> /
     <a href="/collections/vinproducenter">{{ 'jkl.wine_producers' | t }}</a> /

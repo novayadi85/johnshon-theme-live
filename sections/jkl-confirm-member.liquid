@@ -1,18 +1,78 @@
 {% liquid
   assign section_id = 'jkl-confirm-member-' | append: section.id
+
+  # Teksterne kommer fra sprogfilerne, saa siden foelger det aktive storefront-
+  # sprog. Sektionens egne felter fungerer stadig som overstyring: udfyldes et
+  # felt i theme editoren, vinder det over oversaettelsen — men saa gaelder den
+  # tekst for alle sprog.
+  # NB: | default: efterfulgt af | t duer ikke — saa ville en udfyldt overstyring
+  # blive sendt gennem oversaetteren og komme ud som "translation missing".
+  assign t_eyebrow = 'jkl.confirm_eyebrow' | t
+  assign t_heading = 'jkl.confirm_heading' | t
+  assign t_message = 'jkl.confirm_message_html' | t
+  assign t_button = 'jkl.confirm_button' | t
+  assign t_loading = 'jkl.confirm_loading' | t
+  assign t_success_title = 'jkl.confirm_success_title' | t
+  assign t_success_message = 'jkl.confirm_success_message_html' | t
+  assign t_error_title = 'jkl.confirm_error_title' | t
+  assign t_error_message = 'jkl.confirm_error_message_html' | t
+  assign t_invalid_title = 'jkl.confirm_invalid_title' | t
+  assign t_invalid_message = 'jkl.confirm_invalid_message_html' | t
+  assign t_home_button = 'jkl.confirm_home_button' | t
+  assign t_member_button = 'jkl.confirm_member_button' | t
+
+  if section.settings.eyebrow != blank
+    assign t_eyebrow = section.settings.eyebrow
+  endif
+  if section.settings.heading != blank
+    assign t_heading = section.settings.heading
+  endif
+  if section.settings.message != blank
+    assign t_message = section.settings.message
+  endif
+  if section.settings.button_label != blank
+    assign t_button = section.settings.button_label
+  endif
+  if section.settings.loading_text != blank
+    assign t_loading = section.settings.loading_text
+  endif
+  if section.settings.success_title != blank
+    assign t_success_title = section.settings.success_title
+  endif
+  if section.settings.success_message != blank
+    assign t_success_message = section.settings.success_message
+  endif
+  if section.settings.error_title != blank
+    assign t_error_title = section.settings.error_title
+  endif
+  if section.settings.error_message != blank
+    assign t_error_message = section.settings.error_message
+  endif
+  if section.settings.missing_token_title != blank
+    assign t_invalid_title = section.settings.missing_token_title
+  endif
+  if section.settings.missing_token_message != blank
+    assign t_invalid_message = section.settings.missing_token_message
+  endif
+  if section.settings.home_button_label != blank
+    assign t_home_button = section.settings.home_button_label
+  endif
+  if section.settings.member_button_label != blank
+    assign t_member_button = section.settings.member_button_label
+  endif
 %}
 
 <section
   id="{{ section_id }}"
   class="jkl-confirm-member" 
   data-confirm-member
-  data-loading-text="{{ section.settings.loading_text | escape }}"
-  data-success-title="{{ section.settings.success_title | escape }}"
-  data-success-message="{{ section.settings.success_message | escape }}"
-  data-error-title="{{ section.settings.error_title | escape }}"
-  data-error-message="{{ section.settings.error_message | escape }}"
-  data-missing-token-title="{{ section.settings.missing_token_title | escape }}"
-  data-missing-token-message="{{ section.settings.missing_token_message | escape }}"
+  data-loading-text="{{ t_loading | escape }}"
+  data-success-title="{{ t_success_title | escape }}"
+  data-success-message="{{ t_success_message | escape }}"
+  data-error-title="{{ t_error_title | escape }}"
+  data-error-message="{{ t_error_message | escape }}"
+  data-missing-token-title="{{ t_invalid_title | escape }}"
+  data-missing-token-message="{{ t_invalid_message | escape }}"
   data-tags-label="{{ section.settings.tags_label | escape }}"
   data-customer-created-label="{{ section.settings.customer_created_label | escape }}"
   data-customer-not-created-label="{{ section.settings.customer_not_created_label | escape }}"
@@ -32,22 +92,22 @@
 >
   <div class="jkl-confirm-member__inner">
     <div class="jkl-confirm-member__panel">
-      {% if section.settings.eyebrow != blank %}
-        <p class="jkl-confirm-member__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {% if t_eyebrow != blank %}
+        <p class="jkl-confirm-member__eyebrow">{{ t_eyebrow | escape }}</p>
       {% endif %}
 
       <h1 class="jkl-confirm-member__heading" data-confirm-member-title>
-        {{ section.settings.heading | escape }}
+        {{ t_heading | escape }}
       </h1>
 
-      {% if section.settings.message != blank %}
+      {% if t_message != blank %}
         <div class="jkl-confirm-member__message rte" data-confirm-member-message>
-          {{ section.settings.message }}
+          {{ t_message }}
         </div>
       {% endif %}
 
       <button class="jkl-confirm-member__button" type="button" data-confirm-member-button>
-        {{ section.settings.button_label | escape }}
+        {{ t_button | escape }}
       </button>
 
       <div class="jkl-confirm-member__status" data-confirm-member-status aria-live="polite" hidden></div>
@@ -58,10 +118,10 @@
 
       <div class="jkl-confirm-member__actions" data-confirm-member-actions hidden>
         <a class="jkl-confirm-member__link-button jkl-confirm-member__link-button--primary" href="{{ section.settings.home_button_url | default: routes.root_url }}">
-          {{ section.settings.home_button_label | escape }}
+          {{ t_home_button | escape }}
         </a>
         <a class="jkl-confirm-member__link-button jkl-confirm-member__link-button--secondary" href="{{ section.settings.member_button_url | default: '/pages/medlemmer' }}">
-          {{ section.settings.member_button_label | escape }}
+          {{ t_member_button | escape }}
         </a>
       </div>
 

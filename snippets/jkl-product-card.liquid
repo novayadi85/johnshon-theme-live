@@ -4,6 +4,8 @@
 {%- assign winery = product.metafields.custom.vendor.value.name -%}
 {%- assign winery_link = product.metafields.custom.vendor.value.vendor_collection.value.url -%}
 {%- assign vintage = variant.metafields.custom.vintage.value | default: variant.metafields.custom.vintage -%}
+{%- comment -%} Samme kilde som PDP-brødkrummen, se sections/jkl-pdp.liquid {%- endcomment -%}
+{%- assign region = product.metafields.custom.region.value.h1 | default: product.metafields.custom.region.value.name -%}
 
 {%- comment -%} Uden prisdata for det aktive land vises hverken pris eller købsknap. {%- endcomment -%}
 {%- capture price_available %}{% render 'jkl-price-available', variant: variant %}{% endcapture -%}
@@ -105,11 +107,26 @@
     {%- endif -%}
   {%- endif -%}
   <div class="card-meta"><div class="badges">
-    {%- unless collection_card -%}
-      <span class="badge highlight">Top choice by members</span>
-    {%- endunless -%}
-    <span class="badge">Trusted winery</span>
-    <span class="badge">Critics pick</span>
+    {%- comment -%}
+      Samme metafelter som styrer .member-banner nedenfor og pdp-price.liquid.
+      Modsat prisblokken, hvor medlemspris slår tilbud, kan begge badges vises her.
+    {%- endcomment -%}
+    {%- if variant.metafields.custom.show_member_price.value -%}
+      <span class="badge member">{{ 'jkl.badge_member_price' | t }}</span>
+    {%- endif -%}
+    {%- if variant.metafields.custom.on_sale_for_all.value -%}
+      <span class="badge on-sale">{{ 'content.product_badge_sale' | t }}</span>
+    {%- endif -%}
+    {%- comment -%}
+      top_review_score er normaliseret til en 100-skala ovenfor, så stjerne- og
+      20-punktsanmeldelser tæller med på lige fod med point-anmeldelser.
+    {%- endcomment -%}
+    {%- if top_review_score >= 94 -%}
+      <span class="badge">{{ 'jkl.badge_top_rated' | t }}</span>
+    {%- endif -%}
+    {%- if region != blank -%}
+      <span class="badge">{{ region }}</span>
+    {%- endif -%}
   </div>
   <div class="ratings">
     {% render 'jkl-product-rating', review: top_review, product: product, variant: variant %}

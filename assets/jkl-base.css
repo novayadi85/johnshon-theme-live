@@ -66,7 +66,7 @@
 /* === JKL Fine Wines — Global Styles === */
 
 :root {
-  --color-background: #fffcf6;
+  --color-background: #fffcf5;
   --color-green-coal: #1a1914;
   --color-olive: #534524;
   --color-teracotta: #c55e31;
@@ -345,7 +345,7 @@ button {
   display: flex;
   gap: 48px;
   align-items: center;
-  font-size: 12px;
+  font-size: 14px;
   white-space: nowrap;
 }
 
@@ -497,6 +497,7 @@ button {
   align-items: center;
   justify-content: space-between;
   height: 104px;
+  margin-top: 12px;
   position: relative;
 }
 
@@ -1098,6 +1099,21 @@ button {
 
 .badge.highlight {
   background-color: var(--color-sky-blue);
+}
+
+/* Member price / regular sale — border matches the fill so the default dark
+   stroke doesn't read as an outline on the coloured background. Gold carries
+   dark text (same pairing as .member-banner), terracotta carries cream. */
+.badge.member {
+  background-color: var(--color-teracotta);
+  border-color: var(--color-teracotta);
+  color: var(--color-cream);
+}
+
+.badge.on-sale {
+  background-color: var(--color-green-gold);
+  border-color: var(--color-green-gold);
+  color: var(--color-green-coal);
 }
 
 .product-card .ratings {
@@ -2006,18 +2022,29 @@ button {
   position: relative;
 }
 
+/* Logoet ligger i midterhullet mellem kolonne 2 og 3 — hullet skabes af
+   margin-left: auto paa .footer-column:nth-child(3). Absolut placering
+   frem for normal flow, saa toppen flugter med kolonnetitlerne i stedet
+   for at ligge over hele raekken. top: 80px svarer til .site-footer's
+   padding-top, altsaa samme oeverste kant som .footer-columns.
+   Mobilreglen (<=768px) saetter position tilbage til static. */
 .footer-logo {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0 auto;
   opacity: 1;
 }
 
+/* Logoet staar nu foerst i kolonnen, saa de 16px flyttes fra top til bund —
+   ellers ville adressen klaebe direkte op ad logoet. */
 .footer-logo img {
   width: 130px;
   height: auto;
-  margin-top: 16px;
+  margin-bottom: 16px;
 }
 
 .footer-address {
@@ -2158,6 +2185,15 @@ button {
 }
 
 .plp-description {
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.3;
+  text-align: center;
+}
+
+/* Samme udtryk som .plp-description, men uden plp-binding.
+   Bruges af page-content-blokken på standard page-templaten. */
+.intro-description {
   font-size: 16px;
   font-weight: 300;
   line-height: 1.3;
@@ -3229,6 +3265,22 @@ button {
   line-height: 1;
 }
 
+/* Sidder uden for .pdp-price-simple-price, så den kolonne-flexede
+   .pdp-price-simple-content lægger den på linjen over tilbudsprisen. */
+.pdp-price-simple-before {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  font-size: 16px;
+  color: rgba(var(--color-green-coal-rgb), 0.73);
+}
+
+/* Kun beløbet streges ud — "Før:" skal stå ustreget foran. */
+.pdp-price-simple-before-amount {
+  text-decoration: line-through;
+}
+
 .pdp-price-simple-unit {
   font-size: 14px;
 }
@@ -3372,6 +3424,14 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
 
 .pdp-scent-tags {
   max-width: 326px;
+}
+
+.pdp-scent-summary {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  max-width: 326px;
+  margin-bottom: 40px;
 }
 
 .pdp-scent-tag {
@@ -3654,7 +3714,7 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
   right: 0;
   width: min(478px, 100vw);
   height: 100%;
-  background: #fffcf6;
+  background: #fffcf5;
   color: var(--color-green-coal);
   transform: translateX(100%);
   transition: transform 220ms ease;
@@ -3675,7 +3735,7 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
 
 .pdp-review-drawer__panel::-webkit-scrollbar-thumb {
   background: rgba(var(--color-green-coal-rgb), 0.28);
-  border: 2px solid #fffcf6;
+  border: 2px solid #fffcf5;
   border-radius: 999px;
 }
 
@@ -3756,7 +3816,7 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
   height: 44px;
   border: 1px solid rgba(var(--color-green-coal-rgb), 0.2);
   border-radius: 50%;
-  background: #fffcf6;
+  background: #fffcf5;
   color: var(--color-green-coal);
   box-shadow: 0 10px 26px rgba(var(--color-green-coal-rgb), 0.18);
   cursor: pointer;
@@ -5291,7 +5351,7 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
 }
 
 .cart-page-club-banner .cart-club-login {
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 300;
   margin-top: 4px;
 }
@@ -5897,6 +5957,28 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
   font-weight: 400;
 }
 
+/* Klub-bjælke øverst i draweren, kun for ikke-indloggede.
+   Hele feltet er et link. flex-shrink: 0 fordi .cart-drawer er en
+   flex-kolonne — ellers kan bjælken klemmes sammen når kurven er lang. */
+.cart-drawer-join-club {
+  display: block;
+  flex-shrink: 0;
+  background: var(--color-green-gold);
+  color: var(--color-green-coal);
+  padding: 12px 20px;
+  text-align: center;
+  font-family: 'Gascogne', serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.3;
+  text-decoration: none;
+  transition: opacity var(--transition);
+}
+
+.cart-drawer-join-club:hover {
+  opacity: 0.85;
+}
+
 .cart-drawer-club-banner {
   background: var(--color-green-gold);
   padding: 10px 20px 7px 20px;
@@ -5921,7 +6003,7 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
 }
 
 .cart-club-login {
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 300;
   margin: 0;
 }
@@ -6834,4 +6916,195 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
   .jkl-consultation__form button {
     width: 100%;
   }
+}
+
+/* === Page-templates: samme layout/typografi som PLP ===
+   Spejler .plp-container, .plp-top og .plp-title.
+
+   Scopet via en :is()-liste over de templates der skal have udtrykket, så
+   de øvrige custom page-templates (member, consultation, contact, customer,
+   confirm-member) er urørte. Bemærk at data-template indeholder hele
+   template-navnet inkl. suffiks — en side der får templaten
+   "become-jkl-club-member" giver data-template="page.become-jkl-club-member",
+   ikke "page". Nye page-templates skal derfor tilføjes i listen. */
+
+/* .plp-container: max-width 1440px inkl. 40px sidepadding => 1360px indhold */
+main:is([data-template="page"], [data-template="page.become-jkl-club-member"]) .section.page-width-content {
+  --page-content-width: 1360px;
+}
+
+/* Horizons color-scheme-1 maler sektionen ren hvid, mens siden selv er
+   --color-background (#fffcf5). Det gav en synlig kant mellem sektionen og
+   resten af siden. Gennemsigtig frem for en fast hex, så den altid følger
+   sidens baggrund præcist.
+
+   Bemærk at denne regel bevidst har et bredere scope end layout-reglerne
+   herunder: alle page-templates skal have sidens baggrund, mens PLP-udtrykket
+   kun gælder de templates der er nævnt i :is()-listen. De custom page-sektioner
+   (member, consultation, customer, confirm-member) maler deres egen baggrund og
+   bruger ikke .section-background, så de er upåvirkede. */
+main[data-template^="page"] .section-background,
+main[data-template^="page"] .section {
+  background-color: transparent;
+}
+
+/* Flex-gap'en nulstilles, så afstandene styres af .plp-title's 8px
+   under titlen og .plp-top's 64px under hele blokken */
+main:is([data-template="page"], [data-template="page.become-jkl-club-member"]) .section-content-wrapper {
+  gap: 0;
+}
+
+/* .plp-top-container: titel og indhold i samme centrerede 669px kolonne */
+main:is([data-template="page"], [data-template="page.become-jkl-club-member"]) .section-content-wrapper > .text-block,
+main:is([data-template="page"], [data-template="page.become-jkl-club-member"]) .section-content-wrapper > .shopify-block.rte {
+  width: 669px;
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+/* .plp-top: 64px luft under blokken. Gælder kun standard-templaten — på
+   become-jkl-club-member følger jkl-member-benefits umiddelbart efter,
+   og der skal indholdet løbe videre i normal flow uden mellemrum. */
+main[data-template="page"] .section-content-wrapper > .shopify-block.rte {
+  padding-block-end: 64px;
+}
+
+/* .plp-title. max-inline-size nulstiller text.liquid's
+   min(100%, var(--max-width)) — den er sat i em og ville ellers
+   afhænge af titlens font-size. */
+main:is([data-template="page"], [data-template="page.become-jkl-club-member"]) .section-content-wrapper > .text-block h1 {
+  font-family: 'Gascogne', serif;
+  font-weight: 250;
+  font-size: 32px;
+  text-align: center;
+  margin-bottom: 8px;
+  max-inline-size: 100%;
+}
+
+@media (max-width: 768px) {
+  /* .plp-container: padding 0 12px */
+  main:is([data-template="page"], [data-template="page.become-jkl-club-member"]) .section.page-width-content {
+    --page-margin: 12px;
+  }
+
+  /* .plp-top-container: width 100% */
+  main:is([data-template="page"], [data-template="page.become-jkl-club-member"]) .section-content-wrapper > .text-block,
+  main:is([data-template="page"], [data-template="page.become-jkl-club-member"]) .section-content-wrapper > .shopify-block.rte {
+    width: 100%;
+  }
+}
+
+/* === JKL Bliv medlem (sections/jkl-member-benefits.liquid) ===
+   Sektionen skal ikke kunne skelnes fra sidens ovrige indhold: ingen egen
+   baggrund, samme centrerede 669px kolonne som .plp-top-container, og
+   ingen font-overstyring — h2 arver temaets normale overskrift-typografi. */
+
+.jkl-member-benefits {
+  margin: 0;
+  padding: 0 40px 64px;
+}
+
+.jkl-member-benefits__inner {
+  max-width: 669px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.jkl-member-benefits__heading {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 26px;
+  line-height: 1;
+  margin-top: 25px;
+  margin-bottom: 15px;
+}
+
+.jkl-member-benefits__rte {
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+.jkl-member-benefits__rte p {
+  margin: 0 0 16px;
+}
+
+.jkl-member-benefits__rte p:last-child {
+  margin-bottom: 0;
+}
+
+/* Centreret liste med gront checkmark. Ikonet ligger inline i flex-raekken
+   frem for absolut i venstre kant, sa hele linjen — ikon plus tekst — bliver
+   centreret som en helhed. Gronfarven findes ikke i temaets palet, sa den
+   ligger i en variabel og kan skiftes et sted. */
+.jkl-member-benefits__list {
+  list-style: none;
+  padding: 0;
+  margin: 24px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.jkl-member-benefits__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.4;
+}
+
+.jkl-member-benefits__check {
+  flex-shrink: 0;
+  color: var(--jkl-check-color, #3f6b4a);
+}
+
+@media (max-width: 768px) {
+  .jkl-member-benefits {
+    padding: 0 12px 64px;
+  }
+}
+
+/* Signup-blokken i JKL Bliv medlem. Formularen er venstrestillet internt
+   (.signup-form har align-items: flex-start), saa den centreres som blok
+   frem for at arve text-align fra __inner. */
+.jkl-member-benefits__signup {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: left;
+
+  /* Knappen henter sine farver fra --surface-fg/--surface-bg, som normalt
+     sættes af temaets farveklasser (bg-cream-color, color-green-coal osv.).
+     Sektionen har bevidst ingen farveklasse, så de sættes her i stedet.
+     Kun .signup-form-btn læser dem, så det rammer ikke andet. */
+  --surface-fg: var(--color-green-coal);
+  --surface-bg: var(--color-cream);
+}
+
+.jkl-member-benefits__signup-title {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 1;
+  margin: 0 0 12px;
+  text-align: center;
+}
+
+/* CLUB JKL i annoncebjaelken er et link til bliv medlem-siden. Elementet er
+   et <a> med samme klasse som de ovrige grupper, saa flex-layoutet er uaendret
+   — kun link-standardstilen skal nulstilles. */
+.announcement-texts .info-group--link,
+.mobile-info--link {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.announcement-texts .info-group--link:hover .value,
+.mobile-info--link:hover .value {
+  text-decoration: underline;
 }

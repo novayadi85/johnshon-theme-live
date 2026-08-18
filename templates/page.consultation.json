@@ -12,32 +12,37 @@
     "main": {
       "type": "jkl-consultation-page",
       "blocks": {
-        "bullet_1": { 
+        "bullet_1": {
           "type": "bullet",
+          "disabled": true,
           "settings": {
             "text": "Professionel gennemgang af dit lager, vaerksted eller arbejdsomrade"
           }
         },
         "bullet_2": {
           "type": "bullet",
+          "disabled": true,
           "settings": {
             "text": "Skraeddersyet radgivning om optimering, pladsudnyttelse og arbejdsmiljo"
           }
         },
         "bullet_3": {
           "type": "bullet",
+          "disabled": true,
           "settings": {
             "text": "Konkrete forslag til udstyr og losninger, der matcher dine behov og budget"
           }
         },
         "bullet_4": {
           "type": "bullet",
+          "disabled": true,
           "settings": {
             "text": "Mulighed for at afprove udvalgte produkter - f.eks. el-trappesaekkevogne"
           }
         },
         "bullet_5": {
           "type": "bullet",
+          "disabled": true,
           "settings": {
             "text": "Et uforpligtende oplaeg, du kan tage stilling til i ro og mag"
           }
@@ -61,17 +66,16 @@
         "button_background": "#ffc21a",
         "button_text_color": "#000000",
         "eyebrow": "Book et mode og fa styr pa lageret med Dansk Niels Bo",
-        "heading": "Skal dit lager eller vaerksted udnyttes bedre? Vi tilbyder gratis konsulentbesog",
+        "heading": "Har du brug for hjælp?",
         "divider_text": ".",
-        "intro": "<p>Vi kommer gerne ud til dig og gennemgar lageret eller vaerkstedet, sa vi sammen kan finde den bedste losning.</p><p>Som en ekstra service far du mulighed for at teste og afprove vores store udvalg af saekkevogne og el-trappesaekkevogne - en effektiv og praktisk hjaelp i det daglige arbejde.</p><p>Malet er enkelt: at effektivisere dine arbejdsgange og hjaelpe dig med at spare tid, kraefter og penge.</p>",
-        "list_heading": "Hvad far du ud af modet?",
-        "closing_heading": "Skal vi tage en snak?",
-        "closing_text": "<p>Udfyld formularen herunder, sa kontakter vi dig hurtigst muligt og aftaler naermere om modeform og tidspunkt. Du vaelger selv, om det skal vaere online, telefonisk eller et fysisk besog.</p>",
-        "portrait": "",
+        "intro": "<p>Har du spørgsmål til vores vine, producenter, levering eller din ordre? </p><p>Udfyld formularen, så vender vi tilbage hurtigst muligt. </p><p>Vi hjælper også gerne, hvis du søger en bestemt vin eller ønsker rådgivning til dit valg.</p>",
+        "list_heading": "",
+        "closing_heading": "",
+        "closing_text": "",
         "portrait_alt": "Consultant portrait",
-        "portrait_fallback": "NB",
-        "card_heading": "Book et mode med os",
-        "card_text": "<p>Onsker du at se eller prove nogle af vores produkter?<br>Book et mode - sa kommer vi til dig!</p>",
+        "portrait_fallback": "JKL Fine Wines",
+        "card_heading": "",
+        "card_text": "<p>Udfyld formularen </p>",
         "show_company": true,
         "show_phone": true,
         "name_placeholder": "Dit navn",

@@ -189,8 +189,17 @@
 {%- endcomment -%}
 {%- capture price_available %}{% render 'jkl-price-available', variant: variant, allow_native_bundle: true %}{% endcapture -%}
 {%- assign price_available = price_available | strip -%}
+{%- comment -%}
+  Medlemspris og tilbud vises altid i boks-visningen, uanset om produktet har
+  show_simple_price sat. force_full respekteres fortsat, så produktkort og
+  søgeresultater beholder den kompakte visning.
+{%- endcomment -%}
+{%- assign use_simple_price = product.metafields.custom.show_simple_price.value -%}
+{%- if show_member_price or on_sale_for_all -%}
+  {%- assign use_simple_price = true -%}
+{%- endif -%}
 {%- if price_available == blank -%}
-{%- elsif force_full != true and product.metafields.custom.show_simple_price.value -%}
+{%- elsif force_full != true and use_simple_price -%}
   {%- render 'pdp-price-simple', variant: variant -%}
 {%- else -%}
 {%- case show_price_type -%}

@@ -55,6 +55,16 @@
   min-height: 100%;
 }
 
+/* Indent the drawer content 15px from the left edge.
+   Same [data-sl-menu-id] + .open specificity as the width rules below, so the
+   app's own padding reset can't win. border-box keeps the padding inside the
+   365px / calc(100% - 15px) widths instead of adding to them. */
+.mobile-drawer[data-sl-menu-id] .drawer-menu,
+.mobile-drawer[data-sl-menu-id] .drawer-menu.open {
+  padding-left: 15px !important;
+  box-sizing: border-box !important;
+}
+
 /* Width + background on DESKTOP (≥768px).
    The SiteLoom app forces these with a high-specificity, media-scoped rule:
      @media (min-width:768px) .mobile-drawer[data-sl-menu-id] .drawer-menu
@@ -244,6 +254,7 @@
     padding: 45px 25px 20px !important;
     border-bottom: none !important;
     font-weight: 400 !important;
+    margin-bottom: 8px;
   }
 }
 

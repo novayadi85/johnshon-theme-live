@@ -1,11 +1,34 @@
 {%- comment -%}
-  Single source of truth for the free-shipping / minimum-order threshold.
-  Rendered (and captured) wherever the amount appears in copy, so it only
-  needs to be maintained here. Can later be made country/currency-aware.
+  Single source of truth for the free-shipping threshold.
 
-  Usage:
-    {%- capture fs_threshold -%}{% render 'jkl-shipping-threshold' %}{%- endcapture -%}
-    {%- assign fs_threshold = fs_threshold | strip -%}
-    {{ 'jkl.shop_minimum' | t: amount: fs_threshold }}
+  Returns the amount in CENTS (minor units) for the active presentment
+  currency, so the same value can drive both the arithmetic in the cart and
+  the copy in the announcement bar. Formatting is NOT done here — run the
+  result through 'jkl-money', which is currency-aware.
+
+  Usage (arithmetic):
+    {%- capture fs_cents -%}{% render 'jkl-shipping-threshold' %}{%- endcapture -%}
+    {%- assign fs_cents = fs_cents | strip | plus: 0 -%}
+
+  Usage (display):
+    {%- capture fs_amount -%}{% render 'jkl-money', cents: fs_cents %}{%- endcapture -%}
+
+  Consumers: jkl-header (announcement bar), jkl-cart-drawer, jkl-cart.
 {%- endcomment -%}
-{{- '499 kr.' -}}
+{%- liquid
+  assign iso = cart.currency.iso_code | default: shop.currency
+
+  case iso
+    when 'DKK'
+      assign cents = 250000
+    when 'SEK'
+      assign cents = 250000
+    when 'NOK'
+      assign cents = 250000
+    when 'EUR'
+      assign cents = 35000
+    else
+      assign cents = 250000
+  endcase
+-%}
+{{- cents -}}

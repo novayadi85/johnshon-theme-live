@@ -6,8 +6,15 @@
 {{ 'cart-drawer-global.js' | asset_url | script_tag }}
 
 <!-- === Mobile Site Header (≤768px only) === -->
-{%- capture fs_threshold -%}{% render 'jkl-shipping-threshold' %}{%- endcapture -%}
-{%- assign fs_threshold = fs_threshold | strip -%}
+{%- capture fs_cents -%}{% render 'jkl-shipping-threshold' %}{%- endcapture -%}
+{%- assign fs_cents = fs_cents | strip | plus: 0 -%}
+{%- comment -%}
+  jkl-money bruger &nbsp; som tusindtalsseparator. Oversaettelsesfiltret escaper
+  indsatte variabler, saa entiteten ville blive vist raa — derfor almindeligt
+  mellemrum her. Bjaelken har white-space: nowrap, saa den braekker alligevel ikke.
+{%- endcomment -%}
+{%- capture fs_threshold -%}{% render 'jkl-money', cents: fs_cents %}{%- endcapture -%}
+{%- assign fs_threshold = fs_threshold | strip | replace: '&nbsp;', ' ' | replace: ',00', '' -%}
 {%- capture mobile_announcement_groups -%}
   <div class="mobile-info">
     <span class="label">{{ 'jkl.members_free_shipping' | t }}</span>
@@ -267,7 +274,8 @@
       var url = predictiveUrl
         + '?q=' + encodeURIComponent(term)
         + '&section_id=jkl-predictive-search'
-        + '&resources[type]=product,collection,page&resources[limit]=8';
+        + '&resources[type]=product,collection,page&resources[limit]=8'
+        + '&resources[options][fields]=title,product_type,variants.title,vendor,variants.sku';
       fetch(url)
         .then(function (res) { return res.text(); })
         .then(function (html) {

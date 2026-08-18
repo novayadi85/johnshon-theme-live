@@ -9,6 +9,7 @@
 {%- liquid
   assign show_volume_price = variant.metafields.custom.show_volume_price.value
   assign show_member_price = variant.metafields.custom.show_member_price.value
+  assign on_sale_for_all = variant.metafields.custom.on_sale_for_all.value
 
   assign prices_data = variant.metafields.custom.prices.value
   assign country_code = localization.country.iso_code
@@ -43,11 +44,44 @@
     assign member_tier = member_single_tier
   endif
 
+  comment
+    Ved tilbud er tier.offer_price den nedsatte pris og tier.price før-prisen —
+    samme opdeling som pdp-price.liquid bruger i 'single_price_offer' og
+    'bundle_price_offer'. Boksene viser den effektive pris, og før-prisen sættes
+    kun når der faktisk er et tilbud, så den kan streges ud i markup'en nedenfor.
+  endcomment
+  assign single_price_before = nil
   assign single_price = single_tier.price
+  if on_sale_for_all and single_tier.offer_price
+    assign single_price = single_tier.offer_price
+    assign single_price_before = single_tier.price
+  endif
 
+  assign bundle_price_before = nil
+  assign bundle_price = bundle_tier.price
+  if on_sale_for_all and bundle_tier.offer_price
+    assign bundle_price = bundle_tier.offer_price
+    assign bundle_price_before = bundle_tier.price
+  endif
+
+  comment
+    Tilbudsprocenten kommer fra tier-dataen, ikke fra en egen udregning, så den
+    matcher tallet den fulde visning viser for det samme produkt.
+  endcomment
+  capture single_save_percent
+    if single_price_before
+      render 'round-percent', percent: single_tier.offer_save_percent
+    endif
+  endcapture
+
+  comment
+    Besparelsesprocenterne regnes mod den effektive enkeltflaskepris, så et
+    "SAVE x%" aldrig lover mere end kunden reelt sparer i forhold til den pris
+    single-boksen viser.
+  endcomment
   capture bundle_save_percent_raw
     if show_volume_price
-      assign bundle_diff = single_price | minus: bundle_tier.price | times: 100.0
+      assign bundle_diff = single_price | minus: bundle_price | times: 100.0
       echo bundle_diff | divided_by: single_price
     endif
   endcapture
@@ -72,7 +106,17 @@
     <div class="pdp-price-simple-content">
       <div class="pdp-price-simple-header">
         <span class="pdp-price-simple-title">{{ 'jkl.buy_single' | t }}</span>
+        {%- if single_price_before -%}
+          <span class="save-badge">{{ 'jkl.on_sale_save_percent' | t: percent: single_save_percent }}</span>
+        {%- endif -%}
       </div>
+      {%- comment -%} Før-prisen ligger uden for prisrækken, så den får sin egen linje over tilbudsprisen {%- endcomment -%}
+      {%- if single_price_before -%}
+        <span class="pdp-price-simple-before">
+          <span class="pdp-price-simple-before-label">{{ 'jkl.price_before' | t }}</span>
+          <span class="pdp-price-simple-before-amount">{% render 'format-amount', amount: single_price_before %}</span>
+        </span>
+      {%- endif -%}
       <div class="pdp-price-simple-price">
         <span class="pdp-price-simple-amount">{% render 'format-amount', amount: single_price %}</span>
         <span class="pdp-price-simple-unit">{{ 'jkl.per_bottle' | t }}</span>
@@ -88,8 +132,14 @@
           <span class="pdp-price-simple-title">{{ 'jkl.buy_case' | t: count: qty_bulk_size }}</span>
           <span class="save-badge">{{ 'jkl.save_percent' | t: percent: bundle_save_percent }}</span>
         </div>
+        {%- if bundle_price_before -%}
+          <span class="pdp-price-simple-before">
+            <span class="pdp-price-simple-before-label">{{ 'jkl.price_before' | t }}</span>
+            <span class="pdp-price-simple-before-amount">{% render 'format-amount', amount: bundle_price_before %}</span>
+          </span>
+        {%- endif -%}
         <div class="pdp-price-simple-price">
-          <span class="pdp-price-simple-amount">{% render 'format-amount', amount: bundle_tier.price %}</span>
+          <span class="pdp-price-simple-amount">{% render 'format-amount', amount: bundle_price %}</span>
           <span class="pdp-price-simple-unit">{{ 'jkl.per_bottle' | t }}</span>
         </div>
       </div>

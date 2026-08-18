@@ -1,0 +1,312 @@
+{%- comment -%}
+  Sektion til "Bliv medlem"-siden. Indholdet bygges af blokke, så redaktøren
+  frit kan blande overskrifter, brødtekst og fordelslister i vilkårlig rækkefølge.
+
+  Sproghåndtering følger samme mønster som jkl-club-banner: ét felt pr. sprog
+  pr. tekst, valgt ud fra det aktive storefront-sprog. Ingen fallback — er
+  feltet tomt for det aktive sprog, udelades blokken helt.
+{%- endcomment -%}
+{%- assign lang = request.locale.iso_code -%}
+
+<section class="jkl-member-benefits">
+  <div class="jkl-member-benefits__inner">
+    {%- for block in section.blocks -%}
+      {%- case block.type -%}
+
+        {%- when 'heading' -%}
+          {%- assign key = 'text_' | append: lang -%}
+          {%- assign heading = block.settings[key] -%}
+          {%- if heading != blank -%}
+            <h2 class="jkl-member-benefits__heading" {{ block.shopify_attributes }}>{{ heading | escape }}</h2>
+          {%- endif -%}
+
+        {%- when 'text' -%}
+          {%- assign key = 'text_' | append: lang -%}
+          {%- assign body = block.settings[key] -%}
+          {%- if body != blank -%}
+            <div class="jkl-member-benefits__rte rte" {{ block.shopify_attributes }}>{{ body }}</div>
+          {%- endif -%}
+
+        {%- when 'benefits' -%}
+          {%- assign key = 'items_' | append: lang -%}
+          {%- assign items_raw = block.settings[key] -%}
+          {%- if items_raw != blank -%}
+            {%- comment -%}
+              Ét punkt pr. linje. newline_to_br gør linjeskiftet til et token vi
+              kan splitte på, så både \n og \r\n håndteres; strip renser resten.
+            {%- endcomment -%}
+            {%- assign items = items_raw | newline_to_br | split: '<br />' -%}
+            <ul class="jkl-member-benefits__list" {{ block.shopify_attributes }}>
+              {%- for item in items -%}
+                {%- assign label = item | strip -%}
+                {%- if label != blank -%}
+                  <li class="jkl-member-benefits__item">
+                    <svg class="jkl-member-benefits__check" width="20" height="20" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+                      <path d="M3 8.5 6.5 12 13 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>{{ label | escape }}</span>
+                  </li>
+                {%- endif -%}
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+
+        {%- when 'signup' -%}
+          {%- comment -%}
+            Samme formular som på forsiden. Gated som i jkl-club-banner og
+            jkl-plp: eksisterende bronze-medlemmer får den ikke vist.
+          {%- endcomment -%}
+          {%- unless customer.tags contains 'bronze' -%}
+            {%- assign key = 'title_' | append: lang -%}
+            {%- assign signup_title = block.settings[key] -%}
+            {%- assign key = 'button_' | append: lang -%}
+            {%- assign signup_button = block.settings[key] -%}
+            <div class="jkl-member-benefits__signup" {{ block.shopify_attributes }}>
+              {%- if signup_title != blank -%}
+                <h3 class="jkl-member-benefits__signup-title">{{ signup_title | escape }}</h3>
+              {%- endif -%}
+              {% render 'jkl-signup-form',
+                customer_tags_endpoint: '/apps/communication',
+                customer_tags_tag: 'bronze',
+                customer_tags_action: 'add',
+                cta_override: signup_button
+              %}
+            </div>
+          {%- endunless -%}
+
+      {%- endcase -%}
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "JKL Bliv medlem",
+  "tag": "section",
+  "class": "jkl-member-benefits-section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Build the page from blocks below. Each block has one field per language — leave a language empty to hide that block on that storefront."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "heading",
+      "name": "Heading",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Dansk (da)"
+        },
+        {
+          "type": "text",
+          "id": "text_da",
+          "label": "Heading"
+        },
+        {
+          "type": "header",
+          "content": "Svenska (sv)"
+        },
+        {
+          "type": "text",
+          "id": "text_sv",
+          "label": "Heading"
+        },
+        {
+          "type": "header",
+          "content": "Lietuvių (lt)"
+        },
+        {
+          "type": "text",
+          "id": "text_lt",
+          "label": "Heading"
+        },
+        {
+          "type": "header",
+          "content": "English (en)"
+        },
+        {
+          "type": "text",
+          "id": "text_en",
+          "label": "Heading"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Text",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Dansk (da)"
+        },
+        {
+          "type": "richtext",
+          "id": "text_da",
+          "label": "Text"
+        },
+        {
+          "type": "header",
+          "content": "Svenska (sv)"
+        },
+        {
+          "type": "richtext",
+          "id": "text_sv",
+          "label": "Text"
+        },
+        {
+          "type": "header",
+          "content": "Lietuvių (lt)"
+        },
+        {
+          "type": "richtext",
+          "id": "text_lt",
+          "label": "Text"
+        },
+        {
+          "type": "header",
+          "content": "English (en)"
+        },
+        {
+          "type": "richtext",
+          "id": "text_en",
+          "label": "Text"
+        }
+      ]
+    },
+    {
+      "type": "benefits",
+      "name": "Benefits",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "One benefit per line."
+        },
+        {
+          "type": "header",
+          "content": "Dansk (da)"
+        },
+        {
+          "type": "textarea",
+          "id": "items_da",
+          "label": "Benefits"
+        },
+        {
+          "type": "header",
+          "content": "Svenska (sv)"
+        },
+        {
+          "type": "textarea",
+          "id": "items_sv",
+          "label": "Benefits"
+        },
+        {
+          "type": "header",
+          "content": "Lietuvių (lt)"
+        },
+        {
+          "type": "textarea",
+          "id": "items_lt",
+          "label": "Benefits"
+        },
+        {
+          "type": "header",
+          "content": "English (en)"
+        },
+        {
+          "type": "textarea",
+          "id": "items_en",
+          "label": "Benefits"
+        }
+      ]
+    },
+    {
+      "type": "signup",
+      "name": "Signup form",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Same signup form as on the front page. Hidden for customers who are already JKL Club members. The form's own texts are translated inside the form itself — only the heading below is set here."
+        },
+        {
+          "type": "header",
+          "content": "Dansk (da)"
+        },
+        {
+          "type": "text",
+          "id": "title_da",
+          "label": "Heading above form"
+        },
+        {
+          "type": "text",
+          "id": "button_da",
+          "label": "Button label",
+          "info": "Leave empty to keep the form's own wording"
+        },
+        {
+          "type": "header",
+          "content": "Svenska (sv)"
+        },
+        {
+          "type": "text",
+          "id": "title_sv",
+          "label": "Heading above form"
+        },
+        {
+          "type": "text",
+          "id": "button_sv",
+          "label": "Button label"
+        },
+        {
+          "type": "header",
+          "content": "Lietuvių (lt)"
+        },
+        {
+          "type": "text",
+          "id": "title_lt",
+          "label": "Heading above form"
+        },
+        {
+          "type": "text",
+          "id": "button_lt",
+          "label": "Button label"
+        },
+        {
+          "type": "header",
+          "content": "English (en)"
+        },
+        {
+          "type": "text",
+          "id": "title_en",
+          "label": "Heading above form"
+        },
+        {
+          "type": "text",
+          "id": "button_en",
+          "label": "Button label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "JKL Bliv medlem",
+      "blocks": [
+        {
+          "type": "heading"
+        },
+        {
+          "type": "text"
+        },
+        {
+          "type": "benefits"
+        },
+        {
+          "type": "signup"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -107,6 +107,25 @@
       placeholder="{{ 'blocks.contact_form.phone' | t }}"
     >
 
+    {%- comment -%}
+      Ordrenummer. Valgfrit — ikke alle henvendelser handler om en ordre.
+      Feltnavnet har mellemrum med vilje: Shopify bruger navnet som etiket i
+      notifikations-mailen, saa den bliver laesbar frem for "order_id".
+    {%- endcomment -%}
+    <label
+      class="visually-hidden"
+      for="ContactForm-order-id"
+    >
+      {{- 'jkl.contact_order_id' | t -}}
+    </label>
+    <input
+      type="text"
+      id="ContactForm-order-id"
+      class="contact-form__input"
+      name="contact[Order number]"
+      placeholder="{{ 'jkl.contact_order_id' | t }}"
+    >
+
     <label
       class="visually-hidden"
       for="ContactForm-body"
@@ -128,6 +147,21 @@
 </div>
 
 {% stylesheet %}
+  /* Blokken er sat til 100% bredde i templaten; her kappes den ved 800px og
+     centreres. Bredden styres derfor stadig fra theme editoren paa smalle
+     skaerme, mens 800px er loftet paa desktop. */
+  .contact-form {
+    max-width: 800px;
+    margin-inline: auto;
+
+    /* Luft ned til footeren. Sektionens egen "Padding bottom" i theme editoren
+       slog ikke igennem paa denne side — vaerdien stod korrekt i templaten og
+       intet i base.css, jkl-base.css eller den kompilerede CSS overskrev den,
+       men afstanden kom aldrig frem. Den er derfor sat her i stedet, og
+       sektionens indstilling er sat til 0 saa der kun er een kilde. */
+    margin-block-end: 100px;
+  }
+
   .contact-form__form {
     display: flex;
     flex-direction: column;

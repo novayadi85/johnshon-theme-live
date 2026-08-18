@@ -21,9 +21,13 @@
     {%- if scope == 'search' and search_save_amount > 0 -%}
       <span class="save-badge">{{ 'jkl.save' | t }} {% render 'format-amount', amount: member_price_save_amount %}</span>
     {%- endif -%}
-    {%- unless scope == 'search' -%}
-      <span class="{{ scope }}-club-note">{{ 'jkl.earn' | t }} <span class="{{ scope }}-points-value">{% render 'format-amount', amount: member_point %}</span> {{ 'jkl.club_points' | t }}</span>
-    {%- endunless -%}
+    {%- comment -%}
+      Klubpoint midlertidigt skjult på PDP og PLP. Tidligere markup:
+
+      {%- unless scope == 'search' -%}
+        <span class="{{ scope }}-club-note">{{ 'jkl.earn' | t }} <span class="{{ scope }}-points-value">{% render 'format-amount', amount: member_point %}</span> {{ 'jkl.club_points' | t }}</span>
+      {%- endunless -%}
+    {%- endcomment -%}
   </div>
 
   <div class="{{ scope }}-member-prices">

@@ -49,27 +49,51 @@
 
     <aside class="cart-drawer{% if cart.item_count == 0 %} is-empty{% endif %}">
     <div class="cart-drawer-header">
-      <h2 class="cart-drawer-title">Cart</h2>
+      <h2 class="cart-drawer-title">{{ 'jkl.cart_title' | t }}</h2>
       <button class="cart-drawer-close" id="cartDrawerClose" aria-label="Close cart"></button>
     </div>
 
+    {%- comment -%}
+      Klub-bjælke, kun for besøgende der ikke er logget ind. Ligger uden for
+      .cart-drawer-empty og .cart-drawer-filled, så den vises i begge tilstande.
+      Hele feltet er ét link for at give størst mulig klikflade på mobil.
+    {%- endcomment -%}
+    {%- unless customer -%}
+      {%- assign club_url = pages['bliv-medlem'].url | default: routes.root_url -%}
+      <a class="cart-drawer-join-club" href="{{ club_url }}">{{ 'jkl.cart_join_club_html' | t }}</a>
+    {%- endunless -%}
+
     {%- comment -%} Empty state — always in the DOM, shown via .is-empty on .cart-drawer {%- endcomment -%}
     <div class="cart-drawer-empty" id="cartDrawerEmpty">
-      <h1 class="cart-empty-text">Your cart is empty</h1>
+      <h1 class="cart-empty-text">{{ 'content.your_cart_is_empty' | t }}</h1>
       <div class="cart-empty-actions">
-        <button class="btn btn-primary" onclick="window.location.href='{{ routes.collections_url }}'">Explore the shop</button>
+        <button class="btn btn-primary" onclick="window.location.href='{{ routes.root_url }}'">{{ 'jkl.explore_the_shop' | t }}</button>
       </div>
     </div>
 
     {%- comment -%} Filled state — always in the DOM so AJAX can populate it {%- endcomment -%}
     <div class="cart-drawer-filled" id="cartDrawerFilled">
-    <div class="cart-drawer-shipping">
-      {%- assign free_shipping_threshold = 49900 -%}
+    {%- comment -%}
+      JS'en herunder skriver fragtteksten om ved hver kurv-opdatering, så den
+      skal kunne nå oversættelserne. De lægges i data-attributter frem for at
+      blive hardkodet i scriptet. ||AMOUNT|| er pladsholderen JS'en udskifter.
+    {%- endcomment -%}
+    {%- assign shipping_progress_tpl = 'jkl.cart_free_shipping_progress_html' | t: amount: '||AMOUNT||' -%}
+    {%- comment -%} Samme kilde som annoncebjaelken — beloeb i oere {%- endcomment -%}
+    {%- capture fs_cents -%}{% render 'jkl-shipping-threshold' %}{%- endcapture -%}
+    {%- assign free_shipping_threshold = fs_cents | strip | plus: 0 -%}
+    <div
+      class="cart-drawer-shipping"
+      data-shipping-progress="{{ shipping_progress_tpl | escape }}"
+      data-shipping-reached="{{ 'jkl.cart_free_shipping_reached' | t | escape }}"
+      data-shipping-threshold="{{ free_shipping_threshold }}"
+    >
       {%- assign remaining = free_shipping_threshold | minus: cart.total_price -%}
       {%- if remaining > 0 -%}
-        <p class="cart-shipping-text">Spend an additional <strong>{% render 'jkl-money', cents: remaining %}</strong> and get free shipping</p>
+        {%- capture remaining_money -%}{% render 'jkl-money', cents: remaining %}{%- endcapture -%}
+        <p class="cart-shipping-text">{{ shipping_progress_tpl | replace: '||AMOUNT||', remaining_money }}</p>
       {%- else -%}
-        <p class="cart-shipping-text"><strong>You have free shipping!</strong></p>
+        <p class="cart-shipping-text"><strong>{{ 'jkl.cart_free_shipping_reached' | t }}</strong></p>
       {%- endif -%}
       <div class="cart-shipping-bar">
         {%- assign fill_pct = cart.total_price | times: 100 | divided_by: free_shipping_threshold -%}
@@ -130,10 +154,11 @@
         </div>
       {%- endfor -%}
     </div>
-    <div class="cart-drawer-club-banner">
-      <p class="cart-club-save">Save an additional 180kr. <a href="#" class="cart-club-join">Join JKL Club</a></p>
-      <p class="cart-club-login">Allerede medlem? <a href="#">Login</a> og få din rabat</p>
-    </div>
+    {%- unless customer -%}
+      <div class="cart-drawer-club-banner">
+        <p class="cart-club-login">{{ 'jkl.cart_already_member_html' | t: link: routes.account_login_url }}</p>
+      </div>
+    {%- endunless -%}
     {%- liquid
       # Subtotal = sum of single-bottle price (prices JSON, none_member qty 1) × quantity
       # across all lines. Discount = that subtotal minus the actual cart total.
@@ -163,11 +188,11 @@
     -%}
     <div class="cart-drawer-bottom">
       <div class="cart-summary-row">
-        <span>Subtotal</span>
+        <span>{{ 'jkl.cart_subtotal' | t }}</span>
         <span id="cartSubtotal">{% render 'jkl-money', cents: json_subtotal %}</span>
       </div>
       <div class="cart-summary-row" id="cartDiscountRow"{% unless json_discount > 0 %} style="display:none"{% endunless %}>
-        <span>Discount</span>
+        <span>{{ 'jkl.cart_discount' | t }}</span>
         <span id="cartDiscount">-{% render 'jkl-money', cents: json_discount %}</span>
       </div>
       <div class="cart-summary-divider"></div>
@@ -183,7 +208,7 @@
         <span class="cart-terms-label">{{ terms_text | replace: '||LINK||', terms_link }}</span>
       </label>
       <div class="cart-drawer-buttons">
-        <a href="{{ routes.cart_url }}" class="cart-btn-outline">See Cart</a>
+        <a href="{{ routes.cart_url }}" class="cart-btn-outline">{{ 'jkl.cart_see_cart' | t }}</a>
         <a href="/checkout" class="btn btn-primary" id="cartCheckoutBtn">Checkout</a>
       </div>
     </div>
@@ -465,13 +490,27 @@
       });
 
       var shippingTexts = document.querySelectorAll('.cart-shipping-text');
-      var threshold = 49900;
+      // Taersklen kommer fra jkl-shipping-threshold via Liquid, saa JS, kurv og
+      // annoncebjaelke altid regner med samme tal — ogsaa naar valutaen skifter.
+      var thresholdEl = document.querySelector('[data-shipping-threshold]');
+      var threshold = thresholdEl ? parseInt(thresholdEl.dataset.shippingThreshold, 10) : 0;
+      if (!threshold) return;
       var remaining = threshold - cart.total_price;
       shippingTexts.forEach(function(el) {
+        // Oversættelserne kommer fra data-attributter som Liquid har fyldt ud
+        // med det aktive sprog. Selectoren rammer bevidst attributten frem for
+        // en bestemt klasse, fordi den samme .cart-shipping-text findes både i
+        // draweren og på /cart — og draweren ligger i layoutet på alle sider.
+        var box = el.closest('[data-shipping-progress]');
+        var progressTpl = box && box.dataset.shippingProgress;
+        var reachedText = box && box.dataset.shippingReached;
+        // Uden oversættelser er det bedre at lade teksten stå end at tømme den
+        if (!progressTpl || !reachedText) return;
         if (remaining > 0) {
-          el.innerHTML = 'Spend an additional <strong>' + formatMoney(remaining, cart.currency) + '</strong> and get free shipping';
+          // Skabelonen har allerede <strong> omkring pladsholderen
+          el.innerHTML = progressTpl.replace('||AMOUNT||', formatMoney(remaining, cart.currency));
         } else {
-          el.innerHTML = '<strong>You have free shipping!</strong>';
+          el.innerHTML = '<strong>' + reachedText + '</strong>';
         }
       });
 

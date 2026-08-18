@@ -14,11 +14,30 @@
     "header_section": {
       "type": "jkl-header",
       "blocks": {
+        "logged_in_menu_item_pKjWGk": {
+          "type": "logged_in_menu_item",
+          "settings": {
+            "title": "Be a Member",
+            "link": "shopify://pages/bourgogne-sign-up",
+            "show_for_logged_in": false,
+            "customer_tag": "",
+            "customer_metafield_namespace": "custom",
+            "customer_metafield_key": "",
+            "customer_metafield_value": "",
+            "background_color": "#ab8723",
+            "text_color": "#ffffff"
+          }
+        },
         "logged_in_menu_tilbud": {
           "type": "logged_in_menu_item",
           "settings": {
             "title": "Tilbud",
             "link": "",
+            "show_for_logged_in": true,
+            "customer_tag": "bronze",
+            "customer_metafield_namespace": "custom",
+            "customer_metafield_key": "",
+            "customer_metafield_value": "",
             "background_color": "#ab8723",
             "text_color": "#ffffff"
           }
@@ -28,6 +47,11 @@
           "settings": {
             "title": "Medlemstilbud",
             "link": "",
+            "show_for_logged_in": true,
+            "customer_tag": "",
+            "customer_metafield_namespace": "custom",
+            "customer_metafield_key": "",
+            "customer_metafield_value": "",
             "background_color": "#ab2341",
             "text_color": "#ffffff"
           }
@@ -35,14 +59,20 @@
         "logged_in_menu_bliv_medlem": {
           "type": "logged_in_menu_item",
           "settings": {
-            "title": "Bliv medlem",
-            "link": "",
+            "title": "Få fri fragt og ekstra gode tilbud - bliv medlem her",
+            "link": "shopify://pages/bliv-medlem",
+            "show_for_logged_in": false,
+            "customer_tag": "",
+            "customer_metafield_namespace": "custom",
+            "customer_metafield_key": "",
+            "customer_metafield_value": "",
             "background_color": "#000000",
             "text_color": "#ffffff"
           }
         }
       },
       "block_order": [
+        "logged_in_menu_item_pKjWGk",
         "logged_in_menu_tilbud",
         "logged_in_menu_medlemstilbud",
         "logged_in_menu_bliv_medlem"
