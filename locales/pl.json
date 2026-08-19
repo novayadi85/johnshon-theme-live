@@ -386,6 +386,9 @@
     }
   },
   "jkl": {
+    "pdp_banner_desc": "Jako członek zawsze otrzymujesz darmową dostawę – niezależnie od tego, ile butelek kupujesz. Masz również dostęp do wybranych win w specjalnych cenach członkowskich oraz do wielu ekskluzywnych korzyści. Kliknij przycisk poniżej, aby dowiedzieć się więcej.",
+    "pdp_banner_btn": "Dowiedz się więcej",
+    "pdp_banner_title": "Zostań członkiem i oszczędzaj.",
     "badge_top_rated": "Najwyżej oceniane",
     "explore_the_shop": "Odkryj sklep",
     "price_before": "Przed:",

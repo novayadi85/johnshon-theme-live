@@ -12,11 +12,11 @@
     "hero_jkl": {
       "type": "jkl-hero",
       "settings": {
-        "button_link": "",
+        "button_link": "/collections/erbjudanden",
         "subtitle_sv": "Fina viner, noggrant utvalda.",
-        "title_sv": "30 % rabatt på utvalda viner.",
+        "title_sv": "Gör ett fynd – se vin på erbjudande",
         "button_label_sv": "Se erbjudandet",
-        "sticker_sv": "Öppningserbjudande",
+        "sticker_sv": "Erbjudande",
         "right_subtitle_sv": "Fina viner, noggrant utvalda.",
         "right_description_sv": "Vi samarbetar med producenter vi litar på och väljer viner med integritet och karaktär.",
         "subtitle_de": "",
@@ -32,20 +32,60 @@
         "right_subtitle_pl": "",
         "right_description_pl": "",
         "subtitle_en": "Fine wine, carefully curated.",
-        "title_en": "30% off selected wines.",
+        "title_en": "Find a gem – see wines on offer",
         "button_label_en": "See offer",
-        "sticker_en": "Opening offer",
+        "sticker_en": "Offer",
         "right_subtitle_en": "Fine wine, carefully curated.",
         "right_description_en": "We partner with producers we trust, selecting wines of integrity and character."
       }
     },
     "product_carousel_jkl": {
       "type": "jkl-product-carousel",
-      "settings": {}
+      "settings": {
+        "collection": "",
+        "label_sv": "Dagens urval till dig",
+        "title_sv": "Ett utvalt sortiment baserat på det du älskar, just nu.",
+        "label_de": "",
+        "title_de": "",
+        "label_pl": "",
+        "title_pl": "",
+        "label_en": "Todays selection for you",
+        "title_en": "A curated selection based on what you love, right now."
+      }
     },
     "club_banner_jkl": {
       "type": "jkl-club-banner",
-      "settings": {}
+      "settings": {
+        "club_link": "",
+        "info_text_sv": "Bli medlem i [link] gratis",
+        "link_label_sv": "JKL Club",
+        "tag_sv": "Fri frakt på alla beställningar",
+        "title_sv": "Få medlemspriser, förtur och utvalda sortiment.",
+        "benefit_1_sv": "Medlemspriser på utvalda viner",
+        "benefit_2_sv": "Förtur till begränsade flaskor och små allokeringar",
+        "benefit_3_sv": "Utvalda provningspaket anpassade efter säsongen",
+        "info_text_de": "",
+        "link_label_de": "",
+        "tag_de": "",
+        "title_de": "",
+        "benefit_1_de": "",
+        "benefit_2_de": "",
+        "benefit_3_de": "",
+        "info_text_pl": "",
+        "link_label_pl": "",
+        "tag_pl": "",
+        "title_pl": "",
+        "benefit_1_pl": "",
+        "benefit_2_pl": "",
+        "benefit_3_pl": "",
+        "info_text_en": "Join the [link] for free",
+        "link_label_en": "JKL Club",
+        "tag_en": "Free shipping on all orders",
+        "title_en": "Get member pricing, early access, and curated selections.",
+        "benefit_1_en": "Member pricing on selected wines",
+        "benefit_2_en": "Early access to limited bottles and small allocations",
+        "benefit_3_en": "Curated tasting selections tailored to the season"
+      }
     },
     "tasting_boxes_jkl": {
       "type": "jkl-tasting-boxes",
@@ -73,8 +113,29 @@
       "type": "jkl-image-banner",
       "settings": {}
     },
+    "jkl_editorial_eRNaKg": {
+      "type": "jkl-editorial",
+      "name": "JKL Editorial Story",
+      "settings": {
+        "label": "JKL Fine Wines",
+        "heading": "Our team has over 30 years of combined experience in international wine trading.",
+        "description": "Over the decades, we have built close relationships with Europe's leading winemakers. We are constantly searching for wines with a clear identity, personality, and sense of origin.",
+        "image_position": "wide_left",
+        "show_placeholders": true,
+        "bg_color": "#fcf8f2",
+        "text_color": "#000000",
+        "label_color": "#6d1f2a",
+        "divider_color": "#000000",
+        "divider_opacity": 15,
+        "padding_top": 100,
+        "padding_bottom": 100,
+        "mobile_padding_top": 80,
+        "mobile_padding_bottom": 80
+      }
+    },
     "inspiration_story_jkl": {
       "type": "jkl-inspiration-story",
+      "disabled": true,
       "settings": {}
     },
     "faq_jkl": {
@@ -93,6 +154,7 @@
     "tasting_boxes_jkl",
     "story_carousel_jkl",
     "image_banner_jkl",
+    "jkl_editorial_eRNaKg",
     "inspiration_story_jkl",
     "faq_jkl",
     "signup_jkl"

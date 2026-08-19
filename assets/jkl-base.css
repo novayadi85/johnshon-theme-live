@@ -794,9 +794,9 @@ button {
 .hero-sticker {
   position: absolute;
   top: 71px;
-  left: 443px;
-  width: 85px;
-  height: 85px;
+  left: 560px;
+  width: 95px;
+  height: 95px;
   background-color: var(--color-olive);
   border-radius: 50%;
   display: flex;
@@ -829,6 +829,9 @@ button {
   position: relative;
   background-color: var(--color-green-coal);
   overflow: hidden;
+  display: block;
+  color: inherit;
+  text-decoration: none;
 }
 
 .hero-right .hero-bg {

@@ -80,7 +80,7 @@
       "settings": {
         "top_menu": "main-menu",
         "menu": "main-menu",
-        "secondary_menu": "secondary",
+        "secondary_menu": "",
         "use_first_child_as_header": true,
         "wishlist_link": "/collections/mine-farvoritter",
         "search_categories": "main-menu"

@@ -372,6 +372,9 @@
     }
   },
   "jkl":{
+    "pdp_banner_desc": "Som medlem får du altid fri fragt – uanset hvor mange flasker du køber. Du får desuden adgang til udvalgte vine til særlige medlemspriser og en række eksklusive medlemsfordele. Klik på knappen herunder, og læs mere.",
+    "pdp_banner_btn": "Læs mere",
+    "pdp_banner_title": "Bliv medlem og spar penge.",
     "badge_top_rated": "Topanmeldt",
     "explore_the_shop": "Udforsk butikken",
     "price_before": "Før:",

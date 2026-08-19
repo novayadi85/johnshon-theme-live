@@ -372,6 +372,9 @@
     }
   },
   "jkl": {
+    "pdp_banner_desc": "Als Mitglied erhalten Sie immer kostenlosen Versand – ganz gleich, wie viele Flaschen Sie kaufen. Außerdem erhalten Sie Zugang zu ausgewählten Weinen zu besonderen Mitgliederpreisen und zahlreichen exklusiven Vorteilen. Klicken Sie unten auf die Schaltfläche, um mehr zu erfahren.",
+    "pdp_banner_btn": "Mehr erfahren",
+    "pdp_banner_title": "Werden Sie Mitglied und sparen Sie.",
     "badge_top_rated": "Top bewertet",
     "explore_the_shop": "Shop entdecken",
     "price_before": "Vorher:",

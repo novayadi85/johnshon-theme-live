@@ -267,15 +267,19 @@
               return data;
             });
           })
-          .then(function() {
+          .then(function(resp) {
+            
             f.querySelector('.signup-form-row').style.display = 'none';
             f.querySelector('.signup-form-consent').style.display = 'none';
             f.querySelector('.signup-form-errors').classList.remove('is-visible');
             f.querySelector('.signup-form-success').style.display = 'block';
 
-            window.setTimeout(function() {
-              // window.location.href = '/collections/medlemmer';
-            }, 2000);
+            if(resp?.mode == 'simple'){
+              window.setTimeout(function() {
+                window.location.href = '/collections/medlemmer';
+              }, 2000);
+            }
+            
           })
           .catch(function(error) {
             var box = f.querySelector('.signup-form-errors');

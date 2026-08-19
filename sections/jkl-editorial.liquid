@@ -1,0 +1,330 @@
+{%- liquid
+  assign image_layout_class = ''
+  if section.settings.image_position == 'wide_left'
+    assign image_layout_class = ' jkl-editorial-images--reverse'
+  endif
+-%}
+
+{%- style -%}
+  .jkl-editorial-{{ section.id }} {
+    padding: {{ section.settings.padding_top }}px 40px {{ section.settings.padding_bottom }}px;
+    max-width: 1440px;
+    margin: 0 auto;
+    background-color: {{ section.settings.bg_color }};
+    color: {{ section.settings.text_color }};
+  }
+
+  .jkl-editorial-{{ section.id }} .jkl-editorial-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+    max-width: 1360px;
+    margin: 0 auto;
+  }
+
+  .jkl-editorial-{{ section.id }} .jkl-editorial-header {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+  }
+
+  .jkl-editorial-{{ section.id }} .jkl-editorial-label {
+    font-size: 14px;
+    font-weight: 400;
+    color: {{ section.settings.label_color }};
+    margin: 0;
+  }
+
+  .jkl-editorial-{{ section.id }} .jkl-editorial-title {
+    margin: 0;
+    color: {{ section.settings.text_color }};
+  }
+
+  .jkl-editorial-{{ section.id }} .jkl-editorial-body {
+    border-left: 1px solid color-mix(in srgb, {{ section.settings.divider_color }} {{ section.settings.divider_opacity }}%, transparent);
+    padding-left: 345px;
+    width: 100%;
+  }
+
+  .jkl-editorial-{{ section.id }} .jkl-editorial-body p {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.3;
+    margin: 0 0 16px;
+    color: {{ section.settings.text_color }};
+  }
+
+  .jkl-editorial-{{ section.id }} .jkl-editorial-body p:last-child {
+    margin-bottom: 0;
+  }
+
+  .jkl-editorial-{{ section.id }} .jkl-editorial-images {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .jkl-editorial-{{ section.id }} .jkl-editorial-images--reverse {
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+  }
+
+  .jkl-editorial-{{ section.id }} .jkl-editorial-img {
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+
+  .jkl-editorial-{{ section.id }} .jkl-editorial-img--tall {
+    width: 323px;
+    flex-shrink: 1;
+    min-width: 0;
+  }
+
+  .jkl-editorial-{{ section.id }} .jkl-editorial-img--tall img,
+  .jkl-editorial-{{ section.id }} .jkl-editorial-placeholder--tall {
+    width: 100%;
+    height: 489px;
+  }
+
+  .jkl-editorial-{{ section.id }} .jkl-editorial-img--wide {
+    width: 670px;
+    flex-shrink: 1;
+    min-width: 0;
+  }
+
+  .jkl-editorial-{{ section.id }} .jkl-editorial-img--wide img,
+  .jkl-editorial-{{ section.id }} .jkl-editorial-placeholder--wide {
+    width: 100%;
+    height: 368px;
+  }
+
+  .jkl-editorial-{{ section.id }} .jkl-editorial-img img {
+    object-fit: cover;
+    border-radius: 2px;
+    display: block;
+  }
+
+  .jkl-editorial-{{ section.id }} .jkl-editorial-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 14px;
+    border-radius: 2px;
+  }
+
+  @media (max-width: 768px) {
+    .jkl-editorial-{{ section.id }} {
+      padding: {{ section.settings.mobile_padding_top }}px 12px {{ section.settings.mobile_padding_bottom }}px;
+    }
+
+    .jkl-editorial-{{ section.id }} .jkl-editorial-inner {
+      align-items: flex-start;
+      gap: 40px;
+    }
+
+    .jkl-editorial-{{ section.id }} .jkl-editorial-body {
+      border-left: none;
+      padding-left: 0;
+      width: 100%;
+    }
+
+    .jkl-editorial-{{ section.id }} .jkl-editorial-images,
+    .jkl-editorial-{{ section.id }} .jkl-editorial-images--reverse {
+      flex-direction: column;
+    }
+
+    .jkl-editorial-{{ section.id }} .jkl-editorial-img--tall,
+    .jkl-editorial-{{ section.id }} .jkl-editorial-img--wide {
+      width: 100%;
+    }
+
+    .jkl-editorial-{{ section.id }} .jkl-editorial-img--tall img,
+    .jkl-editorial-{{ section.id }} .jkl-editorial-placeholder--tall {
+      height: 300px;
+    }
+
+    .jkl-editorial-{{ section.id }} .jkl-editorial-img--wide img,
+    .jkl-editorial-{{ section.id }} .jkl-editorial-placeholder--wide {
+      height: 240px;
+    }
+  }
+{%- endstyle -%}
+
+<section class="jkl-editorial-{{ section.id }}">
+  <div class="jkl-editorial-inner">
+    <div class="jkl-editorial-header">
+      {%- if section.settings.label != blank -%}
+        <p class="jkl-editorial-label">{{ section.settings.label }}</p>
+      {%- endif -%}
+
+      {%- if section.settings.heading != blank -%}
+        <h2 class="title jkl-editorial-title">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+    </div>
+
+    {%- if section.settings.description != blank -%}
+      <div class="jkl-editorial-body">
+        <p>{{ section.settings.description | newline_to_br }}</p>
+      </div>
+    {%- endif -%}
+
+    <div class="jkl-editorial-images{{ image_layout_class }}">
+      <div class="jkl-editorial-img jkl-editorial-img--tall">
+        {%- if section.settings.image_tall != blank -%}
+          {{ section.settings.image_tall | image_url: width: 800 | image_tag: loading: 'lazy', alt: section.settings.heading }}
+        {%- elsif section.settings.show_placeholders -%}
+          <div class="jkl-editorial-placeholder jkl-editorial-placeholder--tall">Portrait image</div>
+        {%- endif -%}
+      </div>
+
+      <div class="jkl-editorial-img jkl-editorial-img--wide">
+        {%- if section.settings.image_wide != blank -%}
+          {{ section.settings.image_wide | image_url: width: 1400 | image_tag: loading: 'lazy', alt: section.settings.heading }}
+        {%- elsif section.settings.show_placeholders -%}
+          <div class="jkl-editorial-placeholder jkl-editorial-placeholder--wide">Landscape image</div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "JKL Editorial Story",
+  "tag": "section",
+  "class": "section-jkl-editorial",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "default": "JKL Fine Wines"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Main heading",
+      "default": "Our team has over 30 years of combined experience in international wine trading."
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Over the decades, we have built close relationships with Europe's leading winemakers. We are constantly searching for wines with a clear identity, personality, and sense of origin."
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Large image position",
+      "default": "wide_right",
+      "options": [
+        {
+          "value": "wide_right",
+          "label": "Right"
+        },
+        {
+          "value": "wide_left",
+          "label": "Left"
+        }
+      ]
+    },
+    {
+      "type": "image_picker",
+      "id": "image_tall",
+      "label": "Portrait image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_wide",
+      "label": "Landscape image"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_placeholders",
+      "label": "Show placeholders when images are empty",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#fcf8f2"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Label color",
+      "default": "#6d1f2a"
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Description divider color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "divider_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Description divider opacity",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "label": "Desktop top padding",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "label": "Desktop bottom padding",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Mobile top padding",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Mobile bottom padding",
+      "default": 80
+    }
+  ],
+  "presets": [
+    {
+      "name": "JKL Editorial Story"
+    }
+  ]
+}
+{% endschema %}

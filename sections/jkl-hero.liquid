@@ -42,7 +42,7 @@
       <span>{{ hero_sticker }}</span>
     </div>
   {%- endif -%}
-  <div class="hero-right">
+  <a class="hero-right" href="{{ collections['vinproducenter'].url | default: '/collections/vinproducenter' }}">
     <img class="hero-bg" src="https://cdn.shopify.com/s/files/1/0945/9030/4603/files/marker.png?v=1773217359" alt="Vineyard">
     <div class="hero-right-content">
       {%- if hero_right_subtitle != blank -%}
@@ -52,7 +52,7 @@
         <p class="description">{{ hero_right_description }}</p>
       {%- endif -%}
     </div>
-  </div>
+  </a>
 </section>
 
 {% schema %}

@@ -372,6 +372,9 @@
     }
   },
   "jkl": {
+    "pdp_banner_desc": "Som medlem får du alltid fri frakt – oavsett hur många flaskor du köper. Du får dessutom tillgång till utvalda viner till särskilda medlemspriser och en rad exklusiva medlemsförmåner. Klicka på knappen nedan och läs mer.",
+    "pdp_banner_btn": "Läs mer",
+    "pdp_banner_title": "Bli medlem och spara pengar.",
     "badge_top_rated": "Toppbetyg",
     "explore_the_shop": "Utforska butiken",
     "price_before": "Före:",

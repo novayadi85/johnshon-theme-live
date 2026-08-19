@@ -168,12 +168,16 @@
       {% render 'pdp-price', product: product, variant: variant, scope: 'plp', force_full: true %}
       {%- comment -%} Uden prisdata for det aktive land udelades hele købsblokken. {%- endcomment -%}
       {%- if price_available != blank -%}
+        {%- comment -%} Samme antal skal vises i selectoren og sendes med formularen,
+          så kortet ikke lover ét tal og lægger et andet i kurven. {%- endcomment -%}
+        {%- capture qty_bulk -%}{% render 'qty-bulk-size', variant: variant %}{%- endcapture -%}
+        {%- assign qty_bulk = qty_bulk | strip -%}
         <div class="actions">
 
-          <div class="quantity-selector"><span>-</span><span>6</span><span>+</span></div>
+          <div class="quantity-selector"><span>-</span><span>{{ qty_bulk }}</span><span>+</span></div>
           {%- form 'product', product, id: 'jkl-product-form-{{ variant.id }}' -%}
             <input type="hidden" name="id" value="{{ variant.id }}">
-            <input type="hidden" name="quantity" value="{% render 'qty-bulk-size', variant: variant %}" min="1" class="pdp-qty-value">
+            <input type="hidden" name="quantity" value="{{ qty_bulk }}" min="1" class="pdp-qty-value">
             <button type="submit" class="btn-add-to-basket"{% unless product.available %} disabled{% endunless %}>
               {%- if product.available -%}{{ 'actions.add_to_cart' | t }} {%- else -%}{{ 'products.product.sold_out' | t }}{%- endif -%}
             </button>

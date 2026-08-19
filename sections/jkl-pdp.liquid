@@ -606,6 +606,12 @@
   {%- endif -%}
 {%- endcapture -%}
 {%- assign has_pairings = pairing_items | strip -%}
+{%- comment -%}
+  SKJULT 19-08-2026. Overskrift og intro er hardcodet til Chateau de Chamirey /
+  2022 Mercurey og blev vist på alle produktsider uanset vin. Sektionen kan tages
+  i brug igen når de to tekster kommer fra metafelter eller oversættelser —
+  fjern blot denne comment-blok. `pairing_items` ovenfor er bevaret.
+
 {%- if has_pairings != blank -%}
 <section class="pdp-wine-pairing color-green-coal">
   <p class="pdp-section-label">{{ 'jkl.wine_pairing' | t }}</p>
@@ -618,6 +624,7 @@
   </div>
 </section>
 {%- endif -%}
+{%- endcomment -%}
 
 <!-- === PDP Image Banner === -->
 <section class="pdp-image-banner color-cream">
@@ -625,9 +632,11 @@
   <div class="pdp-banner-line-left"></div>
   <div class="pdp-banner-line-right"></div>
   <div class="pdp-banner-content">
-    <h2 class="pdp-banner-title title">Burgundy, carefully selected</h2>
-    <p class="pdp-banner-desc">From village expressions to Premier Cru, each bottle reflects terroir, craftsmanship, and quiet authority. Chosen for character. Offered with conviction.</p>
-    <a href="#" class="pdp-banner-btn">Discover the Collection</a>
+    <h2 class="pdp-banner-title title">{{ 'jkl.pdp_banner_title' | t }}</h2>
+    <p class="pdp-banner-desc">{{ 'jkl.pdp_banner_desc' | t }}</p>
+    {%- comment -%} Samme mønster som klub-linket i jkl-header: pages[...].url giver
+      den sprogpraefiksede sti, saa besoegende paa /en-se/ bliver paa eget sprog. {%- endcomment -%}
+    <a href="{{ pages['bliv-medlem'].url | default: '/pages/bliv-medlem' }}" class="pdp-banner-btn">{{ 'jkl.pdp_banner_btn' | t }}</a>
   </div>
 </section>
 
