@@ -7111,3 +7111,8 @@ main:is([data-template="page"], [data-template="page.become-jkl-club-member"]) .
 .mobile-info--link:hover .value {
   text-decoration: underline;
 }
+
+
+.sticky .category-nav__list--member {
+  display: none;
+}

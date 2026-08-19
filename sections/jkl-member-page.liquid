@@ -1,5 +1,11 @@
 {% liquid
   assign section_id = 'jkl-member-page-' | append: section.id
+  assign is_member = false
+  if customer and customer.tags contains 'bronze'
+    assign is_member = true
+  endif
+  assign return_path = request.path | url_encode
+  assign login_url = routes.account_login_url | append: '?return_url=' | append: return_path
 %}
 
 <section
@@ -7,9 +13,14 @@
   class="jkl-member-page"
   data-member-page
   data-customer-logged-in="{% if customer %}true{% else %}false{% endif %}"
+  data-customer-email="{% if customer %}{{ customer.email | escape }}{% endif %}"
+  data-customer-is-member="{% if is_member %}true{% else %}false{% endif %}"
   data-member-message="{{ section.settings.member_message | escape }}"
   data-member-eyebrow="{{ section.settings.member_eyebrow | escape }}"
   data-guest-message="{{ section.settings.guest_message | escape }}"
+  data-join-loading="{{ section.settings.join_loading | escape }}"
+  data-join-success="{{ section.settings.join_success | escape }}"
+  data-join-error="{{ section.settings.join_error | escape }}"
   data-success-status="{{ section.settings.success_status | escape }}"
   data-success-code="{{ section.settings.success_code | escape }}"
   style="
@@ -23,17 +34,24 @@
   "
 >
   <div class="jkl-member-page__inner">
-    {% if customer %}
+    {% if customer and is_member %}
       <p class="jkl-member-page__eyebrow" data-member-page-eyebrow>{{ section.settings.member_eyebrow | escape }}</p>
       <h1 class="jkl-member-page__heading" data-member-page-message>{{ section.settings.member_message | escape }}</h1>
+    {% elsif customer %}
+      <p class="jkl-member-page__eyebrow" data-member-page-eyebrow>{{ section.settings.non_member_eyebrow | escape }}</p>
+      <p class="jkl-member-page__message" data-member-page-message>{{ section.settings.non_member_message | escape }}</p>
+      <button class="jkl-member-page__button" type="button" data-member-page-join>
+        {{ section.settings.join_label | escape }}
+      </button>
+      <div class="jkl-member-page__status" data-member-page-status aria-live="polite" hidden></div>
     {% else %}
       <p class="jkl-member-page__eyebrow" data-member-page-eyebrow>{{ section.settings.guest_eyebrow | escape }}</p>
-      <h1 class="jkl-member-page__heading" data-member-page-message>{{ section.settings.guest_message | escape }}</h1>
+      <h1 class="jkl-member-page__heading jkl-member-page__heading--guest" data-member-page-message>{{ section.settings.guest_message | escape }}</h1>
       <p class="jkl-member-page__submessage" data-member-page-submessage hidden>
         {{ section.settings.guest_message | escape }}
       </p>
       {% if shop.customer_accounts_enabled %}
-        <a class="jkl-member-page__button" href="{{ routes.account_login_url }}" data-member-page-login>
+        <a class="jkl-member-page__button" href="{{ login_url }}" data-member-page-login>
           {{ section.settings.login_label | escape }}
         </a>
       {% endif %}
@@ -56,19 +74,82 @@
     const successStatus = section.getAttribute('data-success-status') || 'success';
     const successCode = section.getAttribute('data-success-code') || 'confirmed';
 
-    if (params.get('status') !== successStatus || params.get('code') !== successCode) return;
-
     const eyebrow = section.querySelector('[data-member-page-eyebrow]');
     const message = section.querySelector('[data-member-page-message]');
     const submessage = section.querySelector('[data-member-page-submessage]');
     const isLoggedIn = section.getAttribute('data-customer-logged-in') === 'true';
 
-    if (eyebrow) eyebrow.textContent = section.getAttribute('data-member-eyebrow') || '';
-    if (message) message.textContent = section.getAttribute('data-member-message') || '';
-    if (submessage && !isLoggedIn) {
-      submessage.textContent = section.getAttribute('data-guest-message') || '';
-      submessage.hidden = false;
+    if (params.get('status') === successStatus && params.get('code') === successCode) {
+      if (eyebrow) eyebrow.textContent = section.getAttribute('data-member-eyebrow') || '';
+      if (message) message.textContent = section.getAttribute('data-member-message') || '';
+      if (submessage && !isLoggedIn) {
+        submessage.textContent = section.getAttribute('data-guest-message') || '';
+        submessage.hidden = false;
+      }
     }
+
+    const joinButton = section.querySelector('[data-member-page-join]');
+    const status = section.querySelector('[data-member-page-status]');
+
+    const setStatus = (text, type = '') => {
+      if (!status) return;
+      status.textContent = text;
+      status.dataset.type = type;
+      status.hidden = !text;
+    };
+
+    joinButton?.addEventListener('click', async () => {
+      const email = section.getAttribute('data-customer-email') || '';
+      const initialText = joinButton.textContent.trim();
+
+      joinButton.disabled = true;
+      joinButton.textContent = section.getAttribute('data-join-loading') || 'Joining...';
+      setStatus(joinButton.textContent, 'loading');
+
+      try {
+        const res = await fetch('/apps/communication', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            method: 'update_customer_tags',
+            email,
+            locale: window.Shopify?.locale || document.documentElement.lang || '',
+            action: 'add',
+            tags: ['bronze'],
+            metafields: [
+              {
+                key: 'membership',
+                type: 'json',
+                value: ['bronze'],
+              },
+              {
+                key: 'has_tickets',
+                type: 'number_integer',
+                value: '1',
+              },
+            ],
+          }),
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok || data.success === false) {
+          throw new Error(data.error || data.message || section.getAttribute('data-join-error') || 'Unable to join right now. Please try again.');
+        }
+
+        setStatus(section.getAttribute('data-join-success') || 'You are now a member. Loading your reduced prices...', 'success');
+        window.setTimeout(() => {
+          window.location.reload();
+        }, 1200);
+      } catch (error) {
+        setStatus(error.message || section.getAttribute('data-join-error') || 'Unable to join right now. Please try again.', 'error');
+        joinButton.disabled = false;
+        joinButton.textContent = initialText;
+      }
+    });
   })();
 </script>
 
@@ -99,10 +180,23 @@
   .jkl-member-page__heading {
     margin: 0;
     font-family: var(--font-serif);
-    font-size: clamp(36px, 5vw, 72px);
+    font-size: clamp(22px, 2vw, 38px);
     font-weight: 400;
     letter-spacing: 0;
     line-height: 0.98;
+  }
+
+  .jkl-member-page__heading--guest {
+    font-size: clamp(22px, 2vw, 38px);
+    line-height: 1.08;
+  }
+
+  .jkl-member-page__message {
+    max-width: 58ch;
+    margin: 0 auto;
+    font-size: 18px;
+    line-height: 1.45;
+    color: var(--jkl-member-page-muted);
   }
 
   .jkl-member-page__submessage {
@@ -110,6 +204,21 @@
     font-size: 18px;
     line-height: 1.4;
     color: var(--jkl-member-page-muted);
+  }
+
+  .jkl-member-page__status {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.45;
+    color: var(--jkl-member-page-muted);
+  }
+
+  .jkl-member-page__status[data-type='success'] {
+    color: var(--jkl-member-page-text);
+  }
+
+  .jkl-member-page__status[data-type='error'] {
+    color: #9f2f25;
   }
 
   .jkl-member-page__button {
@@ -123,11 +232,18 @@
     background: var(--jkl-member-page-accent);
     color: var(--jkl-member-page-bg);
     text-decoration: none;
+    cursor: pointer;
+    font: inherit;
     transition: opacity var(--transition);
   }
 
   .jkl-member-page__button:hover {
     opacity: 0.82;
+  }
+
+  .jkl-member-page__button:disabled {
+    cursor: wait;
+    opacity: 0.64;
   }
 
   .jkl-member-page__content {
@@ -139,9 +255,12 @@
 
 {% schema %}
 {
-  "name": "JKL Member page",
+  "name": "JKL Member prices CTA",
   "tag": "section",
   "class": "jkl-member-page-section",
+  "enabled_on": {
+    "templates": ["page", "collection"]
+  },
   "settings": [
     {
       "type": "header",
@@ -176,6 +295,42 @@
       "id": "login_label",
       "label": "Login button label",
       "default": "Login"
+    },
+    {
+      "type": "text",
+      "id": "non_member_eyebrow",
+      "label": "Non-member eyebrow",
+      "default": "Member prices"
+    },
+    {
+      "type": "text",
+      "id": "non_member_message",
+      "label": "Non-member message",
+      "default": "To become a member and get reduced prices, click on the button below to accept membership and get your reduced prices."
+    },
+    {
+      "type": "text",
+      "id": "join_label",
+      "label": "Join button label",
+      "default": "Accept membership"
+    },
+    {
+      "type": "text",
+      "id": "join_loading",
+      "label": "Join loading text",
+      "default": "Joining..."
+    },
+    {
+      "type": "text",
+      "id": "join_success",
+      "label": "Join success text",
+      "default": "You are now a member. Loading your reduced prices..."
+    },
+    {
+      "type": "text",
+      "id": "join_error",
+      "label": "Join error text",
+      "default": "Unable to join right now. Please try again."
     },
     {
       "type": "text",
@@ -254,7 +409,7 @@
   ],
   "presets": [
     {
-      "name": "JKL Member page"
+      "name": "JKL Member prices CTA"
     }
   ]
 }
