@@ -302,13 +302,12 @@
         </svg>
       </button>
     </form>
-    <p class="jkl-search-drawer__heading">Most searched:</p>
+    <p class="jkl-search-drawer__heading">{{ 'jkl.most_searched' | t }}</p>
     <ul class="jkl-most-searched">
-      <li><a href="{{ routes.search_url }}?q=rosé&type=product&options[prefix]=last">Rosé wine</a></li>
-      <li><a href="{{ routes.search_url }}?q=light+red&type=product&options[prefix]=last">Light red wine</a></li>
-      <li><a href="{{ routes.search_url }}?q=sparkling&type=product&options[prefix]=last">Sparkling</a></li>
-      <li><a href="{{ routes.search_url }}?q=white+burgundy&type=product&options[prefix]=last">White Burgundy</a></li>
-      <li><a href="{{ routes.search_url }}?q=burgundy&type=product&options[prefix]=last">Burgundy</a></li>
+      <li><a href="{{ routes.collections_url }}/rosevin">{{ 'jkl.search_cat_rose' | t }}</a></li>
+      <li><a href="{{ routes.collections_url }}/let-rodvin">{{ 'jkl.search_cat_light_red' | t }}</a></li>
+      <li><a href="{{ routes.collections_url }}/mousserande-vin">{{ 'jkl.search_cat_sparkling' | t }}</a></li>
+      <li><a href="{{ routes.collections_url }}/bourgogne">{{ 'jkl.search_cat_burgundy' | t }}</a></li>
     </ul>
   </div>
 
@@ -454,7 +453,7 @@
              Shown (via .is-searching on .nav-col-main) only while the search input is active. -->
         <div class="nav-search-panel" data-nav-search-panel>
           <div class="nav-most-searched" data-nav-most-searched>
-            <h3 class="nav-most-searched__title">Most searched:</h3>
+            <h3 class="nav-most-searched__title">{{ 'jkl.most_searched' | t }}</h3>
             <ul class="nav-most-searched__list">
               {%- for link in section.settings.search_categories.links -%}
                 {% unless link.url == blank or link.url == "#" %}

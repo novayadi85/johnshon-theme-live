@@ -340,6 +340,13 @@
       {%- endcomment -%}
       {%- capture fs_threshold -%}{% render 'jkl-money', cents: fs_cents %}{%- endcapture -%}
       {%- assign fs_threshold = fs_threshold | strip | replace: '&nbsp;', ' ' | replace: ',00', '' -%}
+      {%- comment -%}
+        Fri frakt-linjen skal vise valutakoden "sek" i stedet for symbolet "kr"
+        (jkl-money mapper SEK -> kr). Kun her paa PDP; oevrige priser beholder "kr".
+      {%- endcomment -%}
+      {%- if cart.currency.iso_code == 'SEK' -%}
+        {%- assign fs_threshold = fs_threshold | replace: 'kr', 'sek' -%}
+      {%- endif -%}
       <div class="pdp-delivery-info">
         <div class="pdp-delivery-item">
           <span class="pdp-delivery-title">{{ 'jkl.free_delivery' | t }}</span>
@@ -523,7 +530,11 @@
           <span class="pdp-review-stars" aria-label="{% render 'jkl-review-display', review: review, part: 'star_count' %} out of 6 stars">{{ card_stars }}</span>
         {%- endif -%}
         <span class="pdp-review-critic">{{ review.reviewer.value.showing_name | default: review.reviewer.value.name }}</span>
-        <span class="pdp-review-vintage">Vintage {{ review.vintage }}</span>
+        {%- comment -%} Aargang 0 betyder non-vintage: linjen udelades helt. {%- endcomment -%}
+        {%- assign review_vintage = review.vintage | append: '' -%}
+        {%- if review_vintage != blank and review_vintage != '0' -%}
+          <span class="pdp-review-vintage">Vintage {{ review.vintage }}</span>
+        {%- endif -%}
         <p class="pdp-review-text">{{ review.reviewtext | metafield_tag | truncate: 200 }}</p>
         <button type="button" class="pdp-review-link" data-review-drawer-open data-review-index="{{ forloop.index0 }}">Read full review</button>
       </article>
@@ -561,7 +572,10 @@
           <article class="pdp-review-drawer__item" data-review-drawer-item="{{ forloop.index0 }}">
             <span class="pdp-review-drawer__score">{% render 'jkl-review-display', review: review, part: 'label' %}</span>
             <span class="pdp-review-drawer__critic">{{ review.reviewer.value.showing_name | default: review.reviewer.value.name }}</span>
-            <span class="pdp-review-drawer__vintage">Vintage {{ review.vintage }}</span>
+            {%- assign review_vintage = review.vintage | append: '' -%}
+            {%- if review_vintage != blank and review_vintage != '0' -%}
+              <span class="pdp-review-drawer__vintage">Vintage {{ review.vintage }}</span>
+            {%- endif -%}
             <div class="pdp-review-drawer__text">{{ review.reviewtext | metafield_tag }}</div>
           </article>
         {%- endfor -%}
@@ -575,10 +589,19 @@
 <!-- === The Winery === -->
 <section class="pdp-the-winery color-green-coal">
   <p class="pdp-section-label">{{ 'jkl.the_winery' | t }}</p>
-  {%- assign winery_headline = product.metafields.custom.vendor.value.seo_title | default: vendor -%}
-  <h2 class="pdp-section-title title">{{ winery_headline }}</h2>
+  <h2 class="pdp-section-title title">{{ 'jkl.about_vendor' | t: name: vendor }}</h2>
+  {%- comment -%}
+    Producentteksten redigeres paa producentens collection (custom.short_text).
+    Metaobjectets short_top_text beholdes som fallback for producenter, hvor
+    collection-feltet endnu ikke er udfyldt.
+  {%- endcomment -%}
+  {%- assign vendor_collection = product.metafields.custom.vendor.value.vendor_collection.value -%}
+  {%- assign winery_text = vendor_collection.metafields.custom.short_text -%}
+  {%- if winery_text == blank -%}
+    {%- assign winery_text = product.metafields.custom.vendor.value.short_top_text -%}
+  {%- endif -%}
   <div class="pdp-section-body">
-    {{ product.metafields.custom.vendor.value.short_top_text | metafield_tag }}
+    {{ winery_text | metafield_tag }}
   </div>
   {%- assign vendor_image_vertical = product.metafields.custom.vendor.value.images_vertical.value | first -%}
   {%- assign vendor_image_horizontal = product.metafields.custom.vendor.value.images_horizontal.value | first -%}
