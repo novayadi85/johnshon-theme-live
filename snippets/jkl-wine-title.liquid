@@ -1,0 +1,43 @@
+{%- comment -%}
+  jkl-wine-title.liquid
+
+  Samler vinnavnet: aargang + produkttitel (+ evt. flaskestoerrelse).
+
+  Non-vintage viner er gemt uensartet — som 'NV', 'N.V.' eller aargang 0 — og
+  ingen af delene hoerer hjemme i titlen. Er aargangen non-vintage eller tom,
+  udelades den helt, sammen med mellemrummet omkring den.
+
+  Parametre:
+    title    - produkttitlen (paakraevet)
+    vintage  - raa aargang: variant.option1 eller custom.vintage-metafeltet
+    position - 'before' (standard) eller 'after' for aargang efter titlen
+    suffix   - valgfrit tillaeg efter titlen, saettes som ' - suffix'
+
+  Brug:
+    {%- raw -%}{% render 'jkl-wine-title', title: product.title, vintage: variant.option1 %}{%- endraw -%}
+{%- endcomment -%}
+
+{%- liquid
+  assign wt_vintage = vintage | append: '' | strip
+
+  # Punktum og mellemrum fjernes foer sammenligningen, saa 'N.V.' og 'N V'
+  # fanges paa linje med 'NV'.
+  assign wt_key = wt_vintage | upcase | replace: '.', '' | replace: ' ', ''
+  if wt_key == 'NV' or wt_key == '0'
+    assign wt_vintage = ''
+  endif
+
+  assign wt_out = title
+  if wt_vintage != blank
+    if position == 'after'
+      assign wt_out = title | append: ' ' | append: wt_vintage
+    else
+      assign wt_out = wt_vintage | append: ' ' | append: title
+    endif
+  endif
+
+  if suffix != blank
+    assign wt_out = wt_out | append: ' - ' | append: suffix
+  endif
+-%}
+{{- wt_out -}}

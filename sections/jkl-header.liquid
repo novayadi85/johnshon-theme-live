@@ -228,6 +228,10 @@
               assign show_member_item = false
             endif
 
+            if block.settings.show_for_logged_out and customer
+              assign show_member_item = false
+            endif
+
             if block.settings.customer_tag != blank
               assign customer_tag = block.settings.customer_tag | strip
               unless customer and customer.tags contains customer_tag
@@ -1104,6 +1108,13 @@
           "id": "show_for_logged_in",
           "label": "Show for logged-in customers",
           "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_for_logged_out",
+          "label": "Show for customers that are not logged in",
+          "default": false,
+          "info": "Enable this and disable \"Show for logged-in customers\" to show the item only to logged-out customers. Leave both disabled to show the item to everyone."
         },
         {
           "type": "text",

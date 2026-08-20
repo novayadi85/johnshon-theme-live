@@ -1,0 +1,55 @@
+{%- comment -%}
+  jkl-alcohol.liquid
+
+  Normaliserer alkoholprocenten fra metafeltet custom.alcohol_percentage,
+  som ikke altid er gemt ensartet (14.5 / 14,50 / 13.0 / 14,5% / "14,5 % vol").
+
+  - Alt andet end cifre og decimaltegn kasseres (mellemrum, hard space, %, bogstaver)
+  - Punktum konverteres til komma: 14.5 -> 14,5
+  - Efterfoelgende nuller fjernes: 14,50 -> 14,5 og 13,0 -> 13
+  - % saettes altid paa til sidst med fast mellemrum: 14,5 %
+
+  Brug:
+    {%- raw -%}{% render 'jkl-alcohol', value: alcohol_percentage %}{%- endraw -%}
+{%- endcomment -%}
+
+{%- liquid
+  # Whitelist frem for at fjerne kendt skidt: saa slipper hverken hard space
+  # (U+00A0 fra copy-paste i admin), tabs eller 'vol' igennem til visningen.
+  assign alc_raw = value | append: '' | replace: '.', ','
+  assign alc_digits = '0123456789'
+  assign alc = ''
+  assign alc_chars = alc_raw | split: ''
+
+  for alc_char in alc_chars
+    if alc_char == ','
+      assign alc = alc | append: ','
+    elsif alc_digits contains alc_char
+      assign alc = alc | append: alc_char
+    endif
+  endfor
+
+  if alc contains ','
+    assign alc_parts = alc | split: ','
+    assign alc_whole = alc_parts[0]
+    assign alc_dec = alc_parts[1] | append: ''
+
+    # Liquid har ingen while-loekke; 4 gennemloeb daekker alle realistiske vaerdier.
+    for i in (1..4)
+      assign alc_last = alc_dec | slice: -1
+      if alc_last == '0'
+        assign alc_dec_len = alc_dec | size | minus: 1
+        assign alc_dec = alc_dec | slice: 0, alc_dec_len
+      else
+        break
+      endif
+    endfor
+
+    if alc_dec == blank
+      assign alc = alc_whole
+    else
+      assign alc = alc_whole | append: ',' | append: alc_dec
+    endif
+  endif
+-%}
+{%- if alc != blank -%}{{ alc }}&nbsp;%{%- endif -%}

@@ -28,6 +28,14 @@
 -%}
 
 {%- assign vintage = variant.metafields.custom.vintage -%}
+{%- liquid
+  # Aargang 0 betyder non-vintage. Kun visningen aendres; vintage sendes
+  # videre uaendret til bl.a. jkl-member-popup.
+  assign vintage_label = vintage | append: ''
+  if vintage_label == '0'
+    assign vintage_label = 'NV'
+  endif
+-%}
 {%- assign alcohol_percentage = variant.metafields.custom.alcohol_percentage -%}
 {%- assign serving_temperature = variant.metafields.custom.serving_temperature -%}
 
@@ -177,7 +185,7 @@
     {% if district %}
       <a href="{{ district_link }}">{{ district }}</a> / 
     {% endif %}  
-    {{ variant.option1 }} {{ product.title }}{% if bottle_size_label != '' %} - {{ bottle_size_label }}{% endif %}
+    {% render 'jkl-wine-title', title: product.title, vintage: variant.option1, suffix: bottle_size_label %}
   </div>
   <div class="pdp-top-left">
     <div class="pdp-meta">
@@ -237,7 +245,7 @@
         {%- endif -%}
       </p>
       <h1 class="pdp-product-name">
-        {{ variant.option1 }} {{ product.title }}{% if bottle_size_label != '' %} - {{ bottle_size_label }}{% endif %}
+        {% render 'jkl-wine-title', title: product.title, vintage: variant.option1, suffix: bottle_size_label %}
       </h1>
       {%- if wsi_variants.size > 1 -%}
         <div class="pdp-vintage-selector" data-section-id="{{ section.id }}">
@@ -322,8 +330,16 @@
         Add-to-cart is handled globally by snippets/jkl-cart-drawer.liquid:
         it intercepts the /cart/add submit, adds via AJAX, re-renders the drawer and opens it.
       {%- endcomment -%}
-      {%- capture fs_threshold -%}{% render 'jkl-shipping-threshold' %}{%- endcapture -%}
-      {%- assign fs_threshold = fs_threshold | strip -%}
+      {%- capture fs_cents -%}{% render 'jkl-shipping-threshold' %}{%- endcapture -%}
+      {%- assign fs_cents = fs_cents | strip | plus: 0 -%}
+      {%- comment -%}
+        Samme efterbehandling som i sections/jkl-header.liquid: jkl-money bruger
+        &nbsp; som tusindtalsseparator, men oversaettelsesfiltret escaper indsatte
+        variabler, saa entiteten ville blive vist raa. Oerne er altid ,00 paa en
+        taerskel og udelades.
+      {%- endcomment -%}
+      {%- capture fs_threshold -%}{% render 'jkl-money', cents: fs_cents %}{%- endcapture -%}
+      {%- assign fs_threshold = fs_threshold | strip | replace: '&nbsp;', ' ' | replace: ',00', '' -%}
       <div class="pdp-delivery-info">
         <div class="pdp-delivery-item">
           <span class="pdp-delivery-title">{{ 'jkl.free_delivery' | t }}</span>
@@ -423,13 +439,13 @@
       <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.type' | t }}</span><span class="pdp-fact-value">{%- if wine_type_link != blank -%}<a href="{{ wine_type_link }}">{{ wine_type }}</a>{%- else -%}{{ wine_type }}{%- endif -%}</span></div>
     {%- endif -%}
     {%- if vintage != blank -%}
-      <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.vintage' | t }}</span><span class="pdp-fact-value">{{ vintage }}</span></div>
+      <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.vintage' | t }}</span><span class="pdp-fact-value">{{ vintage_label }}</span></div>
     {%- endif -%}
     {%- if size != blank -%}
       <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.size' | t }}</span><span class="pdp-fact-value">{{ size }} CL</span></div>
     {%- endif -%}
     {%- if alcohol_percentage != blank -%}
-      <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.alcohol' | t }}</span><span class="pdp-fact-value">{{ alcohol_percentage }}</span></div>
+      <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.alcohol' | t }}</span><span class="pdp-fact-value">{% render 'jkl-alcohol', value: alcohol_percentage %}</span></div>
     {%- endif -%}
     {%- if country != blank -%}
       <div class="pdp-fact"><span class="pdp-fact-label">{{ 'jkl.country' | t }}</span><span class="pdp-fact-value">{%- if country_link != blank -%}<a href="{{ country_link }}">{{ country }}</a>{%- else -%}{{ country }}{%- endif -%}</span></div>

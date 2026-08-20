@@ -1057,6 +1057,13 @@ button {
   background-color: var(--color-burgundy);
 }
 
+/* Best seller-stickeren er skjult. Staar efter reglen ovenfor, saa den vinder
+   over display:flex fra .product-card .product-sticker (samme specificitet).
+   Fjern denne blok for at vise den igen — markup renderes fortsat. */
+.product-card .product-sticker--best-seller {
+  display: none;
+}
+
 .product-card .product-sticker--other {
   background-color: #534524;
 }
@@ -3623,6 +3630,32 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
 .pdp-reviews-grid {
   display: flex;
   gap: 20px;
+  /* Kortene har min-width: 325px og bryder ikke om. Uden overflow her skubber
+     raekken hele siden bredere end viewporten — 5 anmeldelser fylder 1705px og
+     overskrider dermed sektionens 1360px paa enhver skaermbredde. */
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 12px;
+  /* Synlig scrollbar paa desktop: uden touch-gestus er der ellers intet signal
+     om at der ligger flere anmeldelser til hoejre. Tonet til den moerke
+     sektion. Mobil skjuler den igen i @media (max-width: 768px). */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(198, 176, 102, 0.5) rgba(255, 252, 246, 0.12);
+}
+
+.pdp-reviews-grid::-webkit-scrollbar {
+  height: 8px;
+}
+
+.pdp-reviews-grid::-webkit-scrollbar-track {
+  background: rgba(255, 252, 246, 0.12);
+  border-radius: 4px;
+}
+
+.pdp-reviews-grid::-webkit-scrollbar-thumb {
+  background: rgba(198, 176, 102, 0.5);
+  border-radius: 4px;
 }
 
 .pdp-review-card {
@@ -4912,10 +4945,11 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
     padding: 48px 12px;
   }
 
+  /* Selve scrollen arves nu fra basisreglen — her skjules kun scrollbaren,
+     da touch-gestussen i sig selv afsloerer at raekken kan scrolles. */
   .pdp-reviews-grid {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    padding-bottom: 0;
   }
 
   .pdp-reviews-grid::-webkit-scrollbar {
@@ -7112,7 +7146,14 @@ main:is([data-template="page"], [data-template="page.become-jkl-club-member"]) .
   text-decoration: underline;
 }
 
+.site-header.sticky {
+    height: 8rem;
+}
 
 .sticky .category-nav__list--member {
-  display: none;
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    bottom: -40px;
+    right: 0;
 }

@@ -152,7 +152,7 @@
           {{ winery | default: product.vendor }}
         {%- endif -%}
       </div>
-      <a href="{{ product.url }}?variant={{ variant.id }}" class="wine-name-link"><p class="wine-name">{{ variant.option1 }} {{ product.title }}</p></a>
+      <a href="{{ product.url }}?variant={{ variant.id }}" class="wine-name-link"><p class="wine-name">{% render 'jkl-wine-title', title: product.title, vintage: variant.option1 %}</p></a>
       {%- assign collection_text = product.metafields.custom.collection_text | default: variant.metafields.custom.collection_text -%}
       {%- comment -%} Metafeltet kan indeholde rich text. Et <p> inde i <p> brækker
         kortets layout, så alle tags fjernes. Afsnit og <br> bliver til mellemrum,

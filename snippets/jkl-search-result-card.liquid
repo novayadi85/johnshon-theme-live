@@ -18,7 +18,7 @@
       {%- if winery != blank -%}
         <span class="jkl-search-card__winery">{{ winery }}</span>
       {%- endif -%}
-      <span class="jkl-search-card__title">{{ variant.option1 }} {{ product.title }}</span>
+      <span class="jkl-search-card__title">{% render 'jkl-wine-title', title: product.title, vintage: variant.option1 %}</span>
     </span>
     <span class="jkl-search-card__price">
       {% render 'pdp-price', product: product, variant: variant, scope: 'search', force_full: true %}

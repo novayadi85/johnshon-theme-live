@@ -108,7 +108,7 @@
               {%- if winery != blank -%}
                 <span class="jkl-search-drawer__product-winery">{{ winery }}</span>
               {%- endif -%}
-              <span class="jkl-search-drawer__product-name">{{ product.title }}{% if vintage != blank %} {{ vintage }}{% endif %}</span>
+              <span class="jkl-search-drawer__product-name">{% render 'jkl-wine-title', title: product.title, vintage: vintage, position: 'after' %}</span>
             </div>
 
             <div class="jkl-search-drawer__product-pricing">
