@@ -7240,9 +7240,9 @@ main:is([data-template="page"], [data-template="page.become-jkl-club-member"]) .
     bottom: -40px;
     right: 0;
     */
-    display: none; 
+    display: none !important
 }
 
 .nav-language {
-  display: none;
+  display: none !important
 }
