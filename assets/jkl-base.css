@@ -7242,3 +7242,7 @@ main:is([data-template="page"], [data-template="page.become-jkl-club-member"]) .
     */
     display: none; 
 }
+
+.nav-language {
+  display: none;
+}
