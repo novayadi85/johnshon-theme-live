@@ -1,0 +1,57 @@
+{%- comment -%}
+  OnlineStore JSON-LD — butikkens egen entitet.
+
+  OnlineStore er undertypen af Organization til webshops. @id'et (#organization)
+  er det, WebSite-noden peger på med publisher, og det er stabilt på tværs af
+  sider, så entiteten er den samme uanset hvor crawleren lander.
+
+  sameAs binder entiteten til jeres kendte profiler. URL'erne kommer fra
+  temaindstillingerne — samme kilde som footeren — og feltet udelades helt, hvis
+  ingen er sat. Et tomt array giver ingenting.
+
+  Renderes fra seo-schema.liquid på alle indekserbare sider, af samme grund som
+  WebSite-noden.
+{%- endcomment -%}
+
+{%- liquid
+  # origin trækkes ud af canonical_url, så domænet følger markedet (.se/.com).
+  assign url_parts = canonical_url | split: '/'
+  assign origin = url_parts[0] | append: '//' | append: url_parts[2]
+  assign home_url = origin | append: routes.root_url
+
+  # Samles til én streng og splittes, så tomme indstillinger falder fra af sig
+  # selv og listen kan tælles med .size.
+  assign social_profiles = ''
+  if settings.social_instagram_link != blank
+    assign social_profiles = social_profiles | append: settings.social_instagram_link | append: '|'
+  endif
+  if settings.social_facebook_link != blank
+    assign social_profiles = social_profiles | append: settings.social_facebook_link | append: '|'
+  endif
+  assign social_profiles = social_profiles | split: '|'
+-%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "OnlineStore",
+  "@id": "{{ home_url }}#organization",
+  "name": {{ shop.name | json | replace: '\/', '/' }},
+  "url": {{ home_url | json | replace: '\/', '/' }}
+  {%- comment -%}
+    Logoet genereres af settings.logo frem for en fast sti, så det følger CDN'et
+    og ikke går i stykker, når logoet udskiftes i admin.
+  {%- endcomment -%}
+  {%- if settings.logo != blank -%}
+    ,"logo": {{ settings.logo | image_url: width: 500 | prepend: 'https:' | json | replace: '\/', '/' }}
+  {%- endif -%}
+  {%- if social_profiles.size > 0 -%}
+    ,"sameAs": [
+      {%- for profile in social_profiles -%}
+        {%- unless forloop.first -%},{%- endunless -%}
+        {{ profile | json | replace: '\/', '/' }}
+      {%- endfor -%}
+    ]
+  {%- endif -%}
+}
+</script>

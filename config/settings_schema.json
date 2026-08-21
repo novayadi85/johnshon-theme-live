@@ -2284,5 +2284,26 @@
         "default": "equal-width-buttons"
       }
     ]
+  },
+  {
+    "name": "Social media",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Bruges både til linkene i footeren og til sameAs i sitets structured data. Rettes en URL her, følger begge steder med."
+      },
+      {
+        "type": "text",
+        "id": "social_instagram_link",
+        "label": "Instagram",
+        "default": "https://www.instagram.com/jklfinewines.se"
+      },
+      {
+        "type": "text",
+        "id": "social_facebook_link",
+        "label": "Facebook",
+        "default": "https://www.facebook.com/people/JKLfinewinesse/61584163708688/"
+      }
+    ]
   }
 ]

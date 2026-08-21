@@ -1,0 +1,41 @@
+{%- comment -%}
+  WebSite JSON-LD til forsiden.
+
+  Noden identificerer selve sitet — ikke den enkelte side — og udsendes derfor
+  kun på forsiden, som er der, søgemaskinerne læser den. @id'et er stabilt, så
+  andre schema-noder senere kan pege på det med "isPartOf".
+
+  Bemærk: der er bevidst ingen potentialAction/SearchAction. Google udfasede
+  sitelinks-søgefeltet i 2024 og ignorerer markup'en nu.
+
+  Renderes fra seo-schema.liquid.
+{%- endcomment -%}
+
+{%- liquid
+  # origin trækkes ud af canonical_url som i de øvrige seo-schema-snippets, så
+  # sprog/marked i URL'en følger den side, der faktisk vises.
+  assign url_parts = canonical_url | split: '/'
+  assign origin = url_parts[0] | append: '//' | append: url_parts[2]
+  assign home_url = origin | append: routes.root_url
+
+  assign clean_description = shop.description | strip_html | strip_newlines | strip
+-%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": "{{ home_url }}#website",
+  "url": {{ home_url | json | replace: '\/', '/' }},
+  "name": {{ shop.name | json | replace: '\/', '/' }},
+  "inLanguage": {{ request.locale.iso_code | json }},
+  {%- comment -%}
+    #organization udsendes af seo-schema-organization.liquid under samme
+    betingelse som denne node, så referencen kan altid opløses lokalt.
+  {%- endcomment -%}
+  "publisher": { "@id": "{{ home_url }}#organization" }
+  {%- if clean_description != blank -%}
+    ,"description": {{ clean_description | json | replace: '\/', '/' }}
+  {%- endif -%}
+}
+</script>

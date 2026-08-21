@@ -71,6 +71,7 @@
   --color-olive: #534524;
   --color-teracotta: #c55e31;
   --color-muted-tangerine: #e98132;
+  --color-burnt-orange: #bd532b;
   --color-cream: #fef3dd;
   --color-burgundy: #310912;
   --color-sky-blue: #93d8f3;
@@ -294,6 +295,26 @@ button {
 }
 
 .visually-hidden:not(:focus, :active) {
+  position: absolute !important;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  clip: rect(0 0 0 0);
+  word-wrap: normal !important;
+}
+
+/* Server-renderet paginering på PLP'en. Uendelig scroll dækker almindelige
+   brugere, men Googlebot scroller ikke — uden rigtige <a href> i HTML'en er alt
+   efter side 1 uopdageligt fra kategorisiden.
+
+   Skjules visuelt frem for med display:none, som ville tage linkene ud af
+   tilgængelighedstræet. :focus-within (og ikke :focus som ovenfor) er nødvendig,
+   fordi det er linkene inde i nav'en der får fokus, ikke wrapperen selv —
+   ellers ville en tastaturbruger få usynligt fokus. */
+.plp-pagination-crawlable:not(:focus-within) {
   position: absolute !important;
   overflow: hidden;
   width: 1px;
@@ -1440,6 +1461,25 @@ button {
   align-items: center;
   gap: 48px;
   width: 800px;
+}
+
+/* Klub-CTA på forsidebanneret. Samme form som .pdp-banner-btn.
+   Grøn-guld baggrund med green-coal tekst: guldet er lyst nok til, at creme
+   tekst ville have for lav kontrast. */
+.club-banner-btn {
+  display: inline-block;
+  font-family: var(--font-serif);
+  font-size: 20px;
+  color: var(--color-green-coal);
+  background-color: var(--color-green-gold);
+  padding: 14px 40px 10px 40px;
+  border-radius: 2px;
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.club-banner-btn:hover {
+  opacity: 0.85;
 }
 
 .club-banner .section-info {
@@ -5551,6 +5591,8 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
 
 .cart-drawer-empty .cart-empty-text {
   margin: 0;
+  font-size: 26px;
+  font-weight: 500;
 }
 
 /* Filled state fills the drawer as a flex column so the items area grows
@@ -6570,6 +6612,17 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
   max-width: 600px;
   margin: 40px auto;
   text-align: center;
+
+  /* Nyhedsbrevsknappen henter sine farver fra --surface-fg/--surface-bg, som
+     normalt sættes af temaets farveklasser (bg-cream-color, color-green-coal
+     osv.). Hverken den tomme kollektionsside eller søgesiden har en farveklasse,
+     så variablerne var udefinerede og knappen blev gennemsigtig. Samme løsning
+     som .jkl-member-benefits__signup længere nede.
+
+     Rammer kun nyhedsbrevet: klubknapperne sætter selv deres baggrund i
+     jkl-signup-form.liquid og er upåvirkede. */
+  --surface-fg: var(--color-green-coal);
+  --surface-bg: var(--color-cream);
 }
 
 .plp-empty-signup .signup-form {

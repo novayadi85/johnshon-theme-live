@@ -1,0 +1,141 @@
+{%- comment -%}
+  BreadcrumbList JSON-LD til produkt- og collection-sider.
+
+  Stien skal matche den synlige breadcrumb 1:1 — ellers afviser Google den — så
+  dette snippet spejler markup'en i sections/jkl-pdp.liquid (produkt) og
+  snippets/breadcrumbs.liquid (collection). Rettes en af dem, skal denne med.
+
+  Producent-collections routes uden om dette snippet, fordi
+  seo-schema-vendor.liquid allerede udsender sin egen BreadcrumbList — to lister
+  på samme side ville gøre begge ugyldige.
+
+  Renderes fra seo-schema.liquid.
+{%- endcomment -%}
+
+{%- liquid
+  # Metafelterne giver relative URL'er, men JSON-LD skal bruge absolutte.
+  # origin trækkes ud af canonical_url som i seo-schema-vendor.liquid, så
+  # sproget/markedet i URL'en følger den side, der faktisk vises.
+  assign url_parts = canonical_url | split: '/'
+  assign origin = url_parts[0] | append: '//' | append: url_parts[2]
+  assign all_wines_url = origin | append: routes.collections_url | append: '/all'
+
+  assign bc_position = 1
+
+  if template.name == 'product'
+    assign country_obj = product.metafields.custom.country.value
+    assign region_obj = product.metafields.custom.region.value
+    assign subregion_obj = product.metafields.custom.sub_region.value
+    assign district_obj = product.metafields.custom.district.value
+
+    # PDP'en viser h1-feltet med name som fallback; collection-siden viser altid name.
+    assign crumb_country = country_obj.h1.value | default: country_obj.name.value
+    assign crumb_region = region_obj.h1.value | default: region_obj.name.value
+    assign crumb_subregion = subregion_obj.h1.value | default: subregion_obj.name.value
+    assign crumb_district = district_obj.h1.value | default: district_obj.name.value
+  else
+    assign country_obj = collection.metafields.custom.country.value
+    assign region_obj = collection.metafields.custom.region.value
+    assign subregion_obj = collection.metafields.custom.subregion.value
+
+    assign crumb_country = country_obj.name.value
+    assign crumb_region = region_obj.name.value
+    assign crumb_subregion = subregion_obj.name.value
+  endif
+-%}
+
+{%- comment -%}
+  Sidste led: samme vinnavn som PDP-overskriften (årgang + titel + evt. Magnum),
+  ellers collection-titlen.
+{%- endcomment -%}
+{%- if template.name == 'product' -%}
+  {%- liquid
+    assign variant = product.selected_or_first_available_variant
+    assign size_cl = product.metafields.custom.volume | plus: 0
+    assign bottle_size_label = ''
+    if size_cl == 150
+      assign bottle_size_label = 'Magnum'
+    endif
+  -%}
+  {%- capture crumb_current -%}
+    {%- render 'jkl-wine-title', title: product.title, vintage: variant.option1, suffix: bottle_size_label -%}
+  {%- endcapture -%}
+{%- else -%}
+  {%- assign crumb_current = collection.title -%}
+{%- endif -%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "@id": "{{ canonical_url }}#breadcrumb",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": {{ 'jkl.all_wines' | t | json | replace: '\/', '/' }},
+      "item": {{ all_wines_url | json | replace: '\/', '/' }}
+    }
+    {%- comment -%}
+      Et led uden collection-link udelader "item" frem for at sende en tom
+      streng, som Google ville afvise. Navnet vises stadig i stien.
+    {%- endcomment -%}
+    {%- if crumb_country != blank -%}
+      {%- assign bc_position = bc_position | plus: 1 -%}
+      {%- assign bc_url = country_obj.collection.value.url -%}
+      ,{
+        "@type": "ListItem",
+        "position": {{ bc_position }},
+        "name": {{ crumb_country | json | replace: '\/', '/' }}
+        {%- if bc_url != blank -%}
+          ,"item": {{ origin | append: bc_url | json | replace: '\/', '/' }}
+        {%- endif -%}
+      }
+    {%- endif -%}
+    {%- if crumb_region != blank -%}
+      {%- assign bc_position = bc_position | plus: 1 -%}
+      {%- assign bc_url = region_obj.collection.value.url -%}
+      ,{
+        "@type": "ListItem",
+        "position": {{ bc_position }},
+        "name": {{ crumb_region | json | replace: '\/', '/' }}
+        {%- if bc_url != blank -%}
+          ,"item": {{ origin | append: bc_url | json | replace: '\/', '/' }}
+        {%- endif -%}
+      }
+    {%- endif -%}
+    {%- if crumb_subregion != blank -%}
+      {%- assign bc_position = bc_position | plus: 1 -%}
+      {%- assign bc_url = subregion_obj.collection.value.url -%}
+      ,{
+        "@type": "ListItem",
+        "position": {{ bc_position }},
+        "name": {{ crumb_subregion | json | replace: '\/', '/' }}
+        {%- if bc_url != blank -%}
+          ,"item": {{ origin | append: bc_url | json | replace: '\/', '/' }}
+        {%- endif -%}
+      }
+    {%- endif -%}
+    {%- comment -%} Distrikt findes kun på PDP'en. {%- endcomment -%}
+    {%- if crumb_district != blank -%}
+      {%- assign bc_position = bc_position | plus: 1 -%}
+      {%- assign bc_url = district_obj.collection.value.url -%}
+      ,{
+        "@type": "ListItem",
+        "position": {{ bc_position }},
+        "name": {{ crumb_district | json | replace: '\/', '/' }}
+        {%- if bc_url != blank -%}
+          ,"item": {{ origin | append: bc_url | json | replace: '\/', '/' }}
+        {%- endif -%}
+      }
+    {%- endif -%}
+    {%- assign bc_position = bc_position | plus: 1 -%}
+    ,{
+      "@type": "ListItem",
+      "position": {{ bc_position }},
+      "name": {{ crumb_current | strip | json | replace: '\/', '/' }},
+      "item": {{ canonical_url | json | replace: '\/', '/' }}
+    }
+  ]
+}
+</script>

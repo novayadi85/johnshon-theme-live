@@ -35,7 +35,7 @@
         {%- assign current_sort_name = current_sort_by -%}
       {%- endif -%}
       <label class="filter-sort filter-sort-desktop">
-        <span>Sort by</span>
+        <span>{{ 'jkl.sort_by' | t }}</span>
         <select class="filter-sort-select" name="sort_by" data-filter-sort aria-label="Sort products">
           {%- for option in search.sort_options -%}
             <option value="{{ option.value | escape }}"{% if option.value == current_sort_by %} selected{% endif %}>{{ option.name }}</option>
@@ -46,7 +46,7 @@
         </svg>
       </label>
       <button class="filter-sort filter-sort-mobile" type="button" data-sort-drawer-open aria-haspopup="dialog" aria-controls="sortDrawerOverlay">
-        <span>Sort by <span data-sort-current-label>{{ current_sort_name }}</span></span>
+        <span>{{ 'jkl.sort_by' | t }} <span data-sort-current-label>{{ current_sort_name }}</span></span>
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.2"/>
         </svg>

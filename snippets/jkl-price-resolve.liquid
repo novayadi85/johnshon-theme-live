@@ -1,0 +1,80 @@
+{%- comment -%}
+  Udskriver den pris, PDP'en rent faktisk viser for en variant, som et rent tal
+  uden valuta og formatering — til brug i JSON-LD.
+
+  Udvælgelsen er den samme som i pdp-price.liquid: medlemspris slår tilbud,
+  tilbud slår normalpris, og bundle-tieren (qty > 1) bruges i stedet for
+  enkeltflasken, når varianten er sat til volumenpris. Ændres rækkefølgen i
+  prisblokken, skal den ændres her — ellers viser schemaet en anden pris end
+  siden.
+
+  Priserne ligger i variant-metafeltet custom.prices som JSON med en blok pr.
+  land, ligesom i jkl-price-available.liquid. Er der ingen brugbar pris for det
+  aktive land, udskrives intet — så kan kalderen udelade hele Offer'en frem for
+  at sende 0, som variant.price ville give på de varer.
+
+  Brug:
+    {%- raw -%}{%- capture offer_price %}{% render 'jkl-price-resolve', variant: variant %}{% endcapture -%}{%- endraw -%}
+    {%- raw -%}{%- assign offer_price = offer_price | strip -%}{%- endraw -%}
+{%- endcomment -%}
+{%- liquid
+  unless variant
+    assign variant = product.selected_or_first_available_variant
+  endunless
+
+  assign show_volume_price = variant.metafields.custom.show_volume_price.value
+  assign on_sale_for_all = variant.metafields.custom.on_sale_for_all.value
+  assign show_member_price = variant.metafields.custom.show_member_price.value
+
+  assign country_data = variant.metafields.custom.prices.value[localization.country.iso_code]
+
+  assign single_tier = nil
+  assign bundle_tier = nil
+  for tier in country_data.none_member
+    if tier.qty == 1
+      assign single_tier = tier
+    else
+      assign bundle_tier = tier
+    endif
+  endfor
+
+  assign member_single_tier = nil
+  assign member_bundle_tier = nil
+  for tier in country_data.member.bronze
+    if tier.qty == 1
+      assign member_single_tier = tier
+    else
+      assign member_bundle_tier = tier
+    endif
+  endfor
+
+  if show_volume_price
+    assign active_tier = bundle_tier
+    assign active_member_tier = member_bundle_tier
+  else
+    assign active_tier = single_tier
+    assign active_member_tier = member_single_tier
+  endif
+
+  if show_member_price
+    assign resolved_price = active_member_tier.price
+  elsif on_sale_for_all
+    assign resolved_price = active_tier.offer_price
+  else
+    assign resolved_price = active_tier.price
+  endif
+
+  # Mangler medlems- eller tilbudsprisen på en variant, der ellers er flaget til
+  # det, falder prisblokken tilbage på den almindelige tier. Samme her.
+  if resolved_price == blank
+    assign resolved_price = active_tier.price
+  endif
+  if resolved_price == blank
+    assign resolved_price = single_tier.price
+  endif
+
+  assign resolved_number = resolved_price | plus: 0
+  if resolved_number > 0
+    echo resolved_price
+  endif
+-%}

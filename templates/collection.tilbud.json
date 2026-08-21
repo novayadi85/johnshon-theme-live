@@ -9,25 +9,6 @@
  */
 {
   "sections": {
-    "member_prices_cta": {
-      "type": "jkl-member-page",
-      "settings": {
-        "member_eyebrow": "Member status",
-        "member_message": "You are a member  and enjoy member prices",
-        "guest_eyebrow": "Member prices",
-        "guest_message": "Login to get memberprices",
-        "login_label": "Login",
-        "success_status": "success",
-        "success_code": "confirmed",
-        "max_width": 760,
-        "padding_top": 48,
-        "padding_bottom": 72,
-        "background_color": "#FBF8F3",
-        "text_color": "#17352f",
-        "muted_color": "#6f7d73",
-        "accent_color": "#17352f"
-      }
-    },
     "plp": {
       "type": "jkl-plp",
       "settings": {
@@ -36,7 +17,6 @@
     }
   },
   "order": [
-    "member_prices_cta",
     "plp"
   ]
 }

@@ -1,0 +1,37 @@
+{%- comment -%}
+  Gør HTML til ren tekst til brug i JSON-LD.
+
+  strip_html alene limer sætninger sammen, når to blokke støder op til hinanden:
+  <p>…parcell för parcell.</p><p>Stilen förenar…</p> bliver til
+  "parcell för parcell.Stilen förenar". Derfor indsættes et mellemrum efter
+  blok-tags og linjeskift, før taggene fjernes — og dobbelte mellemrum trykkes
+  sammen bagefter, så indrykket HTML ikke efterlader huller i teksten.
+
+  Parametre:
+    html - den rå HTML (kør metafield_tag på metafelter først)
+
+  Brug:
+    {%- raw -%}{%- capture clean %}{% render 'jkl-plain-text', html: my_html %}{% endcapture -%}{%- endraw -%}
+    {%- raw -%}{%- assign clean = clean | strip -%}{%- endraw -%}
+{%- endcomment -%}
+{%- liquid
+  assign text = html
+
+  assign text = text | replace: '</p>', '</p> '
+  assign text = text | replace: '</div>', '</div> '
+  assign text = text | replace: '</li>', '</li> '
+  assign text = text | replace: '</h1>', '</h1> '
+  assign text = text | replace: '</h2>', '</h2> '
+  assign text = text | replace: '</h3>', '</h3> '
+  assign text = text | replace: '</h4>', '</h4> '
+  assign text = text | replace: '<br>', ' '
+  assign text = text | replace: '<br/>', ' '
+  assign text = text | replace: '<br />', ' '
+
+  # Linjeskift skal blive til mellemrum og ikke bare forsvinde, som
+  # strip_newlines ellers ville gøre.
+  assign text = text | strip_html | newline_to_br | replace: '<br />', ' ' | strip_newlines
+
+  assign text = text | replace: '  ', ' ' | replace: '  ', ' ' | replace: '  ', ' ' | strip
+  echo text
+-%}

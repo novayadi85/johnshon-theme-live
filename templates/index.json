@@ -115,6 +115,7 @@
     },
     "jkl_editorial_eRNaKg": {
       "type": "jkl-editorial",
+      "disabled": true,
       "name": "JKL Editorial Story",
       "settings": {
         "label": "JKL Fine Wines",
@@ -135,7 +136,6 @@
     },
     "inspiration_story_jkl": {
       "type": "jkl-inspiration-story",
-      "disabled": true,
       "settings": {}
     },
     "faq_jkl": {

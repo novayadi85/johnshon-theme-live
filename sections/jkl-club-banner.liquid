@@ -80,26 +80,16 @@
       {%- endif -%}
     </div>
 
-    {%- assign customer_membership = customer.metafields.custom.membership.value -%}
-    {%- assign customer_has_tickets = customer.metafields.custom.has_tickets.value | default: customer.metafields.custom.has_tickets -%}
-    {%- assign is_club_member = false -%}
-    {%- if customer.tags contains 'bronze' -%}
-      {%- assign is_club_member = true -%}
-    {%- endif -%}
- 
-    {% if is_club_member %}
-      <!-- Besked til eksisterende medlemmer -->
-      <div class="jkl-member-message">
-        <p>🎉 <strong>Tak!</strong> Du er allerede tilmeldt JKL Club som Bronze-medlem. Nyd dine eksklusive fordele!</p>
-      </div>
-    {% else %}
-      <!-- Tilmeldingsformular for ikke-medlemmer -->
-      {% render 'jkl-signup-form',
-        customer_tags_endpoint: '/apps/communication',
-        customer_tags_tag: 'bronze',
-        customer_tags_action: 'add' 
-      %}
-    {% endif %}
+    {%- comment -%}
+      Banneret er en teaser på forsiden — selve indmeldelsen sker på
+      medlemssiden. Derfor en knap dertil frem for en formular her, så der kun
+      er ét sted, en tilmelding kan gå galt.
+
+      Linket kommer fra sektionens club_link-indstilling, med bliv-medlem-siden
+      som fallback, hvis den ikke er sat i temaeditoren.
+    {%- endcomment -%}
+    {%- assign club_url = section.settings.club_link | default: pages['bliv-medlem'].url | default: '/pages/bliv-medlem' -%}
+    <a class="club-banner-btn" href="{{ club_url }}">{{ 'jkl.club_banner_btn' | t }}</a>
 
   </div>
 </section>

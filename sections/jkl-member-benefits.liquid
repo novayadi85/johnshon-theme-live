@@ -65,6 +65,7 @@
               {%- endif -%}
             {% endcomment %}
             {% render 'jkl-signup-form',
+              member_signup: true,
               customer_tags_endpoint: '/apps/communication',
               customer_tags_tag: 'bronze',
               customer_tags_action: 'add',

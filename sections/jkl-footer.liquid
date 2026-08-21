@@ -43,8 +43,17 @@
     <div class="footer-column">
       <h3 class="column-title">{{ 'jkl.footer_follow_us' | t }}</h3>
       <ul class="column-links">
-        <li><a href="https://www.instagram.com/jklfinewines.se" target="_blank" rel="noopener">Instagram</a></li>
-        <li><a href="https://www.facebook.com/people/JKLfinewinesse/61584163708688/" target="_blank" rel="noopener">Facebook</a></li>
+        {%- comment -%}
+          URL'erne kommer fra temaindstillingerne, så footeren og sameAs i
+          seo-schema-organization.liquid har samme kilde. Rettes en profil,
+          følger begge steder med.
+        {%- endcomment -%}
+        {%- if settings.social_instagram_link != blank -%}
+          <li><a href="{{ settings.social_instagram_link }}" target="_blank" rel="noopener">Instagram</a></li>
+        {%- endif -%}
+        {%- if settings.social_facebook_link != blank -%}
+          <li><a href="{{ settings.social_facebook_link }}" target="_blank" rel="noopener">Facebook</a></li>
+        {%- endif -%}
         <li><a href="#">{{ 'jkl.footer_newsletter' | t }}</a></li>
       </ul>
     </div>

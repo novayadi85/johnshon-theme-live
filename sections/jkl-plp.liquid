@@ -19,6 +19,13 @@
 
   {%- if collection.products.size > 0 -%}
 
+  {%- comment -%}
+    ItemList skal renderes herinde: collection.products er kun den aktuelle
+    sides 24 produkter inde i paginate-blokken. De øvrige schema-noder kommer
+    fra seo-schema.liquid via layoutet.
+  {%- endcomment -%}
+  {%- render 'seo-schema-itemlist', products: collection.products, paginate: paginate -%}
+
   <!-- Filter Bar -->
   <div class="plp-filter">
     {% render 'jkl-filter-tabs', filters: collection.filters %}
@@ -34,7 +41,7 @@
         {%- assign current_sort_name = current_sort_by -%}
       {%- endif -%}
       <label class="filter-sort filter-sort-desktop">
-        <span>Sort by</span>
+        <span>{{ 'jkl.sort_by' | t }}</span>
         <select class="filter-sort-select" name="sort_by" data-filter-sort aria-label="Sort products">
           {%- for option in collection.sort_options -%}
             <option value="{{ option.value | escape }}"{% if option.value == current_sort_by %} selected{% endif %}>{{ option.name }}</option>
@@ -45,7 +52,7 @@
         </svg>
       </label>
       <button class="filter-sort filter-sort-mobile" type="button" data-sort-drawer-open aria-haspopup="dialog" aria-controls="sortDrawerOverlay">
-        <span>Sort by <span data-sort-current-label>{{ current_sort_name }}</span></span>
+        <span>{{ 'jkl.sort_by' | t }} <span data-sort-current-label>{{ current_sort_name }}</span></span>
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.2"/>
         </svg>
@@ -99,31 +106,38 @@
     <span class="plp-infinite-scroll__loader"></span>
   </div>
 
+  {%- comment -%}
+    Rigtige, server-renderede links til ?page=N. Uendelig scroll henter siderne
+    via fetch, når sentinel'en kommer i syne, men Googlebot scroller ikke, så
+    den observer udløses aldrig under crawl. Uden de her links kan intet efter
+    de første 24 produkter nås fra kategorisiden.
+
+    Genbruger temaets pagination-controls, så URL'erne bevarer filter- og
+    sorteringsparametre og labels er oversatte. Wrapperen skjuler den visuelt,
+    så designet er uændret; linkene bliver i DOM'en — infinite-scroll-scriptet
+    rører kun griddet og sentinel'en, aldrig den her nav.
+  {%- endcomment -%}
+  <div class="plp-pagination-crawlable">
+    {%- render 'pagination-controls', paginate: paginate -%}
+  </div>
+
   {%- else -%}
 
   <!-- Empty collection: hide filter + grid, show newsletter signup -->
   <div class="plp-empty-signup">
-    <h3>Ups - her er ingen varer fra {{ collection.title }}.</h3>
-    <p>Skriv dig op herunder - så får du besked så snart lageret har fået varer igen.</p>
-    {%- assign customer_membership = customer.metafields.custom.membership.value -%}
-    {%- assign customer_has_tickets = customer.metafields.custom.has_tickets.value | default: customer.metafields.custom.has_tickets -%}
-    {%- assign is_club_member = false -%}
-    {%- if customer.tags contains 'bronze' -%}
-      {%- assign is_club_member = true -%}
-    {%- endif -%}
-    {% if is_club_member %}
-      <!-- Besked til eksisterende medlemmer -->
-      <div class="jkl-member-message">
-        <p>🎉 <strong>Tak!</strong> Du er allerede tilmeldt JKL Club som Bronze-medlem. Nyd dine eksklusive fordele!</p>
-      </div>
-    {% else %}
-      {% render 'jkl-signup-form',
-        customer_tags_endpoint: '/apps/communication',
-        customer_tags_tag: 'bronze',
-        customer_tags_action: 'add'
-      %}
+    <h3>{{ 'jkl.plp_empty_heading' | t: collection_title: collection.title }}</h3>
+    <p>{{ 'jkl.plp_empty_text' | t }}</p>
+    {%- comment -%}
+      Ren nyhedsbrevstilmelding — kaldes uden customer_tags-parametre, som på
+      søgesidens tomme tilstand. Med dem sætter snippet'en is_member_signup og
+      begynder både at melde den besøgende ind i JKL Club via app-proxyen og at
+      vise klub-tekster i stedet for formularen. Selve nyhedsbrevstilmeldingen
+      sker uanset hvad: formularen sender altid contact[tags] = newsletter,landing.
 
-    {% endif %}
+      Medlemstjek hører hjemme i snippet'en, som allerede har det — derfor er
+      der ikke noget is_club_member-tjek her.
+    {%- endcomment -%}
+    {% render 'jkl-signup-form' %}
   </div>
 
   {%- endif -%}

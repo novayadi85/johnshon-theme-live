@@ -1,10 +1,25 @@
 {%- liquid
-  assign clean_description = collection.metafields.custom.short_text | metafield_tag | strip_html | strip_newlines | strip
+  assign description_html = collection.metafields.custom.short_text | metafield_tag
+  capture clean_description
+    render 'jkl-plain-text', html: description_html
+  endcapture
+  assign clean_description = clean_description | strip
   assign producent_url = canonical_url
   assign url_parts = canonical_url | split: '/'
   assign origin = url_parts[0] | append: '//' | append: url_parts[2]
   assign producenter_url = origin | append: routes.collections_url | append: '/vinproducenter'
   assign all_wines_url = origin | append: routes.collections_url | append: '/all'
+
+  # Skal give præcis samme streng som @id'et i seo-schema-website.liquid, ellers
+  # peger isPartOf på en node, der ikke findes. Begge bygger den af origin fra
+  # canonical_url + routes.root_url — aldrig shop.url, som ville give .com.
+  assign home_url = origin | append: routes.root_url
+
+  # Producentens hjemmeside ligger på vendor-metaobjektet, som collectionen ikke
+  # peger på. Den nås via en af producentens egne vine — alle vine i en
+  # vendor-collection har samme producent. Er collectionen tom, udelades sameAs.
+  assign vendor_object = collection.products.first.metafields.custom.vendor.value
+  assign vendor_homepage = vendor_object.homepage.value
 -%}
 
 <script type="application/ld+json">
@@ -12,10 +27,18 @@
   "@context": "https://schema.org",
   "@graph": [
     {
-      "@type": "WebPage",
+      {%- comment -%} CollectionPage: siden lister producentens vine. {%- endcomment -%}
+      "@type": "CollectionPage",
       "@id": "{{ producent_url }}#webpage",
       "url": {{ producent_url | json | replace: '\/', '/' }},
-      "name": {{ collection.title | json | replace: '\/', '/' }}
+      "name": {{ collection.title | json | replace: '\/', '/' }},
+      {%- comment -%}
+        Indholdets sprog — ikke kundens marked. Derfor sprogkoden alene og ikke
+        kombineret med localization.country.iso_code, som ville give fx sv-FI,
+        blot fordi kunden vælger Finland.
+      {%- endcomment -%}
+      "inLanguage": {{ request.locale.iso_code | json }},
+      "isPartOf": { "@id": "{{ home_url }}#website" }
       {%- if clean_description != blank -%}
         ,"description": {{ clean_description | json | replace: '\/', '/' }}
       {%- endif -%}
@@ -29,6 +52,9 @@
       "url": {{ producent_url | json | replace: '\/', '/' }}
       {%- if clean_description != blank -%}
         ,"description": {{ clean_description | json | replace: '\/', '/' }}
+      {%- endif -%}
+      {%- if vendor_homepage != blank -%}
+        ,"sameAs": [{{ vendor_homepage | json | replace: '\/', '/' }}]
       {%- endif -%}
     },
     {

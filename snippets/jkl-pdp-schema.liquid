@@ -6,80 +6,159 @@
 {%- endcomment -%}
 
 {%- assign current_variant = product.selected_or_first_available_variant -%}
-{%- assign vendor = product.metafields.custom.vendor.value.name | default: product.vendor -%}
-{%- assign country = product.metafields.custom.country.value.h1 | default: product.metafields.custom.country.value.name -%}
+{%- assign vendor_object = product.metafields.custom.vendor.value -%}
+{%- assign vendor = vendor_object.name.value | default: product.vendor -%}
+{%- assign vendor_homepage = vendor_object.homepage.value -%}
+{%- assign vendor_collection_url = vendor_object.vendor_collection.value.url -%}
+{%- comment -%}
+  Landet hentes fra name-feltet og ikke h1 som de øvrige. h1 er et
+  SEO-overskriftsfelt ("Viner från Frankrike") og bruges til visning; her skal
+  værdien være selve landenavnet, ellers er countryOfOrigin forkerte data.
+{%- endcomment -%}
+{%- assign country = product.metafields.custom.country.value.name.value -%}
 {%- assign region = product.metafields.custom.region.value.h1 | default: product.metafields.custom.region.value.name -%}
 {%- assign subregion = product.metafields.custom.sub_region.value.h1 | default: product.metafields.custom.sub_region.value.name -%}
 {%- assign district = product.metafields.custom.district.value.h1 | default: product.metafields.custom.district.value.name -%}
 {%- assign wine_type = product.metafields.custom.type.value.h1 | default: product.metafields.custom.type.value.type -%}
 {%- assign volume = product.metafields.custom.volume -%}
-{%- assign clean_description = product.description | strip_html | strip_newlines | strip -%}
+{%- comment -%}
+  Domænet tages fra canonical_url og ikke shop.url. shop.url er altid butikkens
+  primære domæne, så på det svenske site ville URL'erne pege på .com.
+{%- endcomment -%}
+{%- assign schema_url_parts = canonical_url | split: '/' -%}
+{%- assign origin = schema_url_parts[0] | append: '//' | append: schema_url_parts[2] -%}
+{%- capture clean_description %}{% render 'jkl-plain-text', html: product.description %}{% endcapture -%}
+{%- assign clean_description = clean_description | strip -%}
+
+{%- comment -%}
+  Navnet sammensættes med jkl-wine-title, så årgangen kommer med foran titlen
+  præcis som i PDP-overskriften. Snippet'et håndterer selv non-vintage: er
+  årgangen 'NV', 'N.V.' eller 0, udelades den sammen med mellemrummet.
+{%- endcomment -%}
+{%- capture product_name %}{% render 'jkl-wine-title', title: product.title, vintage: current_variant.option1 %}{% endcapture -%}
+{%- assign product_name = product_name | strip -%}
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org/",
   "@type": "Product",
-  "name": {{ product.title | json }},
-  "url": {{ shop.url | append: product.url | json }}
+  "name": {{ product_name | json | replace: '\/', '/' }},
+  "url": {{ canonical_url | json | replace: '\/', '/' }}
+  {%- comment -%}
+    sku er anbefalet på Product-noden selv, ikke kun på hver Offer. Med flere
+    varianter findes der ikke ét produkt-SKU, så vi bruger den viste variant —
+    samme kilde som årgang og alkoholprocent nedenfor. De variantspecifikke
+    SKU'er bliver på deres respektive Offers.
+  {%- endcomment -%}
+  {%- if current_variant.sku != blank -%}
+    ,"sku": {{ current_variant.sku | json | replace: '\/', '/' }}
+  {%- endif -%}
   {%- if clean_description != blank -%}
-    ,"description": {{ clean_description | json }}
+    ,"description": {{ clean_description | json | replace: '\/', '/' }}
   {%- endif -%}
   {%- if product.featured_image -%}
-    ,"image": {{ product.featured_image | image_url: width: 1200 | prepend: 'https:' | json }}
+    ,"image": {{ product.featured_image | image_url: width: 1200 | prepend: 'https:' | json | replace: '\/', '/' }}
   {%- endif -%}
+  {%- comment -%}
+    Har producenten en collection-side, peger brand'et på dens #producer-node
+    med samme @id, som seo-schema-vendor.liquid udsender. Det binder vinen
+    sammen med producentsiden i grafen i stedet for et løst brand-navn.
+    Uden collection-side falder vi tilbage på den simple Brand-node.
+  {%- endcomment -%}
   {%- if vendor != blank -%}
-    ,"brand": { "@type": "Brand", "name": {{ vendor | json }} }
+    {%- if vendor_collection_url != blank -%}
+      {%- assign vendor_url = origin | append: vendor_collection_url -%}
+      ,"brand": {
+        "@type": ["Organization", "Winery"],
+        "@id": "{{ vendor_url }}#producer",
+        "name": {{ vendor | json | replace: '\/', '/' }},
+        "url": {{ vendor_url | json | replace: '\/', '/' }}
+        {%- if vendor_homepage != blank -%}
+          ,"sameAs": [{{ vendor_homepage | json | replace: '\/', '/' }}]
+        {%- endif -%}
+      }
+    {%- else -%}
+      ,"brand": { "@type": "Brand", "name": {{ vendor | json | replace: '\/', '/' }} }
+    {%- endif -%}
   {%- endif -%}
+  {%- comment -%}
+    schema.org forventer en Country-node her, ikke fritekst. Navnet er
+    lokaliseret ("Spanien" på svensk), hvilket er gyldigt — vil man gøre det
+    maskinlæsbart, tilføjes "identifier" med ISO 3166-1 alpha-2, når
+    land-metaobjektet får et felt til koden.
+  {%- endcomment -%}
   {%- if country != blank -%}
-    ,"countryOfOrigin": {{ country | json }}
+    ,"countryOfOrigin": { "@type": "Country", "name": {{ country | json | replace: '\/', '/' }} }
   {%- endif -%}
-  ,"offers": [
+  {%- comment -%}
+    Prisen skal være den, kunden faktisk ser: bundle-, tilbuds- eller
+    medlemspris, afgjort af variantens flag i jkl-price-resolve.liquid.
+    variant.price er ikke brugbar — den viste pris kommer fra metafeltet
+    custom.prices, og på varer uden Shopify-pris er variant.price 0.
+
+    Varianter uden brugbar pris for det aktive land udelades helt, og har ingen
+    af dem en pris, udelades offers-nøglen — et tomt array er ugyldigt.
+  {%- endcomment -%}
+  {%- capture offers_json -%}
+    {%- assign offer_first = true -%}
     {%- for variant in product.variants -%}
-      {
-        "@type": "Offer",
-        "price": {{ variant.price | divided_by: 100.0 | json }},
-        "priceCurrency": {{ cart.currency.iso_code | json }},
-        "availability": "https://schema.org/{% if variant.available %}InStock{% else %}OutOfStock{% endif %}",
-        "url": {{ shop.url | append: variant.url | json }}
-        {%- if variant.sku != blank -%}
-          ,"sku": {{ variant.sku | json }}
-        {%- endif -%}
-        {%- if variant.title != blank and variant.title != "Default Title" -%}
-          ,"name": {{ variant.title | json }}
-        {%- endif -%}
-      }{%- unless forloop.last -%},{%- endunless -%}
+      {%- capture offer_price %}{% render 'jkl-price-resolve', variant: variant %}{% endcapture -%}
+      {%- assign offer_price = offer_price | strip -%}
+      {%- if offer_price != blank -%}
+        {%- assign offer_country_data = variant.metafields.custom.prices.value[localization.country.iso_code] -%}
+        {%- assign offer_currency = offer_country_data.currency | default: cart.currency.iso_code -%}
+        {%- unless offer_first -%},{%- endunless -%}
+        {%- assign offer_first = false -%}
+        {
+          "@type": "Offer",
+          "price": {{ offer_price | plus: 0 | json }},
+          "priceCurrency": {{ offer_currency | json | replace: '\/', '/' }},
+          "availability": "https://schema.org/{% if variant.available %}InStock{% else %}OutOfStock{% endif %}",
+          "url": {{ origin | append: variant.url | json | replace: '\/', '/' }}
+          {%- if variant.sku != blank -%}
+            ,"sku": {{ variant.sku | json | replace: '\/', '/' }}
+          {%- endif -%}
+          {%- if variant.title != blank and variant.title != "Default Title" -%}
+            ,"name": {{ variant.title | json | replace: '\/', '/' }}
+          {%- endif -%}
+        }
+      {%- endif -%}
     {%- endfor -%}
-  ]
+  {%- endcapture -%}
+  {%- assign offers_json = offers_json | strip -%}
+  {%- if offers_json != blank -%}
+    ,"offers": [{{ offers_json }}]
+  {%- endif -%}
   {%- assign first = true -%}
   {%- assign vintage = current_variant.metafields.custom.vintage -%}
   {%- assign alcohol_percentage = current_variant.metafields.custom.alcohol_percentage -%}
   ,"additionalProperty": [
     {%- if vintage != blank -%}
-      {% unless first %},{% endunless %}{ "@type": "PropertyValue", "name": "Vintage", "value": {{ vintage | json }} }
+      {% unless first %},{% endunless %}{ "@type": "PropertyValue", "name": "Vintage", "value": {{ vintage | json | replace: '\/', '/' }} }
       {%- assign first = false -%}
     {%- endif -%}
     {%- if wine_type != blank -%}
-      {% unless first %},{% endunless %}{ "@type": "PropertyValue", "name": "Type", "value": {{ wine_type | json }} }
+      {% unless first %},{% endunless %}{ "@type": "PropertyValue", "name": "Type", "value": {{ wine_type | json | replace: '\/', '/' }} }
       {%- assign first = false -%}
     {%- endif -%}
     {%- if region != blank -%}
-      {% unless first %},{% endunless %}{ "@type": "PropertyValue", "name": "Region", "value": {{ region | json }} }
+      {% unless first %},{% endunless %}{ "@type": "PropertyValue", "name": "Region", "value": {{ region | json | replace: '\/', '/' }} }
       {%- assign first = false -%}
     {%- endif -%}
     {%- if subregion != blank -%}
-      {% unless first %},{% endunless %}{ "@type": "PropertyValue", "name": "Sub-region", "value": {{ subregion | json }} }
+      {% unless first %},{% endunless %}{ "@type": "PropertyValue", "name": "Sub-region", "value": {{ subregion | json | replace: '\/', '/' }} }
       {%- assign first = false -%}
     {%- endif -%}
     {%- if district != blank -%}
-      {% unless first %},{% endunless %}{ "@type": "PropertyValue", "name": "District", "value": {{ district | json }} }
+      {% unless first %},{% endunless %}{ "@type": "PropertyValue", "name": "District", "value": {{ district | json | replace: '\/', '/' }} }
       {%- assign first = false -%}
     {%- endif -%}
     {%- if alcohol_percentage != blank -%}
-      {% unless first %},{% endunless %}{ "@type": "PropertyValue", "name": "Alcohol", "value": {{ alcohol_percentage | json }}, "unitText": "%" }
+      {% unless first %},{% endunless %}{ "@type": "PropertyValue", "name": "Alcohol", "value": {{ alcohol_percentage | json | replace: '\/', '/' }}, "unitText": "%" }
       {%- assign first = false -%}
     {%- endif -%}
     {%- if volume != blank -%}
-      {% unless first %},{% endunless %}{ "@type": "PropertyValue", "name": "Volume", "value": {{ volume | json }} }
+      {% unless first %},{% endunless %}{ "@type": "PropertyValue", "name": "Volume", "value": {{ volume | json | replace: '\/', '/' }} }
       {%- assign first = false -%}
     {%- endif -%}
   ]

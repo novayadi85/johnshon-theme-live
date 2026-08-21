@@ -1,0 +1,49 @@
+{%- comment -%}
+  ItemList JSON-LD til collection-sider — den type Google faktisk bruger til at
+  forstå en produktliste.
+
+  Formatet er Googles "summary page": hver ListItem har kun position og url, der
+  peger på produktsiden. Navne, priser og billeder hører til i Product-schemaet
+  på selve produktsiden; duplikeres de her, kan de nå at komme ud af trit.
+
+  Renderes fra jkl-plp.liquid inde i paginate-blokken. products sendes med som
+  parameter, fordi collection.products kun er den aktuelle sides 24 produkter,
+  når den læses derinde — udefra ville det være collectionens første 50,
+  uanset hvilken side man står på.
+
+  Parametre:
+    products - den aktuelle sides produkter
+    paginate - paginate-objektet, til at tælle positionen videre
+
+  position tæller videre på tværs af sider via paginate.current_offset, så side
+  2 starter på 25 og ikke forfra på 1.
+{%- endcomment -%}
+
+{%- liquid
+  assign url_parts = canonical_url | split: '/'
+  assign origin = url_parts[0] | append: '//' | append: url_parts[2]
+  assign offset = paginate.current_offset | default: 0
+-%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "@id": "{{ canonical_url }}#itemlist",
+  "itemListElement": [
+    {%- for product in products -%}
+      {%- unless forloop.first -%},{%- endunless -%}
+      {%- comment -%}
+        product.url er den kanoniske /products/... uden variant-parameter.
+        Griddet viser ét kort pr. variant, men her skal hvert produkt kun stå
+        én gang — ellers ville samme kanoniske URL optræde flere gange i listen.
+      {%- endcomment -%}
+      {
+        "@type": "ListItem",
+        "position": {{ offset | plus: forloop.index }},
+        "url": {{ origin | append: product.url | json | replace: '\/', '/' }}
+      }
+    {%- endfor -%}
+  ]
+}
+</script>

@@ -1,6 +1,6 @@
 
 {%- comment -%}
-  Cancel order modal — "Fortryd din ordre".
+  Cancel order modal — jkl.cancel_order_* i locale-filerne.
   Self-contained: includes its own overlay/dialog styling, open/close logic and
   form submit handler, so it does not depend on the theme's modal framework.
   Opened by any element with [data-action="open-modal"] pointing at cancel-order-modal.
@@ -8,49 +8,49 @@
 
 <div class="cancel-order-modal" aria-hidden="true" tabindex="-1" id="cancel-order-modal">
   <div class="cancel-order-modal__overlay" data-action="close-modal"></div>
-  <div class="cancel-order-modal__dialog" role="dialog" aria-modal="true" aria-label="Fortryd din ordre">
+  <div class="cancel-order-modal__dialog" role="dialog" aria-modal="true" aria-label="{{ 'jkl.cancel_order_title' | t }}">
     <div class="cancel-order-modal__header">
-      <h2 class="cancel-order-modal__title heading h3">Fortryd din ordre</h2>
-      <button type="button" class="cancel-order-modal__close" data-action="close-modal" aria-label="{{ 'general.accessibility.close' | t }}">{%- render 'icon', icon: 'close' -%}</button>
+      <h2 class="cancel-order-modal__title heading h3">{{ 'jkl.cancel_order_title' | t }}</h2>
+      <button type="button" class="cancel-order-modal__close" data-action="close-modal" aria-label="{{ 'actions.close' | t }}">{%- render 'icon', icon: 'close' -%}</button>
     </div>
 
     <div class="cancel-order-modal__content">
       <form class="cancel-order-form" novalidate>
         <div class="cancel-order-form__row">
-          <label for="cancel-order-name" class="cancel-order-form__label">Navn</label>
+          <label for="cancel-order-name" class="cancel-order-form__label">{{ 'blocks.contact_form.name' | t }}</label>
           <input id="cancel-order-name" type="text" class="cancel-order-form__field" name="name" autocomplete="name" required>
         </div>
 
         <div class="cancel-order-form__row">
-          <label for="cancel-order-email" class="cancel-order-form__label">E-mail</label>
+          <label for="cancel-order-email" class="cancel-order-form__label">{{ 'blocks.contact_form.email' | t }}</label>
           <input id="cancel-order-email" type="email" class="cancel-order-form__field" name="email" autocomplete="email" required>
         </div>
 
         <div class="cancel-order-form__row">
-          <label for="cancel-order-number" class="cancel-order-form__label">Ordrenummer</label>
+          <label for="cancel-order-number" class="cancel-order-form__label">{{ 'jkl.contact_order_id' | t }}</label>
           <input id="cancel-order-number" type="text" class="cancel-order-form__field" name="order_number" required>
         </div>
 
         <div class="cancel-order-form__row">
-          <label for="cancel-order-reason" class="cancel-order-form__label">Årsag</label>
+          <label for="cancel-order-reason" class="cancel-order-form__label">{{ 'jkl.cancel_order_reason' | t }}</label>
           <select id="cancel-order-reason" class="cancel-order-form__field" name="reason" required>
-            <option value="" disabled selected>Vælg en årsag</option>
-            <option value="customer">Jeg fortrød købet</option>
-            <option value="wrong_item">Jeg bestilte den forkerte vare</option>
-            <option value="delivery">Leveringstiden er for lang</option>
-            <option value="price">Jeg fandt den billigere et andet sted</option>
-            <option value="other">Andet</option>
+            <option value="" disabled selected>{{ 'jkl.cancel_order_reason_placeholder' | t }}</option>
+            <option value="customer">{{ 'jkl.cancel_order_reason_customer' | t }}</option>
+            <option value="wrong_item">{{ 'jkl.cancel_order_reason_wrong_item' | t }}</option>
+            <option value="delivery">{{ 'jkl.cancel_order_reason_delivery' | t }}</option>
+            <option value="price">{{ 'jkl.cancel_order_reason_price' | t }}</option>
+            <option value="other">{{ 'jkl.cancel_order_reason_other' | t }}</option>
           </select>
         </div>
 
         <div class="cancel-order-form__row">
-          <label for="cancel-order-note" class="cancel-order-form__label">Uddyb gerne (valgfrit)</label>
+          <label for="cancel-order-note" class="cancel-order-form__label">{{ 'jkl.cancel_order_note' | t }}</label>
           <textarea id="cancel-order-note" class="cancel-order-form__field cancel-order-form__field--textarea" name="reason_note" rows="3"></textarea>
         </div>
 
         <p class="cancel-order-form__message" role="status" aria-live="polite" hidden></p>
 
-        <button type="submit" class="cancel-order-form__submit button button--primary">Send</button>
+        <button type="submit" class="cancel-order-form__submit button button--primary">{{ 'actions.submit' | t }}</button>
       </form>
     </div>
   </div>
@@ -169,6 +169,11 @@
     var MODAL_ID = 'cancel-order-modal';
     // Shopify app proxy — forwards to the communication app server-side.
     var CANCEL_ORDER_ENDPOINT = '/apps/communication';
+    var STRINGS = {
+      success: {{ 'jkl.cancel_order_success' | t | json }},
+      notFound: {{ 'jkl.cancel_order_not_found' | t | json }},
+      error: {{ 'jkl.cancel_order_error' | t | json }}
+    };
 
     var modal = document.getElementById(MODAL_ID);
     if (!modal) return;
@@ -240,10 +245,10 @@
         var message = error && error.message ? error.message : '';
 
         if (message === 'No order found for the given order number/email.') {
-          return 'Vi kunne ikke finde en ordre med det angivne ordrenummer og e-mail.';
+          return STRINGS.notFound;
         }
 
-        return message || 'Noget gik galt. Prøv venligst igen senere.';
+        return message || STRINGS.error;
       }
 
       if (!form.checkValidity()) {
@@ -288,7 +293,7 @@
             });
         })
         .then(function () {
-          showMessage('Tak! Vi har modtaget din anmodning om at fortryde din ordre.', false);
+          showMessage(STRINGS.success, false);
           form.reset();
         })
         .catch(function (error) {

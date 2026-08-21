@@ -1,0 +1,61 @@
+{%- comment -%}
+  CollectionPage JSON-LD til collection-sider.
+
+  CollectionPage er undertypen af WebPage til sider, der lister en samling varer
+  — samme node, bare præcist typet. Producent-collections går uden om dette
+  snippet: seo-schema-vendor.liquid udsender sin egen CollectionPage sammen med
+  Winery-noden i ét @graph.
+
+  @id'erne følger mønsteret fra seo-schema-vendor.liquid (#webpage, #breadcrumb),
+  så noderne kan pege på hinanden på tværs af de to script-blokke.
+
+  Renderes fra seo-schema.liquid, som sætter has_breadcrumb.
+{%- endcomment -%}
+
+{%- liquid
+  # origin trækkes ud af canonical_url, så domænet følger den side, der vises.
+  assign url_parts = canonical_url | split: '/'
+  assign origin = url_parts[0] | append: '//' | append: url_parts[2]
+  assign home_url = origin | append: routes.root_url
+
+  # Samme tekst som .plp-description, med den lange beskrivelse som fallback.
+  assign description_html = collection.metafields.custom.short_text | metafield_tag
+  if description_html == blank
+    assign description_html = collection.description
+  endif
+  capture clean_description
+    render 'jkl-plain-text', html: description_html
+  endcapture
+  assign clean_description = clean_description | strip
+-%}
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "@id": "{{ canonical_url }}#webpage",
+  "url": {{ canonical_url | json | replace: '\/', '/' }},
+  "name": {{ collection.title | json | replace: '\/', '/' }},
+  "inLanguage": {{ request.locale.iso_code | json }},
+  "isPartOf": { "@id": "{{ home_url }}#website" }
+  {%- comment -%}
+    ItemList-noden udsendes af jkl-plp.liquid, og kun når collectionen har
+    produkter. Referencen sættes under samme betingelse, så den ikke kan pege
+    på en node, der ikke findes.
+  {%- endcomment -%}
+  {%- if collection.all_products_count > 0 -%}
+    ,"mainEntity": { "@id": "{{ canonical_url }}#itemlist" }
+  {%- endif -%}
+  {%- if clean_description != blank -%}
+    ,"description": {{ clean_description | json | replace: '\/', '/' }}
+  {%- endif -%}
+  {%- comment -%}
+    Referencen udelades på de templates uden synlig breadcrumb (overview og
+    ønskeliste) — der udsendes ingen BreadcrumbList, så @id'et ville pege på
+    en node, der ikke findes.
+  {%- endcomment -%}
+  {%- if has_breadcrumb -%}
+    ,"breadcrumb": { "@id": "{{ canonical_url }}#breadcrumb" }
+  {%- endif -%}
+}
+</script>

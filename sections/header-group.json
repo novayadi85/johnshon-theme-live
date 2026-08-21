@@ -16,6 +16,7 @@
       "blocks": {
         "logged_in_menu_item_pKjWGk": {
           "type": "logged_in_menu_item",
+          "disabled": true,
           "settings": {
             "title": "Be a Member",
             "link": "shopify://pages/bourgogne-sign-up",
@@ -35,9 +36,9 @@
             "title": "Tilbud",
             "link": "shopify://collections/tilbud",
             "show_for_logged_in": true,
-            "show_for_logged_out": false,
-            "customer_tag": "bronze",
-            "customer_metafield_namespace": "custom",
+            "show_for_logged_out": true,
+            "customer_tag": "",
+            "customer_metafield_namespace": "",
             "customer_metafield_key": "",
             "customer_metafield_value": "",
             "background_color": "#ab8723",

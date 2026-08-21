@@ -65,7 +65,7 @@
 
     {%- comment -%} Empty state — always in the DOM, shown via .is-empty on .cart-drawer {%- endcomment -%}
     <div class="cart-drawer-empty" id="cartDrawerEmpty">
-      <h1 class="cart-empty-text">{{ 'content.your_cart_is_empty' | t }}</h1>
+      <div class="cart-empty-text">{{ 'content.your_cart_is_empty' | t }}</div>
       <div class="cart-empty-actions">
         <button class="btn btn-primary" onclick="window.location.href='{{ routes.root_url }}'">{{ 'jkl.explore_the_shop' | t }}</button>
       </div>

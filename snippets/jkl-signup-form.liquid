@@ -119,10 +119,25 @@
 {%- if cta_override != blank -%}
   {%- assign cta = cta_override -%}
 {%- endif -%}
+{%- comment -%}
+  Tagget bruges til at afgøre, om kunden allerede er medlem (linje nedenfor).
+  customer_tags_action bruges kun direkte i det skjulte felt i formularen.
+{%- endcomment -%}
 {%- assign customer_tags_tag_value = customer_tags_tag | default: 'bronze' -%}
-{%- assign customer_tags_action_value = customer_tags_action | default: 'add' -%}
+{%- comment -%}
+  Klubtilstanden sættes eksplicit af kalderen med member_signup: true.
+
+  Før blev den udledt af customer_tags-parametrene (endpoint sat + tag 'bronze'
+  + action 'add'), så "hvilket tag skriver vi?" og "er det her klubformularen?"
+  var det samme spørgsmål. Skiftede nogen tagget til fx 'silver', ville alle
+  medlemsteksterne stille og roligt forsvinde, uden at medlemslogikken var rørt.
+
+  Kaldere uden parameteren — nyhedsbrevet på kollektions- og søgesiden — får den
+  rene formular og rører aldrig medlemsdelen. Endpointet kræves stadig, da
+  medlemsgrenene skriver via app-proxyen.
+{%- endcomment -%}
 {%- assign is_member_signup = false -%}
-{%- if customer_tags_endpoint != blank and customer_tags_tag_value == 'bronze' and customer_tags_action_value == 'add' -%}
+{%- if member_signup and customer_tags_endpoint != blank -%}
   {%- assign is_member_signup = true -%}
 {%- endif -%}
 {%- assign form_class = 'signup-form' -%}
@@ -131,12 +146,12 @@
 {%- assign existing_member_join = false -%}
 {%- if is_member_signup and customer and customer.tags contains customer_tags_tag_value -%}
   {%- assign existing_member_join = true -%}
-  {%- assign success_msg = 'You are already a member and enjoy your benefit' -%}
+  {%- assign success_msg = 'jkl.member_already' | t -%}
 {%- elsif is_member_signup and customer -%}
   {%- assign customer_join_only = true -%}
-  {%- assign cta = 'Click here to become a member of the club' -%}
-  {%- assign consent = 'I accept the terms of the membership' -%}
-  {%- assign success_msg = 'You are already a member and enjoy your benefit' -%}
+  {%- assign cta = 'jkl.member_join_cta' | t -%}
+  {%- assign consent = 'jkl.member_join_consent' | t -%}
+  {%- assign success_msg = 'jkl.member_already' | t -%}
   {%- assign form_class = form_class | append: ' signup-form--customer-join' -%}
 {%- elsif is_member_signup -%}
   {%- assign guest_member_join = true -%}
@@ -148,11 +163,14 @@
   .signup-form-errors.is-visible { display: block; text-align: left; margin-bottom: 0px; }
   .signup-form-errors ul { margin: 4px 0 0; padding-left: 18px; }
   .signup-form-errors li { list-style: disc; }
+  /* Klubbens CTA'er. Sætter selv baggrunden og læser derfor ikke
+     --surface-fg, som nyhedsbrevsknappen bruger — de to kan styles hver for
+     sig. */
   .signup-form-login-btn,
   .signup-form--customer-join .signup-form-btn {
     color: var(--color-cream);
-    background-color: var(--color-muted-tangerine);
-    border-color: var(--color-muted-tangerine);
+    background-color: var(--color-burnt-orange);
+    border-color: var(--color-burnt-orange);
   }
   .signup-form-login-btn {
     display: inline-flex;
@@ -187,7 +205,7 @@
   {%- assign return_path = request.path | url_encode -%}
   {%- assign login_url = routes.account_login_url | append: '?return_url=' | append: return_path -%}
   <a class="signup-form-btn signup-form-login-btn" href="{{ login_url }}">
-    Become member here
+    {{ 'jkl.member_join_login' | t }}
   </a>
 {% else %}
 {% form 'customer', class: form_class %}
