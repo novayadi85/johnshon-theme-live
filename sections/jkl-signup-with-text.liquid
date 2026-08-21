@@ -5,7 +5,9 @@
 <section class="signup-with-text {{ section.settings.background_class | default: 'bg-cream-color' }} {{ section.settings.text_class | default: 'color-green-coal' }}">
   <div class="signup-with-text-top">
     <h1 class="title">{{ section.settings[headline_key] }}</h1>
-    <p>{{ section.settings[body_text_key] }}</p>
+    <div class="signup-with-text-body">
+      {{ section.settings[body_text_key] }}
+    </div>
     {% if section.settings.show_form %}
       {% render 'jkl-signup-form' %}
     {% endif %}
@@ -27,14 +29,14 @@
     { "type": "text", "id": "headline_et", "label": "headline_et" },
     { "type": "text", "id": "headline_lv", "label": "headline_lv" },
     { "type": "text", "id": "headline_lt", "label": "headline_lt" },
-    { "type": "textarea", "id": "body_text_sv", "label": "body_text_sv" },
-    { "type": "textarea", "id": "body_text_da", "label": "body_text_da" },
-    { "type": "textarea", "id": "body_text_de", "label": "body_text_de" },
-    { "type": "textarea", "id": "body_text_fi", "label": "body_text_fi" },
-    { "type": "textarea", "id": "body_text_pl", "label": "body_text_pl" },
-    { "type": "textarea", "id": "body_text_et", "label": "body_text_et" },
-    { "type": "textarea", "id": "body_text_lv", "label": "body_text_lv" },
-    { "type": "textarea", "id": "body_text_lt", "label": "body_text_lt" }
+    { "type": "richtext", "id": "body_text_sv", "label": "body_text_sv" },
+    { "type": "richtext", "id": "body_text_da", "label": "body_text_da" },
+    { "type": "richtext", "id": "body_text_de", "label": "body_text_de" },
+    { "type": "richtext", "id": "body_text_fi", "label": "body_text_fi" },
+    { "type": "richtext", "id": "body_text_pl", "label": "body_text_pl" },
+    { "type": "richtext", "id": "body_text_et", "label": "body_text_et" },
+    { "type": "richtext", "id": "body_text_lv", "label": "body_text_lv" },
+    { "type": "richtext", "id": "body_text_lt", "label": "body_text_lt" }
   ],
   "presets": [
     {

@@ -6664,7 +6664,7 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
   gap: 20px;
 }
 
-.signup-with-text-top p {
+.signup-with-text-body p {
   line-height: 150%;
 }
 
@@ -7233,9 +7233,12 @@ main:is([data-template="page"], [data-template="page.become-jkl-club-member"]) .
 }
 
 .sticky .category-nav__list--member {
+    /*
     display: flex;
     flex-direction: row;
     position: absolute;
     bottom: -40px;
     right: 0;
+    */
+    display: none; 
 }
