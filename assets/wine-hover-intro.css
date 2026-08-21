@@ -1,0 +1,56 @@
+.wine-hover-section {
+  position: relative;
+  padding: 60px 24px;
+  overflow: visible; /* important: bottle image can extend beyond the box */
+}
+
+.wine-hover-inner {
+  max-width: 760px;
+  margin: 0 auto;
+  text-align: center; 
+}
+
+.wine-hover-text {
+  font-size: 28px;
+  line-height: 1.5;
+  font-family: var(--font-heading-family, serif);
+  margin: 0;
+}
+
+.wine-hover-word {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  color: inherit;
+  cursor: pointer;
+  position: relative;
+}
+
+/* Floating bottle image, hidden by default */
+.wine-hover-bottle {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: auto;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(0deg) scale(0.9);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 999;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.2));
+}
+
+.wine-hover-bottle.is-visible {
+  opacity: 1;
+  transform: translate(-50%, -50%) rotate(0deg) scale(1);
+}
+
+@media (max-width: 749px) {
+  .wine-hover-text {
+    font-size: 20px;
+  }
+  /* Tooltip-follow-cursor doesn't translate well to touch; hide on mobile */
+  .wine-hover-bottle {
+    display: none;
+  }
+}
