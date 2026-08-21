@@ -6,7 +6,7 @@
 {% assign bullets_key = 'bullets_' | append: lang %}
 {% assign bullets = section.settings[bullets_key] | split: ',' %}
 
-<section id="signup-section" class="signup-with-text-2 {{ section.settings.background_class | default: 'bg-cream-color' }} {{ section.settings.text_class | default: 'text-black-color' }}">
+<section id="signup-section" class="signup-with-text-2 {{ section.settings.background_class | default: 'bg-cream-color' }} {{ section.settings.text_class | default: 'color-green-coal' }}">
   <div class="signup-with-text-2-inner">
     <h2 class="title">{{ section.settings[headline_key] }}</h2>
     {% if section.settings[subtitle_key] != blank %}

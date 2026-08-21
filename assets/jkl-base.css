@@ -6688,9 +6688,9 @@ main:not([data-template="index"]):not([data-template="cart"]) .pdp-notes-title {
   font-family: var(--font-serif);
   font-weight: 300;
   font-size: 20px;
-  color: var(--surface-bg);
-  background-color: var(--surface-fg);
-  border: 1px solid var(--surface-fg);
+  color: var(--surface-bg, var(--color-cream));
+  background-color: var(--surface-fg, var(--color-green-coal));
+  border: 1px solid var(--surface-fg, var(--color-green-coal));
   border-radius: 2px;
   cursor: pointer;
   white-space: nowrap;
