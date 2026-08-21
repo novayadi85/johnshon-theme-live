@@ -53,26 +53,24 @@
 
         {%- when 'signup' -%}
           {%- comment -%}
-            Samme formular som på forsiden. Gated som i jkl-club-banner og
-            jkl-plp: eksisterende bronze-medlemmer får den ikke vist.
+            Samme formular som på forsiden. Snippet'en styrer selv guest,
+            ikke-medlem og eksisterende bronze-medlem.
           {%- endcomment -%}
-          {%- unless customer.tags contains 'bronze' -%}
-            {%- assign key = 'title_' | append: lang -%}
-            {%- assign signup_title = block.settings[key] -%}
-            {%- assign key = 'button_' | append: lang -%}
-            {%- assign signup_button = block.settings[key] -%}
-            <div class="jkl-member-benefits__signup" {{ block.shopify_attributes }}>
+          {%- assign key = 'button_' | append: lang -%}
+          {%- assign signup_button = block.settings[key] -%}
+          <div class="jkl-member-benefits__signup" {{ block.shopify_attributes }}>
+            {%  comment %}
               {%- if signup_title != blank -%}
                 <h3 class="jkl-member-benefits__signup-title">{{ signup_title | escape }}</h3>
               {%- endif -%}
-              {% render 'jkl-signup-form',
-                customer_tags_endpoint: '/apps/communication',
-                customer_tags_tag: 'bronze',
-                customer_tags_action: 'add',
-                cta_override: signup_button
-              %}
-            </div>
-          {%- endunless -%}
+            {% endcomment %}
+            {% render 'jkl-signup-form',
+              customer_tags_endpoint: '/apps/communication',
+              customer_tags_tag: 'bronze',
+              customer_tags_action: 'add',
+              cta_override: signup_button
+            %}
+          </div>
 
       {%- endcase -%}
     {%- endfor -%}

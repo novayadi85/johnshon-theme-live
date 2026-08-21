@@ -119,6 +119,28 @@
 {%- if cta_override != blank -%}
   {%- assign cta = cta_override -%}
 {%- endif -%}
+{%- assign customer_tags_tag_value = customer_tags_tag | default: 'bronze' -%}
+{%- assign customer_tags_action_value = customer_tags_action | default: 'add' -%}
+{%- assign is_member_signup = false -%}
+{%- if customer_tags_endpoint != blank and customer_tags_tag_value == 'bronze' and customer_tags_action_value == 'add' -%}
+  {%- assign is_member_signup = true -%}
+{%- endif -%}
+{%- assign form_class = 'signup-form' -%}
+{%- assign customer_join_only = false -%}
+{%- assign guest_member_join = false -%}
+{%- assign existing_member_join = false -%}
+{%- if is_member_signup and customer and customer.tags contains customer_tags_tag_value -%}
+  {%- assign existing_member_join = true -%}
+  {%- assign success_msg = 'You are already a member and enjoy your benefit' -%}
+{%- elsif is_member_signup and customer -%}
+  {%- assign customer_join_only = true -%}
+  {%- assign cta = 'Click here to become a member of the club' -%}
+  {%- assign consent = 'I accept the terms of the membership' -%}
+  {%- assign success_msg = 'You are already a member and enjoy your benefit' -%}
+  {%- assign form_class = form_class | append: ' signup-form--customer-join' -%}
+{%- elsif is_member_signup -%}
+  {%- assign guest_member_join = true -%}
+{%- endif -%}
 
 <style>
   .signup-form .h-captcha { position: absolute !important; width: 0 !important; height: 0 !important; overflow: hidden !important; }
@@ -126,9 +148,49 @@
   .signup-form-errors.is-visible { display: block; text-align: left; margin-bottom: 0px; }
   .signup-form-errors ul { margin: 4px 0 0; padding-left: 18px; }
   .signup-form-errors li { list-style: disc; }
+  .signup-form-login-btn,
+  .signup-form--customer-join .signup-form-btn {
+    color: var(--color-cream);
+    background-color: var(--color-muted-tangerine);
+    border-color: var(--color-muted-tangerine);
+  }
+  .signup-form-login-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+  }
+  .signup-form--customer-join {
+    align-items: center;
+  }
+  .signup-form--customer-join .signup-form-btn {
+    min-width: 260px;
+    font-size: 14px;
+  }
+  .signup-form--customer-join .signup-form-consent {
+    color: #000;
+  }
+  .signup-form-member-message {
+    margin: 0;
+    color: #000;
+    font-family: var(--font-serif);
+    font-size: 18px;
+    font-weight: 300;
+    line-height: 1.4;
+    text-align: center;
+  }
 </style>
 
-{% form 'customer', class: 'signup-form' %}
+{% if existing_member_join %}
+  <p class="signup-form-member-message"><strong>{{ success_msg }}</strong></p>
+{% elsif guest_member_join %}
+  {%- assign return_path = request.path | url_encode -%}
+  {%- assign login_url = routes.account_login_url | append: '?return_url=' | append: return_path -%}
+  <a class="signup-form-btn signup-form-login-btn" href="{{ login_url }}">
+    Become member here
+  </a>
+{% else %}
+{% form 'customer', class: form_class %}
   {% if customer_tags_endpoint != blank %}
     <input type="hidden" data-customer-tags-endpoint value="{{ customer_tags_endpoint | escape }}">
     <input type="hidden" data-customer-tags-shop-id value="{{ shop.permanent_domain | default: 'johnsonwine.myshopify.com' | escape }}">
@@ -136,6 +198,9 @@
     <input type="hidden" data-customer-tags-tag value="{{ customer_tags_tag | default: 'bronze' | escape }}">
     <input type="hidden" data-customer-tags-action value="{{ customer_tags_action | default: 'add' | escape }}">
     <input type="hidden" data-customer-tags-locale value="{{ request.locale.iso_code | escape }}">
+  {% endif %}
+  {% if customer_join_only and customer %}
+    <input type="hidden" data-customer-tags-email value="{{ customer.email | escape }}">
   {% endif %}
   <input type="hidden" name="contact[tags]" value="newsletter,landing">
   <input type="hidden" name="contact[accepts_marketing]" value="true">
@@ -149,7 +214,9 @@
     data-consent="{{ error_consent }}">
   </div>
   <div class="signup-form-row">
-    <input type="email" name="contact[email]" class="signup-form-input" placeholder="{{ placeholder }}">
+    {% unless customer_join_only %}
+      <input type="email" name="contact[email]" class="signup-form-input" placeholder="{{ placeholder }}">
+    {% endunless %}
     <button type="submit" class="signup-form-btn">{{ cta }}</button>
   </div>
   <label class="signup-form-consent">
@@ -159,6 +226,7 @@
   </label>
   <p class="signup-form-success" style="display:none;"><strong>{{ success_msg }}</strong></p>
 {% endform %}
+{% endif %}
 
 <script>
   if (!window.__signupFormInit) {
@@ -172,27 +240,30 @@
       var cb = f.querySelector('.signup-form-consent input[type="checkbox"]');
       var checkmark = f.querySelector('.signup-form-checkmark');
       var errors = [];
-      var val = emailInput.value.trim();
-      if (!val) {
-        errors.push(box.dataset.emailEmpty);
-      } else if (val.indexOf('@') === -1) {
-        errors.push(box.dataset.emailAt);
-      } else {
-        var domain = val.split('@')[1];
-        var dotPos = domain ? domain.indexOf('.') : -1;
-        if (!domain || dotPos === -1) {
-          errors.push(box.dataset.emailDot);
-        } else if (dotPos === 0) {
-          errors.push(box.dataset.emailDomain);
-        } else if (domain.endsWith('.')) {
-          errors.push(box.dataset.emailEnd);
+      var emailValid = true;
+      if (emailInput) {
+        var val = emailInput.value.trim();
+        if (!val) {
+          errors.push(box.dataset.emailEmpty);
+        } else if (val.indexOf('@') === -1) {
+          errors.push(box.dataset.emailAt);
+        } else {
+          var domain = val.split('@')[1];
+          var dotPos = domain ? domain.indexOf('.') : -1;
+          if (!domain || dotPos === -1) {
+            errors.push(box.dataset.emailDot);
+          } else if (dotPos === 0) {
+            errors.push(box.dataset.emailDomain);
+          } else if (domain.endsWith('.')) {
+            errors.push(box.dataset.emailEnd);
+          }
         }
+        emailValid = errors.length === 0;
       }
-      var emailValid = errors.length === 0;
       if (!cb.checked) {
         errors.push(box.dataset.consent);
       }
-      emailInput.style.borderColor = emailValid ? '' : 'red';
+      if (emailInput) emailInput.style.borderColor = emailValid ? '' : 'red';
       checkmark.style.borderColor = cb.checked ? '' : 'red';
       if (errors.length > 0) {
         box.innerHTML = '<strong>' + box.dataset.heading + '</strong><ul>' +
@@ -226,7 +297,7 @@
             : document.documentElement.lang || '';
         var payload = {
           method: 'update_customer_tags',
-          email: f.querySelector('input[type="email"]').value.trim(),
+          email: (f.querySelector('input[type="email"]') || f.querySelector('[data-customer-tags-email]')).value.trim(),
           locale: locale,
           action: f.querySelector('[data-customer-tags-action]').value,
           tags: [f.querySelector('[data-customer-tags-tag]').value],
