@@ -1,0 +1,90 @@
+{% assign lang = request.locale.iso_code %}
+{% assign headline_key = 'headline_' | append: lang %}
+{% assign subtitle_key = 'subtitle_' | append: lang %}
+{% assign intro_key = 'intro_' | append: lang %}
+{% assign cta_text_key = 'cta_text_' | append: lang %}
+{% assign bullets_key = 'bullets_' | append: lang %}
+{% assign bullets = section.settings[bullets_key] | split: ',' %}
+
+<section id="signup-section" class="signup-with-text-2 {{ section.settings.background_class | default: 'bg-cream-color' }} {{ section.settings.text_class | default: 'text-black-color' }}">
+  <div class="signup-with-text-2-inner">
+    <h2 class="title">{{ section.settings[headline_key] }}</h2>
+    {% if section.settings[subtitle_key] != blank %}
+      <p>{{ section.settings[subtitle_key] }}</p>
+    {% endif %}
+    {% if bullets[0] != blank %}
+      <p>{{ section.settings[intro_key] }}</p>
+      <ul class="signup-with-text-2-producers">
+        {% for bullet in bullets %}
+          <li>
+            <svg class="signup-with-text-2-check" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8l6 6L20 2" stroke="#1a1914" stroke-width="1.5"></path></svg>
+            <span>{{ bullet | strip }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    {% if section.settings[cta_text_key] != blank %}
+      <p>{{ section.settings[cta_text_key] }}</p>
+    {% endif %}
+    {% if section.settings.show_form %}
+      {% render 'newsletter_signup_landing' %}
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Signup with text 2",
+  "settings": [
+    { "type": "text", "id": "background_class", "label": "background_class" },
+    { "type": "text", "id": "text_class", "label": "text_class" },
+    { "type": "checkbox", "id": "show_form", "label": "show_form" },
+    { "type": "text", "id": "headline_sv", "label": "headline_sv" },
+    { "type": "text", "id": "headline_da", "label": "headline_da" },
+    { "type": "text", "id": "headline_de", "label": "headline_de" },
+    { "type": "text", "id": "headline_fi", "label": "headline_fi" },
+    { "type": "text", "id": "headline_pl", "label": "headline_pl" },
+    { "type": "text", "id": "headline_et", "label": "headline_et" },
+    { "type": "text", "id": "headline_lv", "label": "headline_lv" },
+    { "type": "text", "id": "headline_lt", "label": "headline_lt" },
+    { "type": "textarea", "id": "subtitle_sv", "label": "subtitle_sv" },
+    { "type": "textarea", "id": "subtitle_da", "label": "subtitle_da" },
+    { "type": "textarea", "id": "subtitle_de", "label": "subtitle_de" },
+    { "type": "textarea", "id": "subtitle_fi", "label": "subtitle_fi" },
+    { "type": "textarea", "id": "subtitle_pl", "label": "subtitle_pl" },
+    { "type": "textarea", "id": "subtitle_et", "label": "subtitle_et" },
+    { "type": "textarea", "id": "subtitle_lv", "label": "subtitle_lv" },
+    { "type": "textarea", "id": "subtitle_lt", "label": "subtitle_lt" },
+    { "type": "text", "id": "intro_sv", "label": "intro_sv" },
+    { "type": "text", "id": "intro_da", "label": "intro_da" },
+    { "type": "text", "id": "intro_de", "label": "intro_de" },
+    { "type": "text", "id": "intro_fi", "label": "intro_fi" },
+    { "type": "text", "id": "intro_pl", "label": "intro_pl" },
+    { "type": "text", "id": "intro_et", "label": "intro_et" },
+    { "type": "text", "id": "intro_lv", "label": "intro_lv" },
+    { "type": "text", "id": "intro_lt", "label": "intro_lt" },
+    { "type": "textarea", "id": "bullets_sv", "label": "bullets_sv" },
+    { "type": "textarea", "id": "bullets_da", "label": "bullets_da" },
+    { "type": "textarea", "id": "bullets_de", "label": "bullets_de" },
+    { "type": "textarea", "id": "bullets_fi", "label": "bullets_fi" },
+    { "type": "textarea", "id": "bullets_pl", "label": "bullets_pl" },
+    { "type": "textarea", "id": "bullets_et", "label": "bullets_et" },
+    { "type": "textarea", "id": "bullets_lv", "label": "bullets_lv" },
+    { "type": "textarea", "id": "bullets_lt", "label": "bullets_lt" },
+    { "type": "textarea", "id": "cta_text_sv", "label": "cta_text_sv" },
+    { "type": "textarea", "id": "cta_text_da", "label": "cta_text_da" },
+    { "type": "textarea", "id": "cta_text_de", "label": "cta_text_de" },
+    { "type": "textarea", "id": "cta_text_fi", "label": "cta_text_fi" },
+    { "type": "textarea", "id": "cta_text_pl", "label": "cta_text_pl" },
+    { "type": "textarea", "id": "cta_text_et", "label": "cta_text_et" },
+    { "type": "textarea", "id": "cta_text_lv", "label": "cta_text_lv" },
+    { "type": "textarea", "id": "cta_text_lt", "label": "cta_text_lt" }
+  ],
+  "presets": [
+    {
+      "name": "JKL Signup with text 2"
+    }
+  ]
+}
+{% endschema %}
+ 

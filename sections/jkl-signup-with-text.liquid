@@ -1,33 +1,44 @@
-<section id="signup-section" class="signup-with-text-2 bg-cream-color color-green-coal">
-  <div class="signup-with-text-2-inner">
-    <h2 class="title">Som medlem får du:</h2>
-    <ul class="signup-with-text-2-producers">
-      <li>
-        <svg class="signup-with-text-2-check" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8l6 6L20 2" stroke="#1a1914" stroke-width="1.5"></path></svg>
-        <span>Förtur när nya viner lanseras</span>
-      </li>
-      <li>
-        <svg class="signup-with-text-2-check" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8l6 6L20 2" stroke="#1a1914" stroke-width="1.5"></path></svg>
-        <span>Tillgång till små partier och sällsynta flaskor</span>
-      </li>
-      <li>
-        <svg class="signup-with-text-2-check" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8l6 6L20 2" stroke="#1a1914" stroke-width="1.5"></path></svg>
-        <span>Inbjudningar till exklusiva provningar</span>
-      </li>
-    </ul>
-    {% render 'jkl-signup-form' %}
+{% assign lang = request.locale.iso_code %}
+{% assign headline_key = 'headline_' | append: lang %}
+{% assign body_text_key = 'body_text_' | append: lang %}
+
+<section class="signup-with-text {{ section.settings.background_class | default: 'bg-cream-color' }} {{ section.settings.text_class | default: 'text-black-color' }}">
+  <div class="signup-with-text-top">
+    <h1 class="title">{{ section.settings[headline_key] }}</h1>
+    <p>{{ section.settings[body_text_key] }}</p>
+    {% if section.settings.show_form %}
+      {% render 'newsletter_signup_landing' %}
+    {% endif %}
   </div>
 </section>
 
 {% schema %}
 {
-  "name": "JKL Signup",
-  "tag": "section",
-  "class": "jkl-signup-section",
-  "settings": [],
+  "name": "JKL Signup with text", 
+  "settings": [
+    { "type": "text", "id": "background_class", "label": "background_class" },
+    { "type": "text", "id": "text_class", "label": "text_class" },
+    { "type": "checkbox", "id": "show_form", "label": "show_form" },
+    { "type": "text", "id": "headline_sv", "label": "headline_sv" },
+    { "type": "text", "id": "headline_da", "label": "headline_da" },
+    { "type": "text", "id": "headline_de", "label": "headline_de" },
+    { "type": "text", "id": "headline_fi", "label": "headline_fi" },
+    { "type": "text", "id": "headline_pl", "label": "headline_pl" },
+    { "type": "text", "id": "headline_et", "label": "headline_et" },
+    { "type": "text", "id": "headline_lv", "label": "headline_lv" },
+    { "type": "text", "id": "headline_lt", "label": "headline_lt" },
+    { "type": "textarea", "id": "body_text_sv", "label": "body_text_sv" },
+    { "type": "textarea", "id": "body_text_da", "label": "body_text_da" },
+    { "type": "textarea", "id": "body_text_de", "label": "body_text_de" },
+    { "type": "textarea", "id": "body_text_fi", "label": "body_text_fi" },
+    { "type": "textarea", "id": "body_text_pl", "label": "body_text_pl" },
+    { "type": "textarea", "id": "body_text_et", "label": "body_text_et" },
+    { "type": "textarea", "id": "body_text_lv", "label": "body_text_lv" },
+    { "type": "textarea", "id": "body_text_lt", "label": "body_text_lt" }
+  ],
   "presets": [
     {
-      "name": "JKL Signup"
+      "name": "JKL Signup with text"
     }
   ]
 }

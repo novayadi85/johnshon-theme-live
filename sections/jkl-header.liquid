@@ -218,18 +218,25 @@
         <li><a href="{{ link.url }}"{% if link.links.size > 0 %} data-category="{{ link.title | handleize }}"{% endif %}>{{ link.title }}</a></li>
       {%- endfor -%}
     </ul>
-    {%- capture member_menu_items -%} 
+    {%- capture member_menu_items -%}  
       {%- for block in section.blocks -%}
         {%- if block.type == 'logged_in_menu_item' and block.settings.title != blank -%}
           {%- liquid
             assign show_member_item = true
+            assign show_for_everyone = false
 
-            if block.settings.show_for_logged_in and customer == blank
-              assign show_member_item = false
+            if block.settings.show_for_logged_in == false and block.settings.show_for_logged_out == false
+              assign show_for_everyone = true
             endif
 
-            if block.settings.show_for_logged_out and customer
-              assign show_member_item = false
+            if customer
+              unless block.settings.show_for_logged_in or show_for_everyone
+                assign show_member_item = false
+              endunless
+            else
+              unless block.settings.show_for_logged_out or show_for_everyone
+                assign show_member_item = false
+              endunless
             endif
 
             if block.settings.customer_tag != blank

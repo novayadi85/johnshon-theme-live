@@ -1,0 +1,34 @@
+<section id="signup-section" class="signup-with-text-2 bg-cream-color color-green-coal">
+  <div class="signup-with-text-2-inner">
+    <h2 class="title">Som medlem får du:</h2>
+    <ul class="signup-with-text-2-producers">
+      <li>
+        <svg class="signup-with-text-2-check" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8l6 6L20 2" stroke="#1a1914" stroke-width="1.5"></path></svg>
+        <span>Förtur när nya viner lanseras</span>
+      </li>
+      <li>
+        <svg class="signup-with-text-2-check" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8l6 6L20 2" stroke="#1a1914" stroke-width="1.5"></path></svg>
+        <span>Tillgång till små partier och sällsynta flaskor</span>
+      </li>
+      <li>
+        <svg class="signup-with-text-2-check" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 8l6 6L20 2" stroke="#1a1914" stroke-width="1.5"></path></svg>
+        <span>Inbjudningar till exklusiva provningar</span>
+      </li>
+    </ul>
+    {% render 'jkl-signup-form' %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "JKL Signup",
+  "tag": "section",
+  "class": "jkl-signup-section",
+  "settings": [],
+  "presets": [
+    {
+      "name": "JKL Signup"
+    }
+  ]
+}
+{% endschema %}
